@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Project Requirements | AgencyOS
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+    <style>
+
+        .requirements-page {
+            min-height: calc(100vh - 76px);
+            padding: 48px 0 90px;
+
+            background:
+                radial-gradient(
+                    circle at 85% 0%,
+                    rgba(99, 91, 255, 0.07),
+                    transparent 28%
+                ),
+                var(--light-bg);
+        }
+
+        .requirements-header {
+            max-width: 760px;
+            margin-bottom: 30px;
+        }
+
+        .requirements-header h1 {
+            margin: 8px 0 10px;
+            color: var(--dark);
+            font-size: clamp(30px, 4vw, 42px);
+            line-height: 1.12;
+            letter-spacing: -1.5px;
+        }
+
+        .requirements-header p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .requirements-grid {
+            display: grid;
+
+            grid-template-columns:
+                minmax(0, 1.4fr)
+                minmax(280px, 0.75fr);
+
+            gap: 20px;
+            align-items: start;
+        }
+
+        .requirements-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 27px;
+
+            box-shadow:
+                0 8px 25px rgba(17, 24, 39, 0.04);
+        }
+
+        .requirements-card h2 {
+            margin: 0 0 8px;
+            color: var(--dark);
+            font-size: 20px;
+            letter-spacing: -0.5px;
+        }
+
+        .requirements-card-description {
+            margin: 0 0 24px;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.65;
+        }
+
+        .selected-package {
+            position: relative;
+            overflow: hidden;
+
+            padding: 21px;
+            margin-bottom: 25px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #fafaff,
+                    #f5f3ff
+                );
+
+            border: 1px solid #e5e3ff;
+            border-radius: 15px;
+        }
+
+        .selected-package::after {
+            content: "";
+
+            position: absolute;
+
+            width: 130px;
+            height: 130px;
+
+            right: -65px;
+            top: -65px;
+
+            border-radius: 50%;
+
+            background:
+                rgba(99, 91, 255, 0.06);
+        }
+
+        .selected-package-label {
+            position: relative;
+            z-index: 1;
+
+            margin-bottom: 7px;
+
+            color: var(--primary);
+
+            font-size: 10px;
+            font-weight: 800;
+
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .selected-package h3 {
+            position: relative;
+            z-index: 1;
+
+            margin: 0 0 8px;
+
+            color: var(--dark);
+            font-size: 19px;
+        }
+
+        .selected-package-price {
+            position: relative;
+            z-index: 1;
+
+            color: #4b5563;
+            font-size: 13px;
+        }
+
+        .selected-package-price strong {
+            color: var(--dark);
+            font-size: 18px;
+        }
+
+        .business-selected {
+            position: relative;
+            z-index: 1;
+
+            margin-top: 14px;
+            padding-top: 13px;
+
+            border-top: 1px solid #e5e3ff;
+
+            color: #4b5563;
+            font-size: 12px;
+        }
+
+        .business-selected strong {
+            color: var(--dark);
+        }
+
+        .requirements-form-group {
+            margin-bottom: 22px;
+        }
+
+        .requirements-form-group label {
+            display: block;
+
+            margin-bottom: 8px;
+
+            color: var(--dark);
+
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .requirements-form-group label span {
+            color: #ef4444;
+        }
+
+        .requirements-form-group textarea {
+            width: 100%;
+
+            min-height: 260px;
+
+            padding: 15px 16px;
+
+            resize: vertical;
+
+            background: #ffffff;
+
+            border: 1px solid #dfe3ea;
+
+            border-radius: 12px;
+
+            color: var(--dark);
+
+            font-family: inherit;
+            font-size: 13px;
+            line-height: 1.7;
+
+            outline: none;
+
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .requirements-form-group textarea::placeholder {
+            color: #9ca3af;
+        }
+
+        .requirements-form-group textarea:focus {
+            border-color: var(--primary);
+
+            box-shadow:
+                0 0 0 4px rgba(99, 91, 255, 0.08);
+        }
+
+        .requirements-help {
+            margin-top: 8px;
+
+            color: #9ca3af;
+
+            font-size: 11px;
+            line-height: 1.55;
+        }
+
+        .form-actions {
+            display: flex;
+
+            justify-content: space-between;
+            align-items: center;
+
+            gap: 15px;
+
+            padding-top: 21px;
+
+            border-top: 1px solid var(--border);
+        }
+
+        .form-actions .btn {
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+        }
+
+        .summary-card {
+            background: var(--white);
+
+            border: 1px solid var(--border);
+
+            border-radius: 18px;
+
+            padding: 25px;
+
+            box-shadow:
+                0 8px 25px rgba(17, 24, 39, 0.04);
+        }
+
+        .summary-card h2 {
+            margin: 0 0 19px;
+
+            color: var(--dark);
+            font-size: 18px;
+        }
+
+        .summary-row {
+            display: flex;
+
+            justify-content: space-between;
+            align-items: flex-start;
+
+            gap: 15px;
+
+            padding: 13px 0;
+
+            border-bottom: 1px solid var(--border);
+        }
+
+        .summary-row:first-of-type {
+            padding-top: 0;
+        }
+
+        .summary-row:last-of-type {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .summary-label {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .summary-value {
+            color: var(--dark);
+
+            font-size: 13px;
+            font-weight: 700;
+
+            text-align: right;
+            word-break: break-word;
+        }
+
+        .summary-price {
+            font-size: 18px;
+            color: var(--primary);
+        }
+
+        .process-card {
+            margin-top: 20px;
+
+            padding: 23px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #fafaff,
+                    #f5f3ff
+                );
+
+            border: 1px solid #e5e3ff;
+
+            border-radius: 18px;
+        }
+
+        .process-card h3 {
+            margin: 0 0 16px;
+
+            color: var(--dark);
+            font-size: 16px;
+        }
+
+        .process-item {
+            display: flex;
+
+            align-items: flex-start;
+
+            gap: 11px;
+
+            margin-bottom: 15px;
+        }
+
+        .process-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .process-number {
+            width: 25px;
+            height: 25px;
+
+            flex: 0 0 25px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 50%;
+
+            background: #e9e7ff;
+            color: var(--primary);
+
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .process-item strong {
+            display: block;
+
+            margin-bottom: 2px;
+
+            color: var(--dark);
+            font-size: 12px;
+        }
+
+        .process-item p {
+            margin: 0;
+
+            color: var(--muted);
+
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .important-note {
+            margin-top: 20px;
+
+            padding: 17px;
+
+            background: #fff7ed;
+
+            border: 1px solid #fed7aa;
+
+            border-radius: 13px;
+
+            color: #9a3412;
+
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .important-note strong {
+            display: block;
+
+            margin-bottom: 4px;
+
+            font-size: 11px;
+
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .package-error {
+            padding: 18px;
+
+            background: #fef2f2;
+
+            border: 1px solid #fecaca;
+
+            border-radius: 13px;
+
+            color: #991b1b;
+
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .package-error strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        @media (max-width: 850px) {
+
+            .requirements-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            .requirements-page {
+                padding: 35px 0 65px;
+            }
+
+            .requirements-card,
+            .summary-card {
+                padding: 20px;
+            }
+
+            .requirements-header h1 {
+                font-size: 30px;
+            }
+
+            .requirements-form-group textarea {
+                min-height: 230px;
+            }
+
+            .form-actions {
+                align-items: stretch;
+                flex-direction: column-reverse;
+            }
+
+            .form-actions .btn {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================================================
+         RESOLVE SELECTED PACKAGE
+    ========================================================= -->
+
+    {% set package = namespace(value=None) %}
+
+    {% for item in service.packages %}
+
+        {% if item.id == selected_package or item.name == selected_package %}
+
+            {% set package.value = item %}
+
+        {% endif %}
+
+    {% endfor %}
+
+
+    <!-- =========================================================
+         GLOBAL NAVBAR
+    ========================================================= -->
+
+    <nav class="navbar">
+
+        <div class="nav-container">
+
+            <a
+                href="{{ url_for('dashboard') }}"
+                class="logo"
+            >
+
+                <div class="logo-mark">
+                    A
+                </div>
+
+                Agency<span class="logo-accent">OS</span>
+
+            </a>
+
+
+            <div class="nav-actions">
+
+                <a
+                    href="{{ url_for('dashboard') }}"
+                    class="btn btn-outline"
+                >
+                    ← Back to Dashboard
+                </a>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+
+    <!-- =========================================================
+         MAIN PAGE
+    ========================================================= -->
+
+    <main class="requirements-page">
+
+        <div class="section-container">
+
+
+            <!-- =====================================================
+                 HEADER
+            ===================================================== -->
+
+            <div class="requirements-header">
+
+                <span class="section-label">
+                    PROJECT SETUP
+                </span>
+
+                <h1>
+                    Tell Us About Your Project
+                </h1>
+
+                <p>
+                    Provide the requirements and business information
+                    we need to understand your project. The more details
+                    you provide, the better we can plan and deliver your
+                    project.
+                </p>
+
+            </div>
+
+
+            <!-- =====================================================
+                 CONTENT GRID
+            ===================================================== -->
+
+            <div class="requirements-grid">
+
+
+                <!-- =================================================
+                     REQUIREMENTS FORM
+                ================================================= -->
+
+                <div class="requirements-card">
+
+                    {% if package.value %}
+
+                        <h2>
+                            Project Requirements
+                        </h2>
+
+                        <p class="requirements-card-description">
+                            Describe exactly what you want us to build,
+                            improve, optimize, or deliver.
+                        </p>
+
+
+                        <!-- SELECTED PACKAGE -->
+
+                        <div class="selected-package">
+
+                            <div class="selected-package-label">
+                                Selected Package
+                            </div>
+
+                            <h3>
+                                {{ package.value.name }}
+                            </h3>
+
+                            <div class="selected-package-price">
+
+                                Package price:
+
+                                <strong>
+                                    ₹{{ "{:,.0f}".format(package.value.price) }}
+                                </strong>
+
+                            </div>
+
+                            {% if business %}
+
+                                <div class="business-selected">
+
+                                    Business:
+
+                                    <strong>
+                                        {{ business.name }}
+                                    </strong>
+
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <!-- FORM -->
+
+                        <form
+                            method="POST"
+                            action="{{ url_for(
+                                'requirements',
+                                service_slug=service.slug,
+                                package=package.value.id,
+                                business_id=selected_business_id
+                            ) }}"
+                        >
+
+                            <!-- Keep selected package during POST -->
+
+                            <input
+                                type="hidden"
+                                name="package"
+                                value="{{ package.value.name }}"
+                            >
+
+                            <!-- IMPORTANT:
+                                 Keep selected business during POST -->
+
+                            <input
+                                type="hidden"
+                                name="business_id"
+                                value="{{ selected_business_id }}"
+                            >
+
+
+                            <div class="requirements-form-group">
+
+                                <label for="requirements">
+
+                                    What do you need?
+
+                                    <span>
+                                        *
+                                    </span>
+
+                                </label>
+
+
+                                <textarea
+                                    id="requirements"
+                                    name="requirements"
+                                    rows="10"
+                                    required
+                                    placeholder="Tell us about your project...
+
+For example:
+• What type of website or SEO work do you need?
+• What is your business or industry?
+• What pages or features do you need?
+• Do you have a logo, images, content, or brand guidelines?
+• Who is your target audience?
+• Are there any websites you like as a reference?
+• What specific goals do you want to achieve?"
+                                ></textarea>
+
+
+                                <div class="requirements-help">
+
+                                    Include as much relevant information as possible.
+                                    You can provide links, feature ideas, design
+                                    preferences, target audience details, and
+                                    business goals.
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- ACTIONS -->
+
+                            <div class="form-actions">
+
+                                <a
+                                    href="{{ url_for(
+                                        'start_project',
+                                        service_slug=service.slug,
+                                        business_id=selected_business_id
+                                    ) }}"
+                                    class="btn btn-outline"
+                                >
+                                    ← Change Package
+                                </a>
+
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-primary"
+                                >
+                                    Continue to Payment →
+                                </button>
+
+                            </div>
+
+
+                        </form>
+
+
+                    {% else %}
+
+
+                        <!-- =================================================
+                             INVALID / MISSING PACKAGE
+                        ================================================= -->
+
+                        <div class="package-error">
+
+                            <strong>
+                                Package not found
+                            </strong>
+
+                            The selected package could not be found for
+                            this service. Please return to the package
+                            selection page and choose a package again.
+
+                        </div>
+
+
+                        <div
+                            class="form-actions"
+                            style="margin-top: 22px;"
+                        >
+
+                            <a
+                                href="{{ url_for(
+                                    'start_project',
+                                    service_slug=service.slug,
+                                    business_id=selected_business_id
+                                ) }}"
+                                class="btn btn-primary"
+                            >
+                                ← Select Package
+                            </a>
+
+                        </div>
+
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- =================================================
+                     RIGHT SIDEBAR
+                ================================================= -->
+
+                <div>
+
+                    {% if package.value %}
+
+                        <!-- PROJECT SUMMARY -->
+
+                        <div class="summary-card">
+
+                            <h2>
+                                Project Summary
+                            </h2>
+
+
+                            <div class="summary-row">
+
+                                <span class="summary-label">
+                                    Business
+                                </span>
+
+                                <span class="summary-value">
+                                    {{ business.name }}
+                                </span>
+
+                            </div>
+
+
+                            <div class="summary-row">
+
+                                <span class="summary-label">
+                                    Service
+                                </span>
+
+                                <span class="summary-value">
+                                    {{ service.name }}
+                                </span>
+
+                            </div>
+
+
+                            <div class="summary-row">
+
+                                <span class="summary-label">
+                                    Package
+                                </span>
+
+                                <span class="summary-value">
+                                    {{ package.value.name }}
+                                </span>
+
+                            </div>
+
+
+                            <div class="summary-row">
+
+                                <span class="summary-label">
+                                    Project Price
+                                </span>
+
+                                <span class="summary-value summary-price">
+                                    ₹{{ "{:,.0f}".format(package.value.price) }}
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- PROCESS -->
+
+                        <div class="process-card">
+
+                            <h3>
+                                What Happens Next?
+                            </h3>
+
+
+                            <div class="process-item">
+
+                                <div class="process-number">
+                                    1
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Submit Requirements
+                                    </strong>
+
+                                    <p>
+                                        Tell us what you need for your project.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="process-item">
+
+                                <div class="process-number">
+                                    2
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Complete Payment
+                                    </strong>
+
+                                    <p>
+                                        Continue securely to the payment stage.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="process-item">
+
+                                <div class="process-number">
+                                    3
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Professional Assignment
+                                    </strong>
+
+                                    <p>
+                                        AgencyOS assigns a suitable professional.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="process-item">
+
+                                <div class="process-number">
+                                    4
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Work Begins
+                                    </strong>
+
+                                    <p>
+                                        Your assigned professional starts the project.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="process-item">
+
+                                <div class="process-number">
+                                    5
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Review & Delivery
+                                    </strong>
+
+                                    <p>
+                                        Work is reviewed before final completion.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- IMPORTANT NOTE -->
+
+                        <div class="important-note">
+
+                            <strong>
+                                Important
+                            </strong>
+
+                            Please make sure your requirements are accurate
+                            before continuing. These details will be shared
+                            with the AgencyOS team and assigned professional
+                            for project execution.
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+</body>
+
+</html>

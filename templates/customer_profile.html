@@ -1,0 +1,1853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Manage your AgencyOS customer business profile."
+    >
+
+    <title>Customer Profile | AgencyOS</title>
+
+    <style>
+
+        /* =========================================================
+           RESET
+        ========================================================= */
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Roboto,
+                Arial,
+                sans-serif;
+
+            background: #f7f8fa;
+            color: #172033;
+
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+        }
+
+        a,
+        button,
+        input,
+        textarea,
+        select {
+            font: inherit;
+        }
+
+        button,
+        a {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+
+        /* =========================================================
+           PAGE AMBIENT BACKGROUND
+        ========================================================= */
+
+        .page-background {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .ambient-orb {
+            position: absolute;
+
+            width: 280px;
+            height: 280px;
+
+            border-radius: 50%;
+
+            filter: blur(70px);
+
+            opacity: .28;
+        }
+
+        .ambient-orb.one {
+            top: -120px;
+            right: 8%;
+
+            background: rgba(37, 99, 235, .08);
+
+            animation: ambientFloat 12s ease-in-out infinite;
+        }
+
+        .ambient-orb.two {
+            bottom: 8%;
+            left: -150px;
+
+            background: rgba(148, 163, 184, .10);
+
+            animation: ambientFloat 15s ease-in-out infinite reverse;
+        }
+
+        @keyframes ambientFloat {
+
+            0%,
+            100% {
+                transform: translate3d(0, 0, 0);
+            }
+
+            50% {
+                transform: translate3d(0, 18px, 0);
+            }
+        }
+
+
+        /* =========================================================
+           NAVBAR
+        ========================================================= */
+
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+
+            width: 100%;
+
+            background: rgba(255, 255, 255, .94);
+
+            border-bottom: 1px solid #e7eaf0;
+
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+        }
+
+        .nav-container {
+            width: 100%;
+            max-width: 1180px;
+
+            min-height: 70px;
+
+            margin: 0 auto;
+            padding: 0 24px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 20px;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+
+            color: #172033;
+            text-decoration: none;
+
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -.45px;
+        }
+
+        .logo-mark {
+            width: 36px;
+            height: 36px;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 10px;
+
+            background: #172033;
+            color: #ffffff;
+
+            font-size: 16px;
+            font-weight: 800;
+
+            box-shadow:
+                0 4px 12px rgba(15, 23, 42, .12);
+        }
+
+        .logo-accent {
+            color: #2563eb;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            min-height: 40px;
+
+            padding: 9px 14px;
+
+            border: 1px solid #dce1e9;
+            border-radius: 9px;
+
+            background: #ffffff;
+            color: #334155;
+
+            text-decoration: none;
+
+            font-size: 13px;
+            font-weight: 700;
+
+            transition:
+                background .18s ease,
+                border-color .18s ease,
+                transform .18s ease;
+        }
+
+        .back-btn:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+            transform: translateY(-1px);
+        }
+
+        .back-btn:active {
+            transform: translateY(0);
+        }
+
+
+        /* =========================================================
+           MAIN CONTAINER
+        ========================================================= */
+
+        .page-container {
+            width: 100%;
+            max-width: 1040px;
+
+            margin: 0 auto;
+
+            padding: 42px 24px 72px;
+        }
+
+
+        /* =========================================================
+           PAGE HEADER
+        ========================================================= */
+
+        .page-header {
+            margin-bottom: 26px;
+
+            animation: pageEnter .45s ease both;
+        }
+
+        @keyframes pageEnter {
+
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+
+            margin-bottom: 10px;
+
+            color: #64748b;
+
+            font-size: 10px;
+            font-weight: 800;
+
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .eyebrow::before {
+            content: "";
+
+            width: 18px;
+            height: 1px;
+
+            margin-right: 8px;
+
+            background: #94a3b8;
+        }
+
+        .page-header h1 {
+            margin: 0 0 8px;
+
+            color: #101828;
+
+            font-size: clamp(28px, 4vw, 36px);
+            font-weight: 800;
+
+            line-height: 1.15;
+            letter-spacing: -.8px;
+        }
+
+        .page-header p {
+            max-width: 720px;
+
+            margin: 0;
+
+            color: #64748b;
+
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+
+        /* =========================================================
+           FLASH MESSAGES
+        ========================================================= */
+
+        .flash-container {
+            display: grid;
+            gap: 9px;
+
+            margin-bottom: 20px;
+        }
+
+        .flash-message {
+            padding: 13px 15px;
+
+            border: 1px solid #bbf7d0;
+            border-radius: 10px;
+
+            background: #f0fdf4;
+            color: #166534;
+
+            font-size: 13px;
+            font-weight: 650;
+
+            animation: pageEnter .35s ease both;
+        }
+
+
+        /* =========================================================
+           PROFILE STATUS
+        ========================================================= */
+
+        .profile-status-card {
+            margin-bottom: 22px;
+            padding: 21px 22px;
+
+            background: #ffffff;
+
+            border: 1px solid #e3e7ed;
+            border-radius: 14px;
+
+            box-shadow:
+                0 5px 18px rgba(15, 23, 42, .035);
+
+            animation: pageEnter .5s ease .04s both;
+        }
+
+        .status-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 15px;
+
+            margin-bottom: 13px;
+        }
+
+        .status-heading {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-icon {
+            width: 32px;
+            height: 32px;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 8px;
+
+            background: #f1f5f9;
+            color: #334155;
+
+            font-size: 14px;
+        }
+
+        .status-title {
+            color: #1e293b;
+
+            font-size: 14px;
+            font-weight: 750;
+        }
+
+        .status-value {
+            color: #64748b;
+
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .profile-complete,
+        .profile-incomplete {
+            display: inline-flex;
+            align-items: center;
+
+            padding: 6px 10px;
+
+            border-radius: 999px;
+
+            font-size: 11px;
+            font-weight: 800;
+
+            white-space: nowrap;
+        }
+
+        .profile-complete {
+            background: #ecfdf3;
+            color: #15803d;
+            border: 1px solid #bbf7d0;
+        }
+
+        .profile-incomplete {
+            background: #fff7ed;
+            color: #b45309;
+            border: 1px solid #fed7aa;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+
+            overflow: hidden;
+
+            background: #eef1f5;
+
+            border-radius: 999px;
+        }
+
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+
+            background: #2563eb;
+
+            border-radius: 999px;
+
+            transition: width .7s cubic-bezier(.22, 1, .36, 1);
+        }
+
+        .status-description {
+            margin-top: 10px;
+
+            color: #64748b;
+
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+
+        /* =========================================================
+           FORM
+        ========================================================= */
+
+        .profile-form {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+
+        /* =========================================================
+           SECTION CARDS
+        ========================================================= */
+
+        .section-card {
+            padding: 25px;
+
+            background: #ffffff;
+
+            border: 1px solid #e3e7ed;
+            border-radius: 14px;
+
+            box-shadow:
+                0 5px 18px rgba(15, 23, 42, .035);
+
+            animation: pageEnter .5s ease both;
+        }
+
+        .section-card:nth-child(2) {
+            animation-delay: .05s;
+        }
+
+        .section-card:nth-child(3) {
+            animation-delay: .1s;
+        }
+
+        .section-header {
+            margin-bottom: 21px;
+            padding-bottom: 14px;
+
+            border-bottom: 1px solid #edf0f4;
+        }
+
+        .section-header h2 {
+            margin: 0 0 5px;
+
+            color: #172033;
+
+            font-size: 16px;
+            font-weight: 780;
+
+            letter-spacing: -.15px;
+        }
+
+        .section-header p {
+            margin: 0;
+
+            color: #64748b;
+
+            font-size: 12px;
+            line-height: 1.55;
+        }
+
+
+        /* =========================================================
+           FORM GRID
+        ========================================================= */
+
+        .form-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 18px;
+        }
+
+        .form-group {
+            min-width: 0;
+
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            color: #334155;
+
+            font-size: 12px;
+            font-weight: 750;
+        }
+
+        .required {
+            margin-left: 2px;
+            color: #dc2626;
+        }
+
+
+        /* =========================================================
+           FORM CONTROLS
+        ========================================================= */
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+
+            border: 1px solid #d8dee7;
+            border-radius: 9px;
+
+            background: #ffffff;
+            color: #172033;
+
+            outline: none;
+
+            font-family: inherit;
+            font-size: 13px;
+
+            transition:
+                border-color .18s ease,
+                box-shadow .18s ease,
+                background .18s ease;
+        }
+
+        .form-group input,
+        .form-group select {
+            min-height: 44px;
+            padding: 10px 12px;
+        }
+
+        .form-group textarea {
+            min-height: 112px;
+
+            padding: 11px 12px;
+
+            resize: vertical;
+
+            line-height: 1.55;
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #9aa4b2;
+        }
+
+        .form-group input:hover,
+        .form-group textarea:hover,
+        .form-group select:hover {
+            border-color: #cbd5e1;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: #2563eb;
+
+            box-shadow:
+                0 0 0 3px rgba(37, 99, 235, .09);
+        }
+
+        .form-group input:disabled {
+            background: #f8fafc;
+            border-color: #e5e7eb;
+
+            color: #64748b;
+
+            cursor: not-allowed;
+        }
+
+        .form-help {
+            color: #94a3b8;
+
+            font-size: 11px;
+            line-height: 1.45;
+        }
+
+        .field-counter {
+            align-self: flex-end;
+
+            color: #94a3b8;
+
+            font-size: 10px;
+        }
+
+
+        /* =========================================================
+           SELECT
+        ========================================================= */
+
+        .select-wrapper {
+            position: relative;
+        }
+
+        .select-wrapper select {
+            appearance: none;
+            -webkit-appearance: none;
+
+            padding-right: 38px;
+
+            cursor: pointer;
+        }
+
+        .select-arrow {
+            position: absolute;
+            top: 50%;
+            right: 13px;
+
+            pointer-events: none;
+
+            color: #64748b;
+
+            font-size: 11px;
+
+            transform: translateY(-50%);
+        }
+
+
+        /* =========================================================
+           ACCOUNT FIELDS
+        ========================================================= */
+
+        .readonly-field {
+            position: relative;
+        }
+
+        .readonly-badge {
+            position: absolute;
+
+            right: 9px;
+            bottom: 10px;
+
+            padding: 3px 6px;
+
+            border-radius: 5px;
+
+            background: #eef2f7;
+            color: #64748b;
+
+            font-size: 9px;
+            font-weight: 800;
+
+            text-transform: uppercase;
+            letter-spacing: .35px;
+        }
+
+
+        /* =========================================================
+           SAVE AREA
+        ========================================================= */
+
+        .save-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+
+            padding: 18px 21px;
+
+            background: #ffffff;
+
+            border: 1px solid #e3e7ed;
+            border-radius: 14px;
+
+            box-shadow:
+                0 5px 18px rgba(15, 23, 42, .035);
+
+            animation: pageEnter .5s ease .15s both;
+        }
+
+        .save-note {
+            margin-right: auto;
+
+            color: #64748b;
+
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .save-note strong {
+            color: #334155;
+        }
+
+        .save-btn {
+            min-height: 42px;
+
+            padding: 10px 20px;
+
+            border: 1px solid #172033;
+            border-radius: 9px;
+
+            background: #172033;
+            color: #ffffff;
+
+            font-size: 12px;
+            font-weight: 800;
+
+            cursor: pointer;
+
+            transition:
+                background .18s ease,
+                border-color .18s ease,
+                transform .18s ease,
+                box-shadow .18s ease;
+        }
+
+        .save-btn:hover {
+            background: #0f172a;
+            border-color: #0f172a;
+
+            transform: translateY(-1px);
+
+            box-shadow:
+                0 7px 16px rgba(15, 23, 42, .13);
+        }
+
+        .save-btn:active {
+            transform: translateY(0);
+        }
+
+        .save-btn:focus-visible,
+        .back-btn:focus-visible {
+            outline: 3px solid rgba(37, 99, 235, .18);
+            outline-offset: 2px;
+        }
+
+
+        /* =========================================================
+           SECTION FOOTNOTE
+        ========================================================= */
+
+        .profile-tip {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+
+            margin-top: 15px;
+            padding: 11px 12px;
+
+            border: 1px solid #e5e7eb;
+            border-radius: 9px;
+
+            background: #f8fafc;
+
+            color: #64748b;
+
+            font-size: 11px;
+            line-height: 1.55;
+        }
+
+        .profile-tip-icon {
+            flex: 0 0 auto;
+
+            color: #475569;
+
+            font-weight: 800;
+        }
+
+
+        /* =========================================================
+           MOBILE
+        ========================================================= */
+
+        @media (max-width: 760px) {
+
+            .nav-container {
+                min-height: 64px;
+                padding: 0 16px;
+            }
+
+            .logo {
+                font-size: 18px;
+            }
+
+            .logo-mark {
+                width: 33px;
+                height: 33px;
+                border-radius: 9px;
+                font-size: 15px;
+            }
+
+            .back-btn {
+                min-height: 38px;
+                padding: 8px 11px;
+                font-size: 12px;
+            }
+
+            .page-container {
+                padding: 30px 16px 55px;
+            }
+
+            .page-header h1 {
+                font-size: 28px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full-width {
+                grid-column: auto;
+            }
+
+            .section-card {
+                padding: 21px;
+            }
+
+            .status-top {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .save-section {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .save-note {
+                margin-right: 0;
+            }
+
+            .save-btn {
+                width: 100%;
+            }
+
+        }
+
+
+        @media (max-width: 480px) {
+
+            .page-container {
+                padding-left: 12px;
+                padding-right: 12px;
+            }
+
+            .navbar {
+                backdrop-filter: none;
+                -webkit-backdrop-filter: none;
+            }
+
+            .section-card,
+            .profile-status-card,
+            .save-section {
+                border-radius: 12px;
+            }
+
+            .section-card {
+                padding: 18px;
+            }
+
+            .profile-status-card {
+                padding: 18px;
+            }
+
+            .page-header h1 {
+                font-size: 25px;
+            }
+
+            .page-header p {
+                font-size: 13px;
+            }
+
+            .logo {
+                gap: 7px;
+                font-size: 17px;
+            }
+
+            .back-btn {
+                font-size: 11px;
+                padding: 8px 9px;
+            }
+
+        }
+
+
+        /* =========================================================
+           REDUCED MOTION
+        ========================================================= */
+
+        @media (prefers-reduced-motion: reduce) {
+
+            html {
+                scroll-behavior: auto;
+            }
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: .01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: .01ms !important;
+            }
+
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+    <!-- =========================================================
+         AMBIENT BACKGROUND
+    ========================================================= -->
+
+    <div
+        class="page-background"
+        aria-hidden="true"
+    >
+        <div class="ambient-orb one"></div>
+        <div class="ambient-orb two"></div>
+    </div>
+
+
+    <!-- =========================================================
+         NAVBAR
+    ========================================================= -->
+
+    <nav class="navbar">
+
+        <div class="nav-container">
+
+            <a
+                href="{{ url_for('dashboard') }}"
+                class="logo"
+                aria-label="AgencyOS Dashboard"
+            >
+
+                <span class="logo-mark">
+                    A
+                </span>
+
+                <span>
+                    Agency<span class="logo-accent">OS</span>
+                </span>
+
+            </a>
+
+
+            <div class="nav-actions">
+
+                <a
+                    href="{{ url_for('dashboard') }}"
+                    class="back-btn"
+                >
+                    ← Dashboard
+                </a>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+
+    <!-- =========================================================
+         MAIN
+    ========================================================= -->
+
+    <main class="page-container">
+
+
+        <!-- =====================================================
+             PAGE HEADER
+        ====================================================== -->
+
+        <header class="page-header">
+
+            <div class="eyebrow">
+                Customer Account
+            </div>
+
+            <h1>
+                Your Business Profile
+            </h1>
+
+            <p>
+                Keep your business information updated so AgencyOS and
+                assigned professionals can understand your requirements
+                and deliver work that fits your business.
+            </p>
+
+        </header>
+
+
+        <!-- =====================================================
+             FLASH MESSAGES
+        ====================================================== -->
+
+        {% with messages = get_flashed_messages() %}
+
+            {% if messages %}
+
+                <div class="flash-container">
+
+                    {% for message in messages %}
+
+                        <div class="flash-message">
+                            {{ message }}
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+        {% endwith %}
+
+
+        <!-- =====================================================
+             PROFILE COMPLETION
+        ====================================================== -->
+
+        <section
+            class="profile-status-card"
+            aria-label="Profile completion"
+        >
+
+            <div class="status-top">
+
+                <div class="status-heading">
+
+                    <div
+                        class="status-icon"
+                        aria-hidden="true"
+                    >
+                        ✓
+                    </div>
+
+                    <div>
+
+                        <div class="status-title">
+                            Profile Completion
+                        </div>
+
+                        <div class="status-value">
+                            AgencyOS profile information
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                {% if profile_completion == 100 %}
+
+                    <span class="profile-complete">
+                        Completed ✓
+                    </span>
+
+                {% else %}
+
+                    <span class="profile-incomplete">
+                        {{ profile_completion }}% Complete
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="progress-bar">
+
+                <div
+                    class="progress-fill"
+                    id="profileProgressFill"
+                    data-progress="{{ profile_completion }}"
+                ></div>
+
+            </div>
+
+
+            <div class="status-description">
+
+                {% if profile_completion == 100 %}
+
+                    Your business profile is complete and ready for project work.
+
+                {% else %}
+
+                    Complete the remaining information to give professionals
+                    better context about your business and goals.
+
+                {% endif %}
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             PROFILE FORM
+        ====================================================== -->
+
+        <form
+            method="POST"
+            action="{{ url_for('customer_profile') }}"
+            class="profile-form"
+        >
+
+
+            <!-- =================================================
+                 PERSONAL INFORMATION
+            ================================================== -->
+
+            <section class="section-card">
+
+                <div class="section-header">
+
+                    <h2>
+                        Personal Information
+                    </h2>
+
+                    <p>
+                        Your AgencyOS account information and contact details.
+                    </p>
+
+                </div>
+
+
+                <div class="form-grid">
+
+
+                    <!-- NAME -->
+
+                    <div class="form-group readonly-field">
+
+                        <label for="name">
+                            Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="name"
+                            value="{{ current_user.name }}"
+                            disabled
+                        >
+
+                        <span class="readonly-badge">
+                            Account
+                        </span>
+
+                        <div class="form-help">
+                            Your account name is managed through your account.
+                        </div>
+
+                    </div>
+
+
+                    <!-- EMAIL -->
+
+                    <div class="form-group readonly-field">
+
+                        <label for="email">
+                            Email
+                        </label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            value="{{ current_user.email }}"
+                            disabled
+                        >
+
+                        <span class="readonly-badge">
+                            Account
+                        </span>
+
+                        <div class="form-help">
+                            Your registered AgencyOS email address.
+                        </div>
+
+                    </div>
+
+
+                    <!-- PHONE -->
+
+                    <div class="form-group">
+
+                        <label for="phone">
+                            Phone Number
+                            <span class="required">*</span>
+                        </label>
+
+                        <input
+                            type="tel"
+                            id="phone"
+                            name="phone"
+                            value="{{ customer_profile.phone or '' }}"
+                            placeholder="Enter your phone number"
+                            autocomplete="tel"
+                        >
+
+                    </div>
+
+
+                    <!-- LOCATION -->
+
+                    <div class="form-group">
+
+                        <label for="location">
+                            Location
+                            <span class="required">*</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            id="location"
+                            name="location"
+                            value="{{ customer_profile.location or '' }}"
+                            placeholder="City, State, Country"
+                            autocomplete="address-level2"
+                        >
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 BUSINESS INFORMATION
+            ================================================== -->
+
+            <section class="section-card">
+
+                <div class="section-header">
+
+                    <h2>
+                        Business Information
+                    </h2>
+
+                    <p>
+                        Tell AgencyOS about the business or organization
+                        connected to your project.
+                    </p>
+
+                </div>
+
+
+                <div class="form-grid">
+
+
+                    <!-- BUSINESS NAME -->
+
+                    <div class="form-group">
+
+                        <label for="business_name">
+                            Business Name
+                            <span class="required">*</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            id="business_name"
+                            name="business_name"
+                            value="{{ customer_profile.business_name or '' }}"
+                            placeholder="Enter your business name"
+                            autocomplete="organization"
+                        >
+
+                    </div>
+
+
+                    <!-- BUSINESS TYPE -->
+
+                    <div class="form-group">
+
+                        <label for="business_type">
+                            Business Type
+                            <span class="required">*</span>
+                        </label>
+
+                        <div class="select-wrapper">
+
+                            <select
+                                id="business_type"
+                                name="business_type"
+                            >
+
+                                <option value="">
+                                    Select business type
+                                </option>
+
+                                <option
+                                    value="Restaurant"
+                                    {% if customer_profile.business_type == "Restaurant" %}selected{% endif %}
+                                >
+                                    Restaurant
+                                </option>
+
+                                <option
+                                    value="Retail / Shopping"
+                                    {% if customer_profile.business_type == "Retail / Shopping" %}selected{% endif %}
+                                >
+                                    Retail / Shopping
+                                </option>
+
+                                <option
+                                    value="E-commerce"
+                                    {% if customer_profile.business_type == "E-commerce" %}selected{% endif %}
+                                >
+                                    E-commerce
+                                </option>
+
+                                <option
+                                    value="Startup"
+                                    {% if customer_profile.business_type == "Startup" %}selected{% endif %}
+                                >
+                                    Startup
+                                </option>
+
+                                <option
+                                    value="Education"
+                                    {% if customer_profile.business_type == "Education" %}selected{% endif %}
+                                >
+                                    Education
+                                </option>
+
+                                <option
+                                    value="Healthcare"
+                                    {% if customer_profile.business_type == "Healthcare" %}selected{% endif %}
+                                >
+                                    Healthcare
+                                </option>
+
+                                <option
+                                    value="Real Estate"
+                                    {% if customer_profile.business_type == "Real Estate" %}selected{% endif %}
+                                >
+                                    Real Estate
+                                </option>
+
+                                <option
+                                    value="Professional Services"
+                                    {% if customer_profile.business_type == "Professional Services" %}selected{% endif %}
+                                >
+                                    Professional Services
+                                </option>
+
+                                <option
+                                    value="Technology"
+                                    {% if customer_profile.business_type == "Technology" %}selected{% endif %}
+                                >
+                                    Technology
+                                </option>
+
+                                <option
+                                    value="Personal Brand / Portfolio"
+                                    {% if customer_profile.business_type == "Personal Brand / Portfolio" %}selected{% endif %}
+                                >
+                                    Personal Brand / Portfolio
+                                </option>
+
+                                <option
+                                    value="Nonprofit / Organization"
+                                    {% if customer_profile.business_type == "Nonprofit / Organization" %}selected{% endif %}
+                                >
+                                    Nonprofit / Organization
+                                </option>
+
+                                <option
+                                    value="Other"
+                                    {% if customer_profile.business_type == "Other" %}selected{% endif %}
+                                >
+                                    Other
+                                </option>
+
+                            </select>
+
+                            <span
+                                class="select-arrow"
+                                aria-hidden="true"
+                            >
+                                ▼
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- WEBSITE -->
+
+                    <div class="form-group full-width">
+
+                        <label for="website">
+                            Existing Website
+                        </label>
+
+                        <input
+                            type="url"
+                            id="website"
+                            name="website"
+                            value="{{ customer_profile.website or '' }}"
+                            placeholder="https://example.com"
+                            autocomplete="url"
+                        >
+
+                        <div class="form-help">
+                            Leave blank if your business does not have a website.
+                        </div>
+
+                    </div>
+
+
+                    <!-- SOCIAL LINKS -->
+
+                    <div class="form-group full-width">
+
+                        <label for="social_links">
+                            Social Media Links
+                        </label>
+
+                        <textarea
+                            id="social_links"
+                            name="social_links"
+                            placeholder="Instagram, Facebook, LinkedIn, YouTube, etc."
+                        >{{ customer_profile.social_links or '' }}</textarea>
+
+                        <div class="form-help">
+                            Add relevant social media profile links.
+                        </div>
+
+                    </div>
+
+
+                    <!-- BUSINESS DESCRIPTION -->
+
+                    <div class="form-group full-width">
+
+                        <label for="business_description">
+                            Business Description
+                            <span class="required">*</span>
+                        </label>
+
+                        <textarea
+                            id="business_description"
+                            name="business_description"
+                            placeholder="Describe your business, products, services, or current online presence..."
+                        >{{ customer_profile.business_description or '' }}</textarea>
+
+                        <div class="form-help">
+                            A clear description helps the assigned professional
+                            understand your business context.
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="profile-tip">
+
+                    <span
+                        class="profile-tip-icon"
+                        aria-hidden="true"
+                    >
+                        i
+                    </span>
+
+                    <span>
+                        Your business type and description may be used by AgencyOS
+                        when organizing projects and matching project requirements
+                        with the appropriate professional expertise.
+                    </span>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 GOALS
+            ================================================== -->
+
+            <section class="section-card">
+
+                <div class="section-header">
+
+                    <h2>
+                        Project & Business Goals
+                    </h2>
+
+                    <p>
+                        Give the professional a clear understanding of what
+                        success should look like for your project.
+                    </p>
+
+                </div>
+
+
+                <div class="form-grid">
+
+
+                    <!-- TARGET AUDIENCE -->
+
+                    <div class="form-group full-width">
+
+                        <label for="target_audience">
+                            Target Audience
+                            <span class="required">*</span>
+                        </label>
+
+                        <textarea
+                            id="target_audience"
+                            name="target_audience"
+                            placeholder="Describe the customers or audience you want to reach..."
+                        >{{ customer_profile.target_audience or '' }}</textarea>
+
+                        <div class="form-help">
+                            Example: local customers, online shoppers,
+                            students, businesses, or a specific demographic.
+                        </div>
+
+                    </div>
+
+
+                    <!-- BUSINESS GOALS -->
+
+                    <div class="form-group full-width">
+
+                        <label for="business_goals">
+                            Business Goals
+                            <span class="required">*</span>
+                        </label>
+
+                        <textarea
+                            id="business_goals"
+                            name="business_goals"
+                            placeholder="What do you want to achieve through your website or SEO project?"
+                        >{{ customer_profile.business_goals or '' }}</textarea>
+
+                        <div class="form-help">
+                            Explain the outcomes you want from the project.
+                        </div>
+
+                    </div>
+
+
+                    <!-- PREFERRED BUDGET -->
+
+                    <div class="form-group">
+
+                        <label for="preferred_budget">
+                            Preferred Budget
+                        </label>
+
+                        <input
+                            type="text"
+                            id="preferred_budget"
+                            name="preferred_budget"
+                            value="{{ customer_profile.preferred_budget or '' }}"
+                            placeholder="e.g. ₹10,000 - ₹20,000"
+                        >
+
+                        <div class="form-help">
+                            Optional. This helps with future service planning.
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 SAVE
+            ================================================== -->
+
+            <div class="save-section">
+
+                <div class="save-note">
+
+                    <strong>Keep your profile updated.</strong><br>
+
+                    Your saved information helps AgencyOS organize
+                    your projects and requirements.
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="save-btn"
+                >
+                    Save Profile
+                </button>
+
+            </div>
+
+        </form>
+
+    </main>
+
+
+    <!-- =========================================================
+         SCRIPT
+    ========================================================= -->
+
+   <script>
+
+(function () {
+
+    "use strict";
+
+    const form = document.querySelector(".profile-form");
+
+    const progressBar =
+        document.getElementById("profileProgressFill");
+
+    const badge =
+        document.querySelector(
+            ".profile-incomplete, .profile-complete"
+        );
+
+    const description =
+        document.querySelector(".status-description");
+
+
+    const fields = [
+        "phone",
+        "location",
+        "business_name",
+        "business_type",
+        "website",
+        "social_links",
+        "business_description",
+        "target_audience",
+        "business_goals",
+        "preferred_budget"
+    ];
+
+
+    function updateCompletion() {
+
+        let completed = 0;
+
+
+        fields.forEach(function (name) {
+
+            const field =
+                form.querySelector('[name="' + name + '"]');
+
+
+            if (field && field.value.trim() !== "") {
+                completed++;
+            }
+
+        });
+
+
+        const percentage =
+            Math.round((completed / fields.length) * 100);
+
+
+        /* Progress bar */
+
+        if (progressBar) {
+            progressBar.style.width =
+                percentage + "%";
+        }
+
+
+        /* Percentage text */
+
+        if (badge) {
+
+            if (percentage === 100) {
+
+                badge.className =
+                    "profile-complete";
+
+                badge.textContent =
+                    "Completed ✓";
+
+            } else {
+
+                badge.className =
+                    "profile-incomplete";
+
+                badge.textContent =
+                    percentage + "% Complete";
+
+            }
+
+        }
+
+
+        /* Description */
+
+        if (description) {
+
+            if (percentage === 100) {
+
+                description.textContent =
+                    "Your business profile is complete and ready for project work.";
+
+            } else {
+
+                description.textContent =
+                    "Complete the remaining information to give professionals better context about your business and goals.";
+
+            }
+
+        }
+
+    }
+
+
+    /* Update when page opens */
+
+    updateCompletion();
+
+
+    /* Update while typing/selecting */
+
+    fields.forEach(function (name) {
+
+        const field =
+            form.querySelector('[name="' + name + '"]');
+
+
+        if (field) {
+
+            field.addEventListener(
+                "input",
+                updateCompletion
+            );
+
+            field.addEventListener(
+                "change",
+                updateCompletion
+            );
+
+        }
+
+    });
+
+
+    /* Save button */
+
+    const saveButton =
+        document.querySelector(".save-btn");
+
+
+    if (form && saveButton) {
+
+        form.addEventListener(
+            "submit",
+            function () {
+
+                saveButton.disabled = true;
+
+                saveButton.textContent =
+                    "Saving...";
+
+            }
+        );
+
+    }
+
+
+})();
+
+</script>
+
+</body>
+</html>

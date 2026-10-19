@@ -1,0 +1,1549 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Project Workspace - AgencyOS</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+            background: #f4f7fb;
+            color: #111827;
+        }
+
+        /* =========================
+           NAVBAR
+        ========================= */
+
+        .navbar {
+            background: #0f172a;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 18px rgba(15, 23, 42, 0.18);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            color: white;
+            text-decoration: none;
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .logo-mark {
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9px;
+            background: #2563eb;
+            color: white;
+            font-weight: 800;
+        }
+
+        .logo-accent {
+            color: #60a5fa;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .nav-link,
+        .logout-btn {
+            color: #cbd5e1;
+            text-decoration: none;
+            padding: 9px 13px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: white;
+            background: #1e293b;
+        }
+
+        .logout-btn {
+            background: #dc2626;
+            color: white;
+        }
+
+        .logout-btn:hover {
+            background: #b91c1c;
+        }
+
+        /* =========================
+           WORKSPACE
+        ========================= */
+
+        .workspace-container {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 42px 20px 70px;
+        }
+
+        .page-header {
+            margin-bottom: 28px;
+        }
+
+        .page-header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .page-header h1 {
+            margin: 0 0 7px;
+            font-size: 32px;
+            color: #0f172a;
+        }
+
+        .page-header p {
+            margin: 0;
+            color: #64748b;
+        }
+
+        /* =========================
+           CARDS
+        ========================= */
+
+        .card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 18px;
+            padding: 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 25px rgba(15, 23, 42, 0.05);
+        }
+
+        .card h2 {
+            margin: 0 0 20px;
+            font-size: 21px;
+            color: #0f172a;
+        }
+
+        .card h3 {
+            margin: 24px 0 16px;
+            color: #1e293b;
+        }
+
+        /* =========================
+           PROJECT DETAILS
+        ========================= */
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .detail-item {
+            padding: 17px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+        }
+
+        .detail-label {
+            display: block;
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 7px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            font-weight: 700;
+        }
+
+        .detail-value {
+            color: #0f172a;
+            font-weight: 700;
+        }
+
+        .requirements {
+            white-space: pre-wrap;
+            line-height: 1.75;
+            color: #334155;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 18px;
+            min-height: 70px;
+        }
+
+        /* =========================
+           STATUS
+        ========================= */
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            width: fit-content;
+            padding: 7px 13px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .status-assigned {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .status-progress {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-submitted {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-revision {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-pending {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        /* =========================
+           REVISION
+        ========================= */
+
+        .revision-box {
+            border: 1px solid #fecaca;
+            background: #fff7f7;
+        }
+
+        .revision-title {
+            color: #991b1b;
+        }
+
+        .revision-comment {
+            background: white;
+            border: 1px solid #fecaca;
+            border-radius: 12px;
+            padding: 17px;
+            margin-top: 15px;
+            white-space: pre-wrap;
+            line-height: 1.7;
+            color: #374151;
+        }
+
+        /* =========================
+           INFO
+        ========================= */
+
+        .info-box {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1e40af;
+            padding: 15px 17px;
+            border-radius: 12px;
+            line-height: 1.55;
+            margin-bottom: 22px;
+        }
+
+        .success-box {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+            color: #166534;
+        }
+
+        /* =========================
+           FORMS
+        ========================= */
+
+        .form-group {
+            margin-bottom: 19px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #334155;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            background: white;
+            color: #111827;
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+            transition: 0.2s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: #2563eb;
+            box-shadow:
+                0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 145px;
+            resize: vertical;
+        }
+
+        .help-text {
+            display: block;
+            margin-top: 6px;
+            font-size: 12px;
+            line-height: 1.5;
+            color: #64748b;
+        }
+
+        .required {
+            color: #dc2626;
+        }
+
+        /* =========================
+           BUTTONS
+        ========================= */
+
+        .button-row {
+            display: flex;
+            gap: 11px;
+            flex-wrap: wrap;
+            margin-top: 24px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 10px;
+            padding: 12px 19px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: #16a34a;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #15803d;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e1;
+        }
+
+        /* =========================
+           DELIVERY
+        ========================= */
+
+        .delivery-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 13px;
+            padding: 18px;
+            margin-top: 15px;
+        }
+
+        .delivery-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .delivery-number {
+            font-weight: 800;
+            color: #0f172a;
+        }
+
+        .delivery-meta {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .delivery-row {
+            margin-top: 13px;
+        }
+
+        .delivery-label {
+            font-size: 13px;
+            font-weight: 800;
+            color: #475569;
+            margin-bottom: 4px;
+        }
+
+        .delivery-link {
+            color: #2563eb;
+            word-break: break-all;
+            text-decoration: none;
+            line-height: 1.5;
+        }
+
+        .delivery-link:hover {
+            text-decoration: underline;
+        }
+
+        .notes-box {
+            white-space: pre-wrap;
+            line-height: 1.65;
+            color: #374151;
+        }
+
+        /* =========================
+           HISTORY
+        ========================= */
+
+        .history-item {
+            position: relative;
+            padding-left: 22px;
+            margin-bottom: 18px;
+        }
+
+        .history-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .history-item::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 6px;
+            width: 9px;
+            height: 9px;
+            background: #2563eb;
+            border-radius: 50%;
+        }
+
+        .history-item::after {
+            content: "";
+            position: absolute;
+            left: 4px;
+            top: 18px;
+            width: 1px;
+            height: calc(100% + 5px);
+            background: #cbd5e1;
+        }
+
+        .history-item:last-child::after {
+            display: none;
+        }
+
+        .history-title {
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+
+        .history-meta {
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        .history-status {
+            display: inline-block;
+            padding: 4px 9px;
+            border-radius: 999px;
+            background: #e2e8f0;
+            color: #475569;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .empty-history {
+            padding: 18px;
+            border-radius: 12px;
+            background: #f8fafc;
+            color: #64748b;
+            text-align: center;
+        }
+
+        .back-row {
+            margin-top: 10px;
+        }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 760px) {
+
+            .nav-container {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .nav-actions {
+                width: 100%;
+            }
+
+            .nav-link,
+            .logout-btn {
+                font-size: 13px;
+            }
+
+            .workspace-container {
+                padding: 28px 14px 50px;
+            }
+
+            .page-header h1 {
+                font-size: 27px;
+            }
+
+            .card {
+                padding: 20px;
+                border-radius: 15px;
+            }
+
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .button-row {
+                flex-direction: column;
+            }
+
+            .button-row .btn {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<nav class="navbar">
+
+    <div class="nav-container">
+
+        <a
+            href="{{ url_for('professional_dashboard') }}"
+            class="logo"
+        >
+
+            <div class="logo-mark">
+                A
+            </div>
+
+            Agency<span class="logo-accent">OS</span>
+
+        </a>
+
+        <div class="nav-actions">
+
+            <a
+                href="{{ url_for('professional_dashboard') }}"
+                class="nav-link"
+            >
+                Dashboard
+            </a>
+
+            <a
+                href="{{ url_for('professional_projects') }}"
+                class="nav-link"
+            >
+                Available Projects
+            </a>
+
+            <a
+                href="{{ url_for('professional_my_projects') }}"
+                class="nav-link"
+            >
+                My Projects
+            </a>
+
+            <a
+                href="{{ url_for('logout') }}"
+                class="logout-btn"
+            >
+                Logout
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+<main class="workspace-container">
+
+    <!-- =========================
+         HEADER
+    ========================= -->
+
+    <div class="page-header">
+
+        <div class="page-header-top">
+
+            <div>
+
+                <h1>
+                    Project #{{ project.id }}
+                </h1>
+
+                <p>
+                    Professional Project Workspace
+                </p>
+
+            </div>
+
+            {% if project.status == "Assigned" %}
+
+                <span class="status status-assigned">
+                    Assigned
+                </span>
+
+            {% elif project.status == "In Progress" %}
+
+                <span class="status status-progress">
+                    In Progress
+                </span>
+
+            {% elif project.status == "Submitted" %}
+
+                <span class="status status-submitted">
+                    Submitted
+                </span>
+
+            {% elif project.status == "Revision" %}
+
+                <span class="status status-revision">
+                    Revision Required
+                </span>
+
+            {% elif project.status == "Completed" %}
+
+                <span class="status status-completed">
+                    Completed
+                </span>
+
+            {% else %}
+
+                <span class="status status-pending">
+                    {{ project.status }}
+                </span>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         PROJECT DETAILS
+    ========================= -->
+
+    <section class="card">
+
+        <h2>
+            Project Details
+        </h2>
+
+        <div class="detail-grid">
+
+            <div class="detail-item">
+
+                <span class="detail-label">
+                    Project ID
+                </span>
+
+                <span class="detail-value">
+                    #{{ project.id }}
+                </span>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span class="detail-label">
+                    Service
+                </span>
+
+                <span class="detail-value">
+                    {{ project.service }}
+                </span>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span class="detail-label">
+                    Package
+                </span>
+
+                <span class="detail-value">
+                    {{ project.package }}
+                </span>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span class="detail-label">
+                    Created
+                </span>
+
+                <span class="detail-value">
+
+                    {% if project.created_at %}
+
+                        {{ project.created_at.strftime(
+                            '%d %b %Y, %I:%M %p'
+                        ) }}
+
+                    {% else %}
+
+                        Date unavailable
+
+                    {% endif %}
+
+                </span>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         CUSTOMER REQUIREMENTS
+    ========================= -->
+
+    <section class="card">
+
+        <h2>
+            Customer Requirements
+        </h2>
+
+        <div class="requirements">
+
+            {% if project.requirements %}
+
+                {{ project.requirements }}
+
+            {% else %}
+
+                No customer requirements were provided.
+
+            {% endif %}
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         REVISION REQUEST
+    ========================= -->
+
+    {% if project.status == "Revision" %}
+
+        <section class="card revision-box">
+
+            <h2 class="revision-title">
+                🔄 Revision Requested
+            </h2>
+
+            <p>
+                Your submitted work was reviewed by the admin.
+                Please make the requested changes before resubmitting.
+            </p>
+
+            {% if project.revision_comment %}
+
+                <div class="revision-comment">
+
+                    <strong>
+                        Admin Instructions
+                    </strong>
+
+                    <br>
+                    <br>
+
+                    {{ project.revision_comment }}
+
+                </div>
+
+            {% endif %}
+
+        </section>
+
+    {% endif %}
+
+
+    <!-- =========================
+         ACTIVE WORKSPACE
+    ========================= -->
+
+    <section class="card">
+
+        <h2>
+            Project Workspace
+        </h2>
+
+
+        <!-- =========================
+             ASSIGNED
+        ========================= -->
+
+        {% if project.status == "Assigned" %}
+
+            <div class="info-box">
+
+                <div>
+
+                    <strong>
+                        Project assigned to you.
+                    </strong>
+
+                    <br>
+
+                    Start the project when you are ready
+                    to begin working on the customer's requirements.
+
+                </div>
+
+            </div>
+
+
+            <form
+                method="POST"
+                action="{{ url_for(
+                    'start_professional_project',
+                    project_id=project.id
+                ) }}"
+            >
+
+                <div class="button-row">
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        Start Project
+                    </button>
+
+                </div>
+
+            </form>
+
+
+        <!-- =========================
+             IN PROGRESS
+        ========================= -->
+
+        {% elif project.status == "In Progress" %}
+
+            <div class="info-box">
+
+                <div>
+
+                    <strong>
+                        Project is currently in progress.
+                    </strong>
+
+                    <br>
+
+                    Complete the customer's requirements,
+                    then submit the finished work for admin review.
+
+                </div>
+
+            </div>
+
+
+            <h3>
+                Submit Completed Work
+            </h3>
+
+
+            <form
+                method="POST"
+                action="{{ url_for(
+                    'submit_professional_work',
+                    project_id=project.id
+                ) }}"
+            >
+
+                <!-- LIVE WEBSITE -->
+
+                <div class="form-group">
+
+                    <label for="live_url">
+
+                        Live Website URL
+
+                        {% if "Website" in project.service %}
+
+                            <span class="required">
+                                *
+                            </span>
+
+                        {% endif %}
+
+                    </label>
+
+                    <input
+                        type="url"
+                        id="live_url"
+                        name="live_url"
+                        placeholder="https://example.com"
+                    >
+
+                    <span class="help-text">
+                        Required for website projects.
+                        Enter the deployed website URL.
+                    </span>
+
+                </div>
+
+
+                <!-- PREVIEW -->
+
+                <div class="form-group">
+
+                    <label for="preview_url">
+                        Preview / Staging URL
+                    </label>
+
+                    <input
+                        type="url"
+                        id="preview_url"
+                        name="preview_url"
+                        placeholder="https://preview.example.com"
+                    >
+
+                    <span class="help-text">
+                        Optional preview or staging URL.
+                    </span>
+
+                </div>
+
+
+                <!-- COMPLETION NOTES -->
+
+                <div class="form-group">
+
+                    <label for="completion_notes">
+
+                        Completion Notes
+
+                        <span class="required">
+                            *
+                        </span>
+
+                    </label>
+
+                    <textarea
+                        id="completion_notes"
+                        name="completion_notes"
+                        placeholder="Explain what you completed, major features, SEO work, changes made, testing performed, etc."
+                        required
+                    ></textarea>
+
+                    <span class="help-text">
+                        Give the admin a clear summary of the completed work.
+                    </span>
+
+                </div>
+
+
+                <div class="button-row">
+
+                    <button
+                        type="submit"
+                        class="btn btn-success"
+                    >
+                        Submit Completed Work
+                    </button>
+
+                </div>
+
+            </form>
+
+
+        <!-- =========================
+             SUBMITTED
+        ========================= -->
+
+        {% elif project.status == "Submitted" %}
+
+            <div class="info-box success-box">
+
+                <div>
+
+                    <strong>
+                        ✓ Work submitted successfully.
+                    </strong>
+
+                    <br>
+
+                    Your project is currently waiting for admin review.
+                    You cannot submit another version unless a revision is requested.
+
+                </div>
+
+            </div>
+
+
+            {% if latest_delivery %}
+
+                <h3>
+                    Latest Submission
+                </h3>
+
+                <div class="delivery-card">
+
+                    <div class="delivery-header">
+
+                        <span class="delivery-number">
+                            Submission #{{ latest_delivery.submission_number }}
+                        </span>
+
+                        <span class="history-status">
+                            {{ latest_delivery.status }}
+                        </span>
+
+                    </div>
+
+
+                    <!-- LIVE WEBSITE -->
+
+                    {% if latest_delivery.live_url %}
+
+                        <div class="delivery-row">
+
+                            <div class="delivery-label">
+                                Live Website
+                            </div>
+
+                            <a
+                                href="{{ latest_delivery.live_url }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="delivery-link"
+                            >
+                                {{ latest_delivery.live_url }}
+                            </a>
+
+                        </div>
+
+                    {% endif %}
+
+
+                    <!-- PREVIEW -->
+
+                    {% if latest_delivery.preview_url %}
+
+                        <div class="delivery-row">
+
+                            <div class="delivery-label">
+                                Preview / Staging
+                            </div>
+
+                            <a
+                                href="{{ latest_delivery.preview_url }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="delivery-link"
+                            >
+                                {{ latest_delivery.preview_url }}
+                            </a>
+
+                        </div>
+
+                    {% endif %}
+
+
+                    <!-- COMPLETION NOTES -->
+
+                    <div class="delivery-row">
+
+                        <div class="delivery-label">
+                            Completion Notes
+                        </div>
+
+                        <div class="notes-box">
+
+                            {{ latest_delivery.completion_notes }}
+
+                        </div>
+
+                    </div>
+
+
+                    {% if latest_delivery.submitted_at %}
+
+                        <div class="delivery-row">
+
+                            <div class="delivery-label">
+                                Submitted
+                            </div>
+
+                            <div class="delivery-meta">
+
+                                {{ latest_delivery.submitted_at.strftime(
+                                    '%d %b %Y, %I:%M %p'
+                                ) }}
+
+                            </div>
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            {% endif %}
+
+
+        <!-- =========================
+             REVISION
+        ========================= -->
+
+        {% elif project.status == "Revision" %}
+
+            <div class="info-box">
+
+                <div>
+
+                    <strong>
+                        Changes are required.
+                    </strong>
+
+                    <br>
+
+                    Review the admin instructions above,
+                    make the requested changes, and resubmit your work.
+
+                </div>
+
+            </div>
+
+
+            <h3>
+                Resubmit Updated Work
+            </h3>
+
+
+            <form
+                method="POST"
+                action="{{ url_for(
+                    'resubmit_professional_work',
+                    project_id=project.id
+                ) }}"
+            >
+
+                <!-- LIVE WEBSITE -->
+
+                <div class="form-group">
+
+                    <label for="revision_live_url">
+
+                        Live Website URL
+
+                        {% if "Website" in project.service %}
+
+                            <span class="required">
+                                *
+                            </span>
+
+                        {% endif %}
+
+                    </label>
+
+                    <input
+                        type="url"
+                        id="revision_live_url"
+                        name="live_url"
+                        placeholder="https://example.com"
+                    >
+
+                    <span class="help-text">
+                        Enter the updated deployed website URL.
+                    </span>
+
+                </div>
+
+
+                <!-- PREVIEW -->
+
+                <div class="form-group">
+
+                    <label for="revision_preview_url">
+                        Preview / Staging URL
+                    </label>
+
+                    <input
+                        type="url"
+                        id="revision_preview_url"
+                        name="preview_url"
+                        placeholder="https://preview.example.com"
+                    >
+
+                    <span class="help-text">
+                        Optional preview or staging URL.
+                    </span>
+
+                </div>
+
+
+                <!-- COMPLETION NOTES -->
+
+                <div class="form-group">
+
+                    <label for="revision_completion_notes">
+
+                        Completion Notes
+
+                        <span class="required">
+                            *
+                        </span>
+
+                    </label>
+
+                    <textarea
+                        id="revision_completion_notes"
+                        name="completion_notes"
+                        placeholder="Explain the changes you made after the revision request."
+                        required
+                    ></textarea>
+
+                    <span class="help-text">
+                        Clearly describe the changes made after the revision.
+                    </span>
+
+                </div>
+
+
+                <div class="button-row">
+
+                    <button
+                        type="submit"
+                        class="btn btn-success"
+                    >
+                        Resubmit Work
+                    </button>
+
+                </div>
+
+            </form>
+
+
+        <!-- =========================
+             COMPLETED
+        ========================= -->
+
+        {% elif project.status == "Completed" %}
+
+            <div class="info-box success-box">
+
+                <div>
+
+                    <strong>
+                        ✓ Project approved and completed.
+                    </strong>
+
+                    <br>
+
+                    This project has been approved by the admin.
+                    The approved delivery is shown below.
+
+                </div>
+
+            </div>
+
+
+            {% if latest_delivery %}
+
+                <h3>
+                    Approved Delivery
+                </h3>
+
+                <div class="delivery-card">
+
+                    <div class="delivery-header">
+
+                        <span class="delivery-number">
+                            Submission #{{ latest_delivery.submission_number }}
+                        </span>
+
+                        <span class="history-status">
+                            Approved
+                        </span>
+
+                    </div>
+
+
+                    <!-- LIVE WEBSITE -->
+
+                    {% if latest_delivery.live_url %}
+
+                        <div class="delivery-row">
+
+                            <div class="delivery-label">
+                                Live Website
+                            </div>
+
+                            <a
+                                href="{{ latest_delivery.live_url }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="delivery-link"
+                            >
+                                {{ latest_delivery.live_url }}
+                            </a>
+
+                        </div>
+
+                    {% endif %}
+
+
+                    <!-- PREVIEW -->
+
+                    {% if latest_delivery.preview_url %}
+
+                        <div class="delivery-row">
+
+                            <div class="delivery-label">
+                                Preview / Staging
+                            </div>
+
+                            <a
+                                href="{{ latest_delivery.preview_url }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="delivery-link"
+                            >
+                                {{ latest_delivery.preview_url }}
+                            </a>
+
+                        </div>
+
+                    {% endif %}
+
+
+                    <!-- COMPLETION NOTES -->
+
+                    <div class="delivery-row">
+
+                        <div class="delivery-label">
+                            Completion Notes
+                        </div>
+
+                        <div class="notes-box">
+
+                            {{ latest_delivery.completion_notes }}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            {% endif %}
+
+
+        <!-- =========================
+             OTHER STATUS
+        ========================= -->
+
+        {% else %}
+
+            <div class="info-box">
+
+                <div>
+
+                    Current project status:
+
+                    <strong>
+                        {{ project.status }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+        {% endif %}
+
+    </section>
+
+
+    <!-- =========================
+         DELIVERY HISTORY
+    ========================= -->
+
+    <section class="card">
+
+        <h2>
+            Delivery History
+        </h2>
+
+        {% if delivery_history %}
+
+            {% for delivery in delivery_history %}
+
+                <div class="history-item">
+
+                    <div class="history-title">
+
+                        Submission #{{ delivery.submission_number }}
+
+                    </div>
+
+
+                    {% if delivery.submitted_at %}
+
+                        <div class="history-meta">
+
+                            Submitted:
+
+                            {{ delivery.submitted_at.strftime(
+                                '%d %b %Y, %I:%M %p'
+                            ) }}
+
+                        </div>
+
+                    {% endif %}
+
+
+                    <span class="history-status">
+                        {{ delivery.status }}
+                    </span>
+
+
+                    {% if delivery.completion_notes %}
+
+                        <div
+                            class="notes-box"
+                            style="margin-top: 9px;"
+                        >
+                            {{ delivery.completion_notes }}
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="empty-history">
+                No delivery submissions yet.
+            </div>
+
+        {% endif %}
+
+    </section>
+
+
+    <!-- =========================
+         BACK
+    ========================= -->
+
+    <div class="back-row">
+
+        <a
+            href="{{ url_for('professional_my_projects') }}"
+            class="btn btn-secondary"
+        >
+            ← Back to My Projects
+        </a>
+
+    </div>
+
+</main>
+
+</body>
+
+</html>

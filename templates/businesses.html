@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Businesses | AgencyOS</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Roboto,
+                sans-serif;
+
+            background: #f7f8fa;
+            color: #111827;
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        button {
+            font: inherit;
+        }
+
+        /* =========================
+           NAVBAR
+        ========================= */
+
+        .navbar {
+            background: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar-inner {
+            width: min(1380px, calc(100% - 40px));
+            min-height: 72px;
+
+            margin: 0 auto;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 24px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            color: #111827;
+
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+
+            flex-shrink: 0;
+        }
+
+        .brand-mark {
+            width: 36px;
+            height: 36px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 10px;
+
+            background: #111827;
+            color: #ffffff;
+
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+
+            gap: 5px;
+
+            flex-shrink: 0;
+            margin-left: auto;
+        }
+
+        .nav-link {
+            padding: 9px 13px;
+
+            border-radius: 8px;
+
+            color: #6b7280;
+
+            font-size: 14px;
+            font-weight: 600;
+
+            transition:
+                background 0.2s ease,
+                color 0.2s ease,
+                transform 0.2s ease;
+        }
+
+        .nav-link:hover {
+            background: #f3f4f6;
+            color: #111827;
+        }
+
+        .nav-link:active {
+            transform: scale(0.97);
+        }
+
+        .nav-link.active {
+            background: #f3f4f6;
+            color: #111827;
+        }
+
+        /* =========================
+           PAGE
+        ========================= */
+
+        .page {
+            width: min(1180px, calc(100% - 40px));
+
+            margin: 0 auto;
+
+            padding: 48px 0 70px;
+        }
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .page-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+
+            gap: 30px;
+
+            margin-bottom: 30px;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+
+            margin-bottom: 11px;
+
+            padding: 5px 10px;
+
+            border-radius: 999px;
+
+            background: #f1f5f9;
+            color: #475569;
+
+            font-size: 12px;
+            font-weight: 750;
+        }
+
+        .page-header h1 {
+            margin-bottom: 9px;
+
+            color: #111827;
+
+            font-size: clamp(32px, 5vw, 46px);
+            line-height: 1.08;
+
+            letter-spacing: -1.7px;
+        }
+
+        .page-header p {
+            max-width: 680px;
+
+            color: #6b7280;
+
+            font-size: 15px;
+        }
+
+        /* =========================
+           BUTTONS
+        ========================= */
+
+        .btn {
+            min-height: 43px;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 0 16px;
+
+            border-radius: 9px;
+
+            font-size: 13px;
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition:
+                background 0.18s ease,
+                border-color 0.18s ease,
+                color 0.18s ease,
+                transform 0.18s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        .btn-primary {
+            background: #111827;
+            border: 1px solid #111827;
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background: #1f2937;
+        }
+
+        .btn-secondary {
+            background: #ffffff;
+            border: 1px solid #d9dee5;
+            color: #374151;
+        }
+
+        .btn-secondary:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+        }
+
+        .btn-danger {
+            background: #ffffff;
+            border: 1px solid #fecaca;
+            color: #b91c1c;
+        }
+
+        .btn-danger:hover {
+            background: #fef2f2;
+            border-color: #fca5a5;
+        }
+
+        /* =========================
+           BUSINESS GRID
+        ========================= */
+
+        .business-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 20px;
+        }
+
+        /* =========================
+           BUSINESS CARD
+        ========================= */
+
+        .business-card {
+            background: #ffffff;
+
+            border: 1px solid #e5e7eb;
+            border-radius: 17px;
+
+            padding: 24px;
+
+            box-shadow:
+                0 8px 25px rgba(15, 23, 42, 0.025);
+
+            display: flex;
+            flex-direction: column;
+
+            min-width: 0;
+
+            animation: cardEnter 0.4s ease both;
+
+            transition:
+                border-color 0.2s ease,
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .business-card:hover {
+            border-color: #d7dce2;
+
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 14px 32px rgba(15, 23, 42, 0.055);
+        }
+
+        @keyframes cardEnter {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .business-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+
+            gap: 16px;
+
+            margin-bottom: 17px;
+        }
+
+        .business-icon {
+            width: 44px;
+            height: 44px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 12px;
+
+            background: #f1f5f9;
+            color: #334155;
+
+            font-size: 19px;
+            font-weight: 800;
+
+            flex-shrink: 0;
+        }
+
+        .business-heading {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .business-heading h2 {
+            color: #111827;
+
+            font-size: 20px;
+            line-height: 1.25;
+
+            letter-spacing: -0.4px;
+
+            margin-bottom: 5px;
+
+            overflow-wrap: anywhere;
+        }
+
+        .business-type {
+            color: #6b7280;
+
+            font-size: 12px;
+            font-weight: 650;
+        }
+
+        /* =========================
+           BUSINESS DETAILS
+        ========================= */
+
+        .business-details {
+            display: grid;
+
+            gap: 9px;
+
+            margin-bottom: 19px;
+        }
+
+        .detail-row {
+            display: flex;
+            align-items: flex-start;
+
+            gap: 9px;
+
+            color: #6b7280;
+
+            font-size: 13px;
+        }
+
+        .detail-icon {
+            width: 18px;
+
+            color: #9ca3af;
+
+            flex-shrink: 0;
+        }
+
+        .detail-value {
+            min-width: 0;
+
+            overflow-wrap: anywhere;
+        }
+
+        .business-description {
+            min-height: 63px;
+
+            margin-bottom: 19px;
+
+            color: #6b7280;
+
+            font-size: 13px;
+
+            display: -webkit-box;
+            display: box;
+
+            -webkit-box-orient: vertical;
+            box-orient: vertical;
+
+            -webkit-line-clamp: 3;
+            line-clamp: 3;
+
+            overflow: hidden;
+        }
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        .business-footer {
+            margin-top: auto;
+
+            padding-top: 18px;
+
+            border-top: 1px solid #eef0f2;
+        }
+
+        .project-count {
+            margin-bottom: 14px;
+
+            color: #6b7280;
+
+            font-size: 12px;
+            font-weight: 650;
+        }
+
+        .project-count strong {
+            color: #111827;
+        }
+
+        .card-actions {
+            display: flex;
+            align-items: center;
+
+            gap: 8px;
+
+            flex-wrap: wrap;
+        }
+
+        .card-actions .btn {
+            flex: 1;
+            min-width: 105px;
+        }
+
+        .delete-form {
+            flex: 1;
+            min-width: 105px;
+        }
+
+        .delete-form .btn {
+            width: 100%;
+        }
+
+        .disabled-delete {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .disabled-delete:hover {
+            transform: none;
+            background: #ffffff;
+            border-color: #fecaca;
+        }
+
+        /* =========================
+           EMPTY STATE
+        ========================= */
+
+        .empty-state {
+            background: #ffffff;
+
+            border: 1px dashed #d5dbe2;
+            border-radius: 18px;
+
+            padding: 65px 25px;
+
+            text-align: center;
+
+            animation: cardEnter 0.45s ease both;
+        }
+
+        .empty-icon {
+            width: 58px;
+            height: 58px;
+
+            display: grid;
+            place-items: center;
+
+            margin: 0 auto 17px;
+
+            border-radius: 15px;
+
+            background: #f1f5f9;
+            color: #475569;
+
+            font-size: 23px;
+        }
+
+        .empty-state h2 {
+            margin-bottom: 7px;
+
+            color: #111827;
+
+            font-size: 20px;
+            letter-spacing: -0.3px;
+        }
+
+        .empty-state p {
+            max-width: 500px;
+
+            margin: 0 auto 21px;
+
+            color: #6b7280;
+
+            font-size: 14px;
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 850px) {
+
+            .business-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            .navbar {
+                position: relative;
+            }
+
+            .navbar-inner {
+                width: calc(100% - 22px);
+
+                min-height: auto;
+
+                padding: 12px 0;
+
+                flex-wrap: wrap;
+
+                gap: 10px 16px;
+            }
+
+            .nav-actions {
+                width: 100%;
+
+                margin-left: 0;
+
+                gap: 2px;
+
+                overflow-x: auto;
+
+                scrollbar-width: none;
+            }
+
+            .nav-actions::-webkit-scrollbar {
+                display: none;
+            }
+
+            .nav-link {
+                white-space: nowrap;
+            }
+
+            .page {
+                width: calc(100% - 28px);
+
+                padding-top: 32px;
+            }
+
+            .page-header h1 {
+                font-size: 34px;
+            }
+
+            .page-header .btn {
+                width: 100%;
+            }
+
+            .business-card {
+                padding: 20px;
+            }
+
+            .card-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .card-actions .btn,
+            .delete-form {
+                width: 100%;
+                flex: none;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- =========================
+         NAVBAR
+    ========================= -->
+
+    <nav class="navbar">
+
+        <div class="navbar-inner">
+
+            <a
+                href="{{ url_for('dashboard') }}"
+                class="brand"
+            >
+                <span class="brand-mark">AO</span>
+                <span>AgencyOS</span>
+            </a>
+
+            <div class="nav-actions">
+
+                <a
+                    href="{{ url_for('dashboard') }}"
+                    class="nav-link"
+                >
+                    Dashboard
+                </a>
+
+                <a
+                    href="{{ url_for('businesses') }}"
+                    class="nav-link active"
+                >
+                    My Businesses
+                </a>
+
+                <a
+                    href="{{ url_for('customer_profile') }}"
+                    class="nav-link"
+                >
+                    Profile
+                </a>
+
+                <a
+                    href="{{ url_for('logout') }}"
+                    class="nav-link"
+                >
+                    Logout
+                </a>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+
+    <!-- =========================
+         PAGE
+    ========================= -->
+
+    <main class="page">
+
+        <header class="page-header">
+
+            <div>
+
+                <div class="eyebrow">
+                    Business Management
+                </div>
+
+                <h1>
+                    My Businesses
+                </h1>
+
+                <p>
+                    Manage your businesses separately and create
+                    projects for the right business.
+                </p>
+
+            </div>
+
+
+            <a
+                href="{{ url_for('add_business') }}"
+                class="btn btn-primary"
+            >
+                + Add Business
+            </a>
+
+        </header>
+
+
+        {% if businesses %}
+
+            <div class="business-grid">
+
+                {% for business in businesses %}
+
+                    <article class="business-card">
+
+                        <!-- =====================
+                             TOP
+                        ====================== -->
+
+                        <div class="business-top">
+
+                            <div class="business-icon">
+                                {{ business.name[:1] | upper }}
+                            </div>
+
+                            <div class="business-heading">
+
+                                <h2>
+                                    {{ business.name }}
+                                </h2>
+
+                                {% if business.business_type %}
+
+                                    <div class="business-type">
+                                        {{ business.business_type }}
+                                    </div>
+
+                                {% else %}
+
+                                    <div class="business-type">
+                                        Business type not added
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- =====================
+                             DETAILS
+                        ====================== -->
+
+                        <div class="business-details">
+
+                            {% if business.location %}
+
+                                <div class="detail-row">
+
+                                    <span class="detail-icon">
+                                        📍
+                                    </span>
+
+                                    <span class="detail-value">
+                                        {{ business.location }}
+                                    </span>
+
+                                </div>
+
+                            {% endif %}
+
+
+                            {% if business.website %}
+
+                                <div class="detail-row">
+
+                                    <span class="detail-icon">
+                                        🌐
+                                    </span>
+
+                                    <a
+                                        href="{{ business.website }}"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="detail-value"
+                                    >
+                                        {{ business.website }}
+                                    </a>
+
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <!-- =====================
+                             DESCRIPTION
+                        ====================== -->
+
+                        <div class="business-description">
+
+                            {% if business.description %}
+
+                                {{ business.description }}
+
+                            {% else %}
+
+                                No business description added yet.
+                                Edit this business to complete the details.
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <!-- =====================
+                             FOOTER
+                        ====================== -->
+
+                        <div class="business-footer">
+
+                            <div class="project-count">
+
+                                <strong>
+                                    {{ business.projects|length }}
+                                </strong>
+
+                                project{% if business.projects|length != 1 %}s{% endif %}
+
+                            </div>
+
+
+                            <div class="card-actions">
+
+                                <!-- MANAGE -->
+
+                                <a
+                                    href="{{ url_for(
+                                        'business_details',
+                                        business_id=business.id
+                                    ) }}"
+                                    class="btn btn-secondary"
+                                >
+                                    Manage
+                                </a>
+
+
+                                <!-- EDIT -->
+
+                                <a
+                                    href="{{ url_for(
+                                        'edit_business',
+                                        business_id=business.id
+                                    ) }}"
+                                    class="btn btn-secondary"
+                                >
+                                    Edit
+                                </a>
+
+
+                                <!-- DELETE -->
+
+                                {% if business.projects|length > 0 %}
+
+                                    <button
+                                        type="button"
+                                        class="btn btn-danger disabled-delete"
+                                        disabled
+                                        title="Businesses with projects cannot be deleted"
+                                    >
+                                        Delete
+                                    </button>
+
+                                {% else %}
+
+                                    <form
+                                            method="POST"
+                                            action="{{ url_for(
+                                                'delete_business',
+                                                business_id=business.id
+                                            ) }}"
+                                            class="delete-form"
+                                            onsubmit="return confirm('Are you sure you want to delete this business? This action cannot be undone.');"
+                                        >
+                                            <button
+                                                type="submit"
+                                                class="btn btn-danger"
+                                            >
+                                                Delete
+                                            </button>
+                                        </form>
+                                    >
+
+                                        <button
+                                            type="submit"
+                                            class="btn btn-danger"
+                                        >
+                                            Delete
+                                        </button>
+
+                                    </form>
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
+
+
+        {% else %}
+
+            <!-- =====================
+                 EMPTY STATE
+            ====================== -->
+
+            <section class="empty-state">
+
+                <div class="empty-icon">
+                    🏢
+                </div>
+
+                <h2>
+                    No businesses yet
+                </h2>
+
+                <p>
+                    Add your first business to keep its information,
+                    website projects, and SEO projects organized separately.
+                </p>
+
+                <a
+                    href="{{ url_for('add_business') }}"
+                    class="btn btn-primary"
+                >
+                    + Add Your First Business
+                </a>
+
+            </section>
+
+        {% endif %}
+
+    </main>
+
+</body>
+</html>

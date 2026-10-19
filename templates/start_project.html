@@ -1,0 +1,1943 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Create Project | AgencyOS</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+    <style>
+
+        /* ============================================================
+           CREATE PROJECT PAGE
+        ============================================================ */
+
+        .project-page {
+            padding: 48px 0 90px;
+            background:
+                radial-gradient(
+                    circle at 85% 0%,
+                    rgba(99, 91, 255, 0.07),
+                    transparent 28%
+                ),
+                var(--light-bg);
+            min-height: calc(100vh - 76px);
+        }
+
+
+        /* ============================================================
+           NAVBAR
+        ============================================================ */
+
+        .project-nav-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .back-dashboard {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+
+            padding: 10px 16px;
+
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+
+            background: white;
+            color: #374151;
+
+            font-size: 14px;
+            font-weight: 600;
+
+            text-decoration: none;
+            white-space: nowrap;
+
+            transition:
+                border-color 0.2s ease,
+                color 0.2s ease,
+                background 0.2s ease;
+        }
+
+        .back-dashboard:hover {
+            border-color: #635bff;
+            color: #635bff;
+            background: #f8f7ff;
+        }
+
+
+        /* ============================================================
+           PAGE HEADER
+        ============================================================ */
+
+        .project-header {
+            max-width: 780px;
+            margin-bottom: 30px;
+        }
+
+        .project-header .section-label {
+            display: inline-block;
+            margin-bottom: 9px;
+        }
+
+        .project-header h1 {
+            margin: 0 0 10px;
+
+            color: var(--dark);
+
+            font-size: clamp(32px, 4vw, 42px);
+            line-height: 1.1;
+
+            letter-spacing: -1.5px;
+        }
+
+        .project-header p {
+            max-width: 700px;
+            margin: 0;
+
+            color: var(--muted);
+
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+
+        /* ============================================================
+           BUSINESS SELECTION
+        ============================================================ */
+
+        .business-selection {
+            position: relative;
+            overflow: hidden;
+
+            margin-bottom: 38px;
+            padding: 25px 27px;
+
+            background: var(--white);
+
+            border: 1px solid var(--border);
+            border-radius: 18px;
+
+            box-shadow:
+                0 10px 30px rgba(17, 24, 39, 0.045);
+        }
+
+        .business-selection::after {
+            content: "";
+
+            position: absolute;
+
+            width: 180px;
+            height: 180px;
+
+            right: -90px;
+            top: -100px;
+
+            border-radius: 50%;
+
+            background: rgba(99, 91, 255, 0.045);
+
+            pointer-events: none;
+        }
+
+        .business-selection-header {
+            position: relative;
+            z-index: 1;
+
+            margin-bottom: 17px;
+        }
+
+        .business-selection-header h2 {
+            margin: 0 0 6px;
+
+            color: var(--dark);
+
+            font-size: 21px;
+            letter-spacing: -0.4px;
+        }
+
+        .business-selection-header p {
+            margin: 0;
+
+            color: var(--muted);
+
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .business-selection-form {
+            position: relative;
+            z-index: 1;
+
+            display: flex;
+            align-items: flex-end;
+            gap: 13px;
+        }
+
+        .business-field {
+            flex: 1;
+        }
+
+        .business-field label {
+            display: block;
+
+            margin-bottom: 7px;
+
+            color: var(--dark);
+
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .business-select {
+            width: 100%;
+
+            min-height: 46px;
+
+            padding: 0 13px;
+
+            border: 1px solid var(--border);
+            border-radius: 9px;
+
+            background: #ffffff;
+            color: var(--dark);
+
+            font-family: inherit;
+            font-size: 13px;
+
+            outline: none;
+
+            cursor: pointer;
+
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .business-select:focus {
+            border-color: var(--primary);
+
+            box-shadow:
+                0 0 0 3px rgba(99, 91, 255, 0.10);
+        }
+
+        .business-select option {
+            color: #111827;
+        }
+
+        .manage-businesses {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            min-height: 46px;
+
+            padding: 0 16px;
+
+            border: 1px solid var(--border);
+            border-radius: 9px;
+
+            background: #ffffff;
+            color: #374151;
+
+            font-size: 12px;
+            font-weight: 700;
+
+            text-decoration: none;
+            white-space: nowrap;
+
+            transition:
+                border-color 0.2s ease,
+                color 0.2s ease,
+                background 0.2s ease;
+        }
+
+        .manage-businesses:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: #f8f7ff;
+        }
+
+        .business-required-message {
+            display: none;
+
+            margin-top: 10px;
+
+            color: #dc2626;
+
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .no-businesses {
+            position: relative;
+            z-index: 1;
+
+            padding: 18px;
+
+            background: #fafafa;
+
+            border: 1px dashed #d1d5db;
+            border-radius: 11px;
+        }
+
+        .no-businesses strong {
+            display: block;
+
+            margin-bottom: 5px;
+
+            color: var(--dark);
+
+            font-size: 13px;
+        }
+
+        .no-businesses p {
+            margin: 0 0 13px;
+
+            color: var(--muted);
+
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .add-business-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 9px 14px;
+
+            border-radius: 8px;
+
+            background: var(--primary);
+            color: white;
+
+            font-size: 12px;
+            font-weight: 700;
+
+            text-decoration: none;
+
+            transition:
+                background 0.2s ease,
+                transform 0.1s ease;
+        }
+
+        .add-business-link:hover {
+            background: #5148e8;
+        }
+
+
+        /* ============================================================
+           SERVICE INTRODUCTION
+        ============================================================ */
+
+        .service-intro {
+            position: relative;
+            overflow: hidden;
+
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 22px;
+
+            padding: 27px;
+            margin-bottom: 38px;
+
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+
+            box-shadow:
+                0 10px 30px rgba(17, 24, 39, 0.045);
+        }
+
+        .service-intro::after {
+            content: "";
+
+            position: absolute;
+
+            width: 190px;
+            height: 190px;
+
+            right: -95px;
+            top: -100px;
+
+            border-radius: 50%;
+
+            background: rgba(99, 91, 255, 0.045);
+
+            pointer-events: none;
+        }
+
+        .service-icon-large {
+            position: relative;
+            z-index: 1;
+
+            width: 64px;
+            height: 64px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 16px;
+
+            background: #f1f0ff;
+            color: var(--primary);
+
+            font-size: 29px;
+        }
+
+        .service-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .service-content h2 {
+            margin: 0 0 8px;
+
+            color: var(--dark);
+
+            font-size: 24px;
+            letter-spacing: -0.5px;
+        }
+
+        .service-content > p {
+            max-width: 850px;
+            margin: 0;
+
+            color: var(--muted);
+
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+
+        /* ============================================================
+           SERVICE INFORMATION BOXES
+        ============================================================ */
+
+        .service-info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+
+            margin-top: 22px;
+        }
+
+        .info-box {
+            padding: 17px;
+
+            background: #fafafa;
+
+            border: 1px solid var(--border);
+            border-radius: 11px;
+        }
+
+        .info-box h4 {
+            margin: 0 0 6px;
+
+            color: var(--dark);
+
+            font-size: 13px;
+        }
+
+        .info-box p {
+            margin: 0;
+
+            color: var(--muted);
+
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+
+        /* ============================================================
+           PACKAGE SECTION
+        ============================================================ */
+
+        .package-section {
+            margin-bottom: 52px;
+        }
+
+        .section-heading {
+            margin-bottom: 21px;
+        }
+
+        .section-heading h2 {
+            margin: 0 0 6px;
+
+            color: var(--dark);
+
+            font-size: 24px;
+            letter-spacing: -0.6px;
+        }
+
+        .section-heading p {
+            margin: 0;
+
+            color: var(--muted);
+
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+
+        /* ============================================================
+           PACKAGE CARDS
+        ============================================================ */
+
+        .package-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .package-card {
+            position: relative;
+
+            display: flex;
+            flex-direction: column;
+
+            padding: 24px;
+
+            background: var(--white);
+
+            border: 1px solid var(--border);
+            border-radius: 17px;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 7px 23px rgba(17, 24, 39, 0.035);
+
+            transition:
+                transform 0.2s ease,
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .package-card:hover {
+            transform: translateY(-3px);
+
+            border-color: rgba(99, 91, 255, 0.28);
+
+            box-shadow:
+                0 17px 35px rgba(17, 24, 39, 0.08);
+        }
+
+        .package-card.selected {
+            border-color: var(--primary);
+
+            box-shadow:
+                0 0 0 3px rgba(99, 91, 255, 0.10),
+                0 14px 32px rgba(17, 24, 39, 0.07);
+        }
+
+
+        /* ============================================================
+           POPULAR BADGE
+        ============================================================ */
+
+        .popular-badge {
+            position: absolute;
+
+            top: 14px;
+            right: 14px;
+
+            padding: 5px 9px;
+
+            border-radius: 30px;
+
+            background: var(--primary);
+            color: white;
+
+            font-size: 9px;
+            font-weight: 800;
+
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+
+        /* ============================================================
+           PACKAGE CONTENT
+        ============================================================ */
+
+        .package-card h3 {
+            margin: 0 0 11px;
+
+            padding-right: 62px;
+
+            color: var(--dark);
+
+            font-size: 18px;
+            line-height: 1.3;
+        }
+
+        .package-price {
+            margin-bottom: 13px;
+
+            color: var(--dark);
+
+            font-size: 27px;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        .package-price span {
+            font-size: 11px;
+            font-weight: 500;
+            color: #9ca3af;
+        }
+
+        .package-description {
+            min-height: 64px;
+
+            margin: 0 0 18px;
+
+            color: var(--muted);
+
+            font-size: 12px;
+            line-height: 1.65;
+        }
+
+        .package-features {
+            margin: 0;
+            padding: 0;
+
+            list-style: none;
+        }
+
+        .package-features li {
+            position: relative;
+
+            margin-bottom: 9px;
+            padding-left: 21px;
+
+            color: #374151;
+
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .package-features li::before {
+            content: "✓";
+
+            position: absolute;
+            left: 0;
+            top: 0;
+
+            color: #059669;
+
+            font-weight: 800;
+        }
+
+        .package-select {
+            margin-top: auto;
+            padding-top: 19px;
+
+            border-top: 1px solid var(--border);
+        }
+
+        .package-select-label {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+
+            color: var(--dark);
+
+            font-size: 12px;
+            font-weight: 700;
+
+            cursor: pointer;
+        }
+
+        .package-select-label input {
+            width: 17px;
+            height: 17px;
+
+            margin: 0;
+
+            accent-color: var(--primary);
+
+            cursor: pointer;
+        }
+
+
+        /* ============================================================
+           CONTINUE AREA
+        ============================================================ */
+
+        .continue-area {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+
+            margin-top: 20px;
+            padding: 20px 21px;
+
+            background: var(--white);
+
+            border: 1px solid var(--border);
+            border-radius: 15px;
+
+            box-shadow:
+                0 7px 22px rgba(17, 24, 39, 0.03);
+        }
+
+        .continue-info strong {
+            display: block;
+
+            margin-bottom: 4px;
+
+            color: var(--dark);
+
+            font-size: 13px;
+        }
+
+        .continue-info span {
+            color: var(--muted);
+
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .continue-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 11px 20px;
+
+            border: none;
+            border-radius: 8px;
+
+            background: var(--primary);
+            color: white;
+
+            font-size: 13px;
+            font-weight: 700;
+
+            cursor: pointer;
+
+            white-space: nowrap;
+
+            transition:
+                background 0.2s ease,
+                transform 0.1s ease;
+        }
+
+        .continue-button:hover {
+            background: #5148e8;
+        }
+
+        .continue-button:active {
+            transform: translateY(1px);
+        }
+
+        #error-message {
+            display: none;
+
+            margin: 12px 0 0;
+
+            color: #dc2626;
+
+            font-size: 12px;
+            font-weight: 600;
+
+            text-align: right;
+        }
+
+
+        /* ============================================================
+           PROJECT PROCESS
+        ============================================================ */
+
+        .process-section {
+            margin-top: 52px;
+        }
+
+        .process-heading {
+            margin-bottom: 20px;
+        }
+
+        .process-heading h2 {
+            margin: 0 0 6px;
+
+            color: var(--dark);
+
+            font-size: 24px;
+            letter-spacing: -0.6px;
+        }
+
+        .process-heading p {
+            margin: 0;
+
+            color: var(--muted);
+
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .process-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 13px;
+        }
+
+        .process-step {
+            padding: 18px;
+
+            background: var(--white);
+
+            border: 1px solid var(--border);
+            border-radius: 13px;
+        }
+
+        .process-number {
+            width: 31px;
+            height: 31px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            margin-bottom: 12px;
+
+            border-radius: 50%;
+
+            background: #f1f0ff;
+            color: var(--primary);
+
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .process-step h4 {
+            margin: 0 0 6px;
+
+            color: var(--dark);
+
+            font-size: 13px;
+        }
+
+        .process-step p {
+            margin: 0;
+
+            color: var(--muted);
+
+            font-size: 11px;
+            line-height: 1.55;
+        }
+
+
+        /* ============================================================
+           TABLET
+        ============================================================ */
+
+        @media (max-width: 1000px) {
+
+            .package-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .service-info-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .process-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+        }
+
+
+        /* ============================================================
+           MOBILE
+        ============================================================ */
+
+        @media (max-width: 700px) {
+
+            .project-page {
+                padding: 35px 0 65px;
+            }
+
+            .project-nav-actions {
+                flex-shrink: 0;
+            }
+
+            .back-dashboard {
+                padding: 9px 12px;
+                font-size: 12px;
+            }
+
+            .project-header h1 {
+                font-size: 30px;
+                letter-spacing: -1px;
+            }
+
+            .project-header p {
+                font-size: 14px;
+            }
+
+            .business-selection {
+                padding: 21px;
+            }
+
+            .business-selection-form {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .manage-businesses {
+                width: 100%;
+            }
+
+            .service-intro {
+                grid-template-columns: 1fr;
+
+                padding: 22px;
+            }
+
+            .service-icon-large {
+                width: 55px;
+                height: 55px;
+
+                font-size: 25px;
+            }
+
+            .service-content h2 {
+                font-size: 21px;
+            }
+
+            .service-info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .package-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .continue-area {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .continue-button {
+                width: 100%;
+            }
+
+            #error-message {
+                text-align: left;
+            }
+
+            .process-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+
+        /* ============================================================
+           SMALL MOBILE
+        ============================================================ */
+
+        @media (max-width: 420px) {
+
+            .back-dashboard {
+                padding: 8px 9px;
+                font-size: 11px;
+            }
+
+            .project-header h1 {
+                font-size: 27px;
+            }
+
+            .business-selection {
+                padding: 19px;
+            }
+
+            .service-intro {
+                padding: 19px;
+            }
+
+            .package-card {
+                padding: 20px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- ============================================================
+         DASHBOARD-MATCHING NAVBAR
+    ============================================================ -->
+
+    <nav class="navbar">
+
+        <div class="nav-container">
+
+            <div class="logo">
+
+                <div class="logo-mark">
+                    A
+                </div>
+
+                Agency<span class="logo-accent">OS</span>
+
+            </div>
+
+
+            <div class="nav-actions project-nav-actions">
+
+                <a
+                    href="{{ url_for('dashboard') }}"
+                    class="back-dashboard"
+                >
+                    ← Back to Dashboard
+                </a>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+
+    <!-- ============================================================
+         MAIN CONTENT
+    ============================================================ -->
+
+    <main class="project-page">
+
+        <div class="section-container">
+
+
+            <!-- ====================================================
+                 PAGE HEADER
+            ==================================================== -->
+
+            <div class="project-header">
+
+                <span class="section-label">
+                    CREATE PROJECT
+                </span>
+
+                <h1>
+                    Start Your {{ service.name }} Project
+                </h1>
+
+                <p>
+                    First choose the business this project belongs to.
+                    Then select the package that matches your current
+                    requirements.
+                </p>
+
+            </div>
+
+
+            <!-- ====================================================
+                 BUSINESS SELECTION
+            ==================================================== -->
+
+            <section class="business-selection">
+
+                <div class="business-selection-header">
+
+                    <h2>
+                        1. Select Your Business
+                    </h2>
+
+                    <p>
+                        Every AgencyOS project belongs to a specific
+                        business. Choose the business you want this
+                        {{ service.name }} project to be created for.
+                    </p>
+
+                </div>
+
+
+                {% if businesses %}
+
+                    <div class="business-selection-form">
+
+                        <div class="business-field">
+
+                            <label for="business-select">
+                                Business
+                            </label>
+
+                            <select
+                                id="business-select"
+                                class="business-select"
+                            >
+
+                                <option value="">
+                                    Select a business
+                                </option>
+
+
+                                {% for business in businesses %}
+
+                                    <option
+                                        value="{{ business.id }}"
+                                        {% if selected_business_id and selected_business_id|int == business.id %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        {{ business.name }}
+                                        {% if business.business_type %}
+                                            — {{ business.business_type }}
+                                        {% endif %}
+                                    </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+
+
+                        <a
+                            href="{{ url_for('businesses') }}"
+                            class="manage-businesses"
+                        >
+                            Manage Businesses
+                        </a>
+
+                    </div>
+
+
+                    <div
+                        id="business-required-message"
+                        class="business-required-message"
+                    >
+                        Please select the business this project is for.
+                    </div>
+
+
+                {% else %}
+
+                    <div class="no-businesses">
+
+                        <strong>
+                            You don't have a business yet.
+                        </strong>
+
+                        <p>
+                            Create your business profile first. You can
+                            then return here and start your
+                            {{ service.name }} project.
+                        </p>
+
+                        <a
+                            href="{{ url_for('add_business') }}"
+                            class="add-business-link"
+                        >
+                            + Add Business
+                        </a>
+
+                    </div>
+
+                {% endif %}
+
+            </section>
+
+
+            <!-- ====================================================
+                 SERVICE INFORMATION
+            ==================================================== -->
+
+            <section class="service-intro">
+
+                <div class="service-icon-large">
+                    {{ service.icon }}
+                </div>
+
+
+                <div class="service-content">
+
+                    <h2>
+                        {{ service.name }}
+                    </h2>
+
+                    <p>
+                        {{ service.description }}
+                    </p>
+
+
+                    {% if service.slug == "website-development" %}
+
+                        <div class="service-info-grid">
+
+                            <div class="info-box">
+
+                                <h4>
+                                    What you can build
+                                </h4>
+
+                                <p>
+                                    Business websites, portfolios,
+                                    landing pages, startup websites,
+                                    service websites, blogs and other
+                                    professional web experiences.
+                                </p>
+
+                            </div>
+
+
+                            <div class="info-box">
+
+                                <h4>
+                                    Suitable for
+                                </h4>
+
+                                <p>
+                                    Businesses, startups, professionals,
+                                    creators, organizations and anyone
+                                    who needs a professional online
+                                    presence.
+                                </p>
+
+                            </div>
+
+
+                            <div class="info-box">
+
+                                <h4>
+                                    What we focus on
+                                </h4>
+
+                                <p>
+                                    Responsive design, clear structure,
+                                    usability, modern presentation and
+                                    a website aligned with your business
+                                    goals.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                    {% elif service.slug == "seo" %}
+
+                        <div class="service-info-grid">
+
+                            <div class="info-box">
+
+                                <h4>
+                                    What SEO covers
+                                </h4>
+
+                                <p>
+                                    Website optimization, keyword-focused
+                                    improvements, technical optimization
+                                    and content-related SEO work.
+                                </p>
+
+                            </div>
+
+
+                            <div class="info-box">
+
+                                <h4>
+                                    Suitable for
+                                </h4>
+
+                                <p>
+                                    Businesses and website owners who
+                                    want to improve search visibility
+                                    and attract relevant organic visitors.
+                                </p>
+
+                            </div>
+
+
+                            <div class="info-box">
+
+                                <h4>
+                                    What we focus on
+                                </h4>
+
+                                <p>
+                                    Search visibility, relevant keywords,
+                                    technical foundations and ongoing
+                                    optimization based on your objectives.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            </section>
+
+
+            <!-- ====================================================
+                 PACKAGE SELECTION
+            ==================================================== -->
+
+            <section class="package-section">
+
+                <div class="section-heading">
+
+                    <h2>
+                        2. Choose a Package
+                    </h2>
+
+                    <p>
+                        Compare the available packages and select the
+                        one that best matches the scope of your project.
+                        You can explain your exact requirements next.
+                    </p>
+
+                </div>
+
+
+                <div class="package-grid">
+
+                    {% for package in service.packages %}
+
+                        <div
+                            class="package-card"
+                            id="card-{{ package.id }}"
+                            onclick="selectPackage('{{ package.id }}')"
+                        >
+
+                            {% if
+                                (service.slug == "website-development" and package.id == "website-business")
+                                or
+                                (service.slug == "seo" and package.id == "seo-growth")
+                            %}
+
+                                <div class="popular-badge">
+                                    Popular
+                                </div>
+
+                            {% endif %}
+
+
+                            <h3>
+                                {{ package.name }}
+                            </h3>
+
+
+                            <div class="package-price">
+
+                                ₹{{ package.price }}
+
+                                <span>
+                                    starting price
+                                </span>
+
+                            </div>
+
+
+                            {% if package.id == "website-basic" %}
+
+                                <p class="package-description">
+                                    A professional starting point for a
+                                    simple online presence and essential
+                                    business information.
+                                </p>
+
+                                <ul class="package-features">
+
+                                    <li>
+                                        Clean responsive website
+                                    </li>
+
+                                    <li>
+                                        Essential business pages
+                                    </li>
+
+                                    <li>
+                                        Mobile-friendly layout
+                                    </li>
+
+                                    <li>
+                                        Professional basic presentation
+                                    </li>
+
+                                </ul>
+
+
+                            {% elif package.id == "website-business" %}
+
+                                <p class="package-description">
+                                    A stronger business website designed
+                                    for companies that need a polished
+                                    online presence and a more complete
+                                    website structure.
+                                </p>
+
+                                <ul class="package-features">
+
+                                    <li>
+                                        Professional multi-page website
+                                    </li>
+
+                                    <li>
+                                        Business-focused structure
+                                    </li>
+
+                                    <li>
+                                        Responsive design
+                                    </li>
+
+                                    <li>
+                                        Better content organization
+                                    </li>
+
+                                </ul>
+
+
+                            {% elif package.id == "website-advanced" %}
+
+                                <p class="package-description">
+                                    An advanced website solution for
+                                    projects that require a more customized
+                                    experience, richer functionality and
+                                    a stronger digital presence.
+                                </p>
+
+                                <ul class="package-features">
+
+                                    <li>
+                                        Advanced website experience
+                                    </li>
+
+                                    <li>
+                                        More customized functionality
+                                    </li>
+
+                                    <li>
+                                        Advanced page structure
+                                    </li>
+
+                                    <li>
+                                        Suitable for larger requirements
+                                    </li>
+
+                                </ul>
+
+
+                            {% elif package.id == "seo-starter" %}
+
+                                <p class="package-description">
+                                    A starting SEO package for businesses
+                                    that want to establish a stronger
+                                    search-engine foundation.
+                                </p>
+
+                                <ul class="package-features">
+
+                                    <li>
+                                        Initial SEO review
+                                    </li>
+
+                                    <li>
+                                        Basic keyword direction
+                                    </li>
+
+                                    <li>
+                                        On-page optimization
+                                    </li>
+
+                                    <li>
+                                        SEO foundation improvements
+                                    </li>
+
+                                </ul>
+
+
+                            {% elif package.id == "seo-growth" %}
+
+                                <p class="package-description">
+                                    A broader SEO package for businesses
+                                    looking to improve organic visibility
+                                    and build a stronger search presence.
+                                </p>
+
+                                <ul class="package-features">
+
+                                    <li>
+                                        Deeper SEO analysis
+                                    </li>
+
+                                    <li>
+                                        Keyword-focused optimization
+                                    </li>
+
+                                    <li>
+                                        On-page SEO improvements
+                                    </li>
+
+                                    <li>
+                                        Growth-focused optimization
+                                    </li>
+
+                                </ul>
+
+
+                            {% elif package.id == "seo-advanced" %}
+
+                                <p class="package-description">
+                                    An advanced SEO solution for businesses
+                                    with broader optimization requirements
+                                    and a stronger focus on search
+                                    performance.
+                                </p>
+
+                                <ul class="package-features">
+
+                                    <li>
+                                        Advanced SEO analysis
+                                    </li>
+
+                                    <li>
+                                        Technical SEO focus
+                                    </li>
+
+                                    <li>
+                                        Broader optimization scope
+                                    </li>
+
+                                    <li>
+                                        Suitable for larger SEO requirements
+                                    </li>
+
+                                </ul>
+
+
+                            {% else %}
+
+                                <p class="package-description">
+                                    A professional service package
+                                    designed around your project
+                                    requirements.
+                                </p>
+
+                            {% endif %}
+
+
+                            <div class="package-select">
+
+                                <label
+                                    class="package-select-label"
+                                    onclick="event.stopPropagation();"
+                                >
+
+                                    <input
+                                        type="radio"
+                                        name="package"
+                                        value="{{ package.id }}"
+                                        id="package-{{ package.id }}"
+                                        onclick="
+                                            event.stopPropagation();
+                                            selectPackage('{{ package.id }}')
+                                        "
+                                    >
+
+                                    Select this package
+
+                                </label>
+
+                            </div>
+
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+
+                <!-- ==================================================
+                     CONTINUE
+                ================================================== -->
+
+                <div class="continue-area">
+
+                    <div class="continue-info">
+
+                        <strong>
+                            Ready to continue?
+                        </strong>
+
+                        <span>
+                            Select a business and package above.
+                            On the next step, you will provide your
+                            detailed project requirements.
+                        </span>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="continue-button"
+                        onclick="continueProject()"
+                    >
+                        Continue →
+                    </button>
+
+                </div>
+
+
+                <p id="error-message">
+                    Please select a business and package first.
+                </p>
+
+
+            </section>
+
+
+            <!-- ====================================================
+                 PROJECT PROCESS
+            ==================================================== -->
+
+            <section class="process-section">
+
+                <div class="process-heading">
+
+                    <h2>
+                        How Your Project Starts
+                    </h2>
+
+                    <p>
+                        AgencyOS keeps the project process structured
+                        from your first request through delivery.
+                    </p>
+
+                </div>
+
+
+                <div class="process-grid">
+
+                    <div class="process-step">
+
+                        <div class="process-number">
+                            1
+                        </div>
+
+                        <h4>
+                            Select Business
+                        </h4>
+
+                        <p>
+                            Choose the business this project belongs to.
+                        </p>
+
+                    </div>
+
+
+                    <div class="process-step">
+
+                        <div class="process-number">
+                            2
+                        </div>
+
+                        <h4>
+                            Select Package
+                        </h4>
+
+                        <p>
+                            Choose the package that matches your current
+                            project scope.
+                        </p>
+
+                    </div>
+
+
+                    <div class="process-step">
+
+                        <div class="process-number">
+                            3
+                        </div>
+
+                        <h4>
+                            Share Requirements
+                        </h4>
+
+                        <p>
+                            Explain your business, goals, features,
+                            preferences and expectations.
+                        </p>
+
+                    </div>
+
+
+                    <div class="process-step">
+
+                        <div class="process-number">
+                            4
+                        </div>
+
+                        <h4>
+                            Payment & Assignment
+                        </h4>
+
+                        <p>
+                            Complete payment and allow AgencyOS to
+                            assign the appropriate professional.
+                        </p>
+
+                    </div>
+
+
+                    <div class="process-step">
+
+                        <div class="process-number">
+                            5
+                        </div>
+
+                        <h4>
+                            Delivery & Review
+                        </h4>
+
+                        <p>
+                            Review the delivered work and provide
+                            revision requirements where applicable.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+        </div>
+
+    </main>
+
+
+    <!-- ============================================================
+         JAVASCRIPT
+    ============================================================ -->
+
+    <script>
+
+        const serviceSlug = "{{ service.slug }}";
+
+        let selectedPackageId = null;
+
+
+        /* ============================================================
+           PACKAGE SELECTION
+        ============================================================ */
+
+        function selectPackage(packageId) {
+
+            selectedPackageId = packageId;
+
+
+            document
+                .querySelectorAll(".package-card")
+                .forEach(function(card) {
+
+                    card.classList.remove("selected");
+
+                });
+
+
+            const selectedCard =
+                document.getElementById(
+                    "card-" + packageId
+                );
+
+            if (selectedCard) {
+
+                selectedCard.classList.add("selected");
+
+            }
+
+
+            const radio =
+                document.getElementById(
+                    "package-" + packageId
+                );
+
+            if (radio) {
+
+                radio.checked = true;
+
+            }
+
+
+            const errorMessage =
+                document.getElementById(
+                    "error-message"
+                );
+
+            if (errorMessage) {
+
+                errorMessage.style.display = "none";
+
+            }
+
+        }
+
+
+        /* ============================================================
+           CONTINUE PROJECT
+        ============================================================ */
+
+        function continueProject() {
+
+            const errorMessage =
+                document.getElementById(
+                    "error-message"
+                );
+
+            const businessSelect =
+                document.getElementById(
+                    "business-select"
+                );
+
+
+            /*
+             * Check business selection.
+             */
+
+            if (businessSelect) {
+
+                const businessId =
+                    businessSelect.value;
+
+
+                if (!businessId) {
+
+                    errorMessage.innerText =
+                        "Please select the business this project is for.";
+
+                    errorMessage.style.display =
+                        "block";
+
+                    businessSelect.focus();
+
+                    return;
+
+                }
+
+            } else {
+
+                errorMessage.innerText =
+                    "Please create a business before starting a project.";
+
+                errorMessage.style.display =
+                    "block";
+
+                return;
+
+            }
+
+
+            /*
+             * Check package selection.
+             */
+
+            if (!selectedPackageId) {
+
+                errorMessage.innerText =
+                    "Please select a package first.";
+
+                errorMessage.style.display =
+                    "block";
+
+                return;
+
+            }
+
+
+            /*
+             * Everything is valid.
+             */
+
+            errorMessage.style.display =
+                "none";
+
+
+            const businessId =
+                businessSelect.value;
+
+
+            /*
+             * Preserve the business through the
+             * requirements step.
+             *
+             * Example:
+             *
+             * /requirements/website-development
+             * ?package=website-business
+             * &business_id=1
+             */
+
+            const url =
+                "/requirements/"
+                + encodeURIComponent(serviceSlug)
+                + "?package="
+                + encodeURIComponent(selectedPackageId)
+                + "&business_id="
+                + encodeURIComponent(businessId);
+
+
+            window.location.href = url;
+
+        }
+
+
+        /* ============================================================
+           PRESELECT PACKAGE IF NEEDED
+        ============================================================ */
+
+        const initialPackageId =
+            "{{ request.args.get('package', '') }}";
+
+
+        if (initialPackageId) {
+
+            const initialRadio =
+                document.getElementById(
+                    "package-" + initialPackageId
+                );
+
+            if (initialRadio) {
+
+                selectPackage(initialPackageId);
+
+            }
+
+        }
+
+    </script>
+
+
+</body>
+
+</html>

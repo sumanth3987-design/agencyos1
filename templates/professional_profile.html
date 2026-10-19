@@ -1,0 +1,2650 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Professional Profile - AgencyOS</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #f5f7fb;
+            --surface: #ffffff;
+            --surface-soft: #f8fafc;
+            --border: #e2e8f0;
+            --border-dark: #cbd5e1;
+            --text: #172033;
+            --heading: #0f172a;
+            --muted: #64748b;
+            --subtle: #94a3b8;
+            --accent: #2563eb;
+            --accent-soft: #eff6ff;
+            --success: #166534;
+            --success-bg: #ecfdf5;
+            --warning: #92400e;
+            --warning-bg: #fffbeb;
+            --danger: #991b1b;
+            --danger-bg: #fef2f2;
+        }
+
+        body {
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Roboto,
+                Arial,
+                sans-serif;
+
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* =========================
+           NAVBAR
+        ========================= */
+
+        .navbar {
+            width: 100%;
+            background: #111827;
+            color: #ffffff;
+            border-bottom: 1px solid #1f2937;
+        }
+
+        .nav-container {
+            max-width: 1180px;
+            min-height: 68px;
+
+            margin: 0 auto;
+            padding: 0 24px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            color: #ffffff;
+            text-decoration: none;
+
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .logo-mark {
+            width: 37px;
+            height: 37px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 9px;
+
+            background: #2563eb;
+            color: #ffffff;
+
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .logo-accent {
+            color: #60a5fa;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-link,
+        .logout {
+            text-decoration: none;
+            border-radius: 8px;
+
+            padding: 9px 13px;
+
+            font-size: 13px;
+            font-weight: 650;
+
+            transition:
+                background 0.2s ease,
+                color 0.2s ease;
+        }
+
+        .nav-link {
+            color: #d1d5db;
+        }
+
+        .nav-link:hover {
+            background: #1f2937;
+            color: #ffffff;
+        }
+
+        .logout {
+            background: #374151;
+            color: #ffffff;
+        }
+
+        .logout:hover {
+            background: #4b5563;
+        }
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        .container {
+            max-width: 1080px;
+
+            margin: 0 auto;
+
+            padding: 38px 24px 70px;
+        }
+
+        .page-header {
+            margin-bottom: 24px;
+        }
+
+        .eyebrow {
+            margin-bottom: 7px;
+
+            color: var(--accent);
+
+            font-size: 11px;
+            font-weight: 800;
+
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .page-header h1 {
+            color: var(--heading);
+
+            font-size: 31px;
+            line-height: 1.2;
+            font-weight: 800;
+
+            margin-bottom: 8px;
+        }
+
+        .page-header p {
+            max-width: 720px;
+
+            color: var(--muted);
+
+            font-size: 14px;
+            line-height: 1.65;
+        }
+
+        /* =========================
+           FLASH
+        ========================= */
+
+        .flash-container {
+            margin-bottom: 20px;
+        }
+
+        .flash {
+            padding: 13px 16px;
+            margin-bottom: 9px;
+
+            border: 1px solid #bbf7d0;
+            border-radius: 10px;
+
+            background: var(--success-bg);
+            color: var(--success);
+
+            font-size: 13px;
+            font-weight: 650;
+        }
+
+        /* =========================
+           PROFILE SUMMARY
+        ========================= */
+
+        .summary-grid {
+            display: grid;
+
+            grid-template-columns:
+                minmax(0, 1.7fr)
+                minmax(260px, 1fr);
+
+            gap: 18px;
+
+            margin-bottom: 22px;
+        }
+
+        .summary-card,
+        .completion-card {
+            background: var(--surface);
+
+            border: 1px solid var(--border);
+            border-radius: 15px;
+
+            box-shadow:
+                0 4px 16px rgba(15, 23, 42, 0.04);
+        }
+
+        .summary-card {
+            padding: 23px;
+        }
+
+        .summary-label {
+            color: var(--subtle);
+
+            font-size: 11px;
+            font-weight: 800;
+
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+
+            margin-bottom: 7px;
+        }
+
+        .summary-name {
+            color: var(--heading);
+
+            font-size: 21px;
+            font-weight: 800;
+
+            margin-bottom: 5px;
+        }
+
+        .summary-email {
+            color: var(--muted);
+
+            font-size: 13px;
+            margin-bottom: 17px;
+        }
+
+        .summary-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .meta-pill {
+            display: inline-flex;
+            align-items: center;
+
+            padding: 6px 10px;
+
+            border: 1px solid var(--border);
+            border-radius: 999px;
+
+            background: var(--surface-soft);
+            color: #475569;
+
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        /* =========================
+           COMPLETION
+        ========================= */
+
+        .completion-card {
+            padding: 21px;
+        }
+
+        .completion-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 12px;
+
+            margin-bottom: 14px;
+        }
+
+        .completion-title {
+            color: var(--heading);
+
+            font-size: 15px;
+            font-weight: 800;
+        }
+
+        .completion-percent {
+            display: inline-flex;
+            align-items: center;
+
+            padding: 5px 9px;
+
+            border-radius: 999px;
+
+            background: var(--accent-soft);
+            color: var(--accent);
+
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .completion-complete {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 9px;
+
+            overflow: hidden;
+
+            border-radius: 999px;
+
+            background: #e5e7eb;
+        }
+
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+
+            border-radius: 999px;
+
+            background: var(--accent);
+
+            transition: width 0.55s ease;
+        }
+
+        .completion-note {
+            margin-top: 10px;
+
+            color: var(--muted);
+
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        /* =========================
+           CARDS
+        ========================= */
+
+        .card {
+            background: var(--surface);
+
+            border: 1px solid var(--border);
+            border-radius: 15px;
+
+            padding: 25px;
+
+            margin-bottom: 20px;
+
+            box-shadow:
+                0 4px 16px rgba(15, 23, 42, 0.04);
+        }
+
+        .section-heading {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+
+            gap: 16px;
+
+            margin-bottom: 20px;
+        }
+
+        .section-number {
+            width: 29px;
+            height: 29px;
+
+            flex-shrink: 0;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 8px;
+
+            background: var(--surface-soft);
+            border: 1px solid var(--border);
+
+            color: #475569;
+
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .section-title-wrap {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .card h2 {
+            color: var(--heading);
+
+            font-size: 18px;
+            line-height: 1.3;
+            font-weight: 800;
+
+            margin-bottom: 5px;
+        }
+
+        .card-description {
+            color: var(--muted);
+
+            font-size: 12px;
+            line-height: 1.55;
+        }
+
+        /* =========================
+           FORM
+        ========================= */
+
+        .form-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 18px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+
+            min-width: 0;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            color: #334155;
+
+            font-size: 12px;
+            font-weight: 750;
+        }
+
+        .required {
+            color: #dc2626;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+
+            border: 1px solid #d8dee8;
+            border-radius: 9px;
+
+            padding: 11px 12px;
+
+            background: #ffffff;
+            color: var(--text);
+
+            font-family: inherit;
+            font-size: 13px;
+
+            outline: none;
+
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease,
+                background 0.2s ease;
+        }
+
+        input {
+            min-height: 45px;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--accent);
+
+            box-shadow:
+                0 0 0 3px rgba(37, 99, 235, 0.09);
+        }
+
+        textarea {
+            min-height: 112px;
+
+            resize: vertical;
+
+            line-height: 1.55;
+        }
+
+        .readonly-box {
+            background: #f1f5f9;
+            color: #64748b;
+            cursor: not-allowed;
+        }
+
+        .help-text {
+            color: var(--subtle);
+
+            font-size: 11px;
+            line-height: 1.45;
+        }
+
+        /* =========================
+           EXPERTISE
+        ========================= */
+
+        .expertise-options {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 10px;
+        }
+
+        .expertise-option {
+            position: relative;
+        }
+
+        .expertise-option input {
+            position: absolute;
+
+            width: 1px;
+            height: 1px;
+
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .expertise-label {
+            min-height: 65px;
+
+            display: flex;
+            align-items: center;
+
+            gap: 11px;
+
+            padding: 12px 13px;
+
+            border: 1px solid var(--border);
+            border-radius: 10px;
+
+            background: #ffffff;
+            color: #334155;
+
+            cursor: pointer;
+
+            transition:
+                border-color 0.2s ease,
+                background 0.2s ease,
+                box-shadow 0.2s ease,
+                transform 0.2s ease;
+        }
+
+        .expertise-label:hover {
+            border-color: #94a3b8;
+            background: #f8fafc;
+
+            transform: translateY(-1px);
+        }
+
+        .expertise-check {
+            width: 19px;
+            height: 19px;
+
+            flex-shrink: 0;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border: 1.5px solid #cbd5e1;
+            border-radius: 5px;
+
+            background: #ffffff;
+            color: transparent;
+
+            font-size: 11px;
+            font-weight: 900;
+
+            transition:
+                background 0.2s ease,
+                border-color 0.2s ease,
+                color 0.2s ease;
+        }
+
+        .expertise-option input:checked + .expertise-label {
+            border-color: #93c5fd;
+            background: #eff6ff;
+
+            box-shadow:
+                0 0 0 3px rgba(37, 99, 235, 0.06);
+        }
+
+        .expertise-option input:checked
+        + .expertise-label
+        .expertise-check {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #ffffff;
+        }
+
+        .expertise-option input:focus-visible
+        + .expertise-label {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        .expertise-description {
+            display: flex;
+            flex-direction: column;
+
+            gap: 3px;
+
+            min-width: 0;
+        }
+
+        .expertise-name {
+            color: #1e293b;
+
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .expertise-note {
+            color: var(--subtle);
+
+            font-size: 10px;
+            font-weight: 500;
+
+            line-height: 1.4;
+        }
+
+        /* =========================
+           SKILLS
+        ========================= */
+
+        .skills-options {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, minmax(0, 1fr));
+
+            gap: 9px;
+        }
+
+        .skill-option {
+            position: relative;
+        }
+
+        .skill-option input {
+            position: absolute;
+
+            width: 1px;
+            height: 1px;
+
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .skill-label {
+            min-height: 45px;
+
+            display: flex;
+            align-items: center;
+
+            gap: 9px;
+
+            padding: 9px 11px;
+
+            border: 1px solid var(--border);
+            border-radius: 9px;
+
+            background: #ffffff;
+            color: #334155;
+
+            cursor: pointer;
+
+            font-size: 12px;
+            font-weight: 700;
+
+            transition:
+                border-color 0.2s ease,
+                background 0.2s ease,
+                box-shadow 0.2s ease,
+                transform 0.2s ease;
+        }
+
+        .skill-label:hover {
+            border-color: #94a3b8;
+            background: #f8fafc;
+
+            transform: translateY(-1px);
+        }
+
+        .skill-check {
+            width: 18px;
+            height: 18px;
+
+            flex-shrink: 0;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border: 1.5px solid #cbd5e1;
+            border-radius: 5px;
+
+            background: #ffffff;
+            color: transparent;
+
+            font-size: 10px;
+            font-weight: 900;
+
+            transition:
+                background 0.2s ease,
+                border-color 0.2s ease,
+                color 0.2s ease;
+        }
+
+        .skill-option input:checked + .skill-label {
+            border-color: #93c5fd;
+            background: #eff6ff;
+
+            box-shadow:
+                0 0 0 3px rgba(37, 99, 235, 0.06);
+        }
+
+        .skill-option input:checked
+        + .skill-label
+        .skill-check {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #ffffff;
+        }
+
+        .skill-option input:focus-visible
+        + .skill-label {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        /* =========================
+           VERIFICATION
+        ========================= */
+
+        .verification-box {
+            padding: 18px;
+
+            border-radius: 11px;
+
+            background: var(--warning-bg);
+            border: 1px solid #fde68a;
+
+            color: var(--warning);
+
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .verification-box.verified {
+            background: var(--success-bg);
+            border-color: #bbf7d0;
+            color: var(--success);
+        }
+
+        .verification-box.rejected {
+            background: var(--danger-bg);
+            border-color: #fecaca;
+            color: var(--danger);
+        }
+
+        .verification-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 12px;
+
+            margin-bottom: 7px;
+        }
+
+        .verification-title {
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+
+            padding: 5px 10px;
+
+            border-radius: 999px;
+
+            font-size: 10px;
+            font-weight: 800;
+
+            white-space: nowrap;
+        }
+
+        .status.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status.verified {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status.rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .verification-note {
+            margin-top: 10px;
+
+            padding-top: 10px;
+
+            border-top: 1px solid rgba(148, 163, 184, 0.25);
+
+            font-size: 12px;
+        }
+
+        /* =========================
+           ACTIONS
+        ========================= */
+
+        .actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+
+            gap: 10px;
+
+            margin-top: 24px;
+            padding-top: 20px;
+
+            border-top: 1px solid var(--border);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            min-height: 43px;
+
+            padding: 10px 18px;
+
+            border-radius: 8px;
+
+            text-decoration: none;
+
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 750;
+
+            cursor: pointer;
+
+            transition:
+                background 0.2s ease,
+                border-color 0.2s ease,
+                color 0.2s ease,
+                transform 0.2s ease;
+        }
+
+        .btn-secondary {
+            border: 1px solid var(--border-dark);
+
+            background: #ffffff;
+            color: #334155;
+        }
+
+        .btn-secondary:hover {
+            background: #f8fafc;
+            border-color: #94a3b8;
+        }
+
+        .btn-primary {
+            border: 1px solid var(--accent);
+
+            background: var(--accent);
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+
+            transform: translateY(-1px);
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 800px) {
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .expertise-options {
+                grid-template-columns: 1fr;
+            }
+
+            .skills-options {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+
+        }
+
+        @media (max-width: 700px) {
+
+            .nav-container {
+                min-height: 62px;
+                padding: 0 16px;
+            }
+
+            .logo {
+                font-size: 18px;
+            }
+
+            .logo-mark {
+                width: 34px;
+                height: 34px;
+            }
+
+            .nav-link {
+                display: none;
+            }
+
+            .container {
+                padding: 29px 16px 50px;
+            }
+
+            .page-header h1 {
+                font-size: 27px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full {
+                grid-column: auto;
+            }
+
+            .card {
+                padding: 21px;
+            }
+
+            .section-heading {
+                gap: 11px;
+            }
+
+            .actions {
+                flex-direction: column-reverse;
+                align-items: stretch;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .skills-options {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+        @media (max-width: 480px) {
+
+            .container {
+                padding-left: 12px;
+                padding-right: 12px;
+            }
+
+            .page-header h1 {
+                font-size: 24px;
+            }
+
+            .summary-card,
+            .completion-card,
+            .card {
+                border-radius: 12px;
+            }
+
+            .summary-card {
+                padding: 19px;
+            }
+
+            .card {
+                padding: 18px;
+            }
+
+            .verification-head {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+        }
+
+        /* =========================
+           REDUCED MOTION
+        ========================= */
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                animation: none !important;
+                transition: none !important;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     NAVBAR
+========================= -->
+
+<nav class="navbar">
+
+    <div class="nav-container">
+
+        <a
+            href="{{ url_for('professional_dashboard') }}"
+            class="logo"
+        >
+
+            <div class="logo-mark">
+                A
+            </div>
+
+            Agency<span class="logo-accent">OS</span>
+
+        </a>
+
+
+        <div class="nav-actions">
+
+            <a
+                href="{{ url_for('professional_dashboard') }}"
+                class="nav-link"
+            >
+                Dashboard
+            </a>
+
+            <a
+                href="{{ url_for('logout') }}"
+                class="logout"
+            >
+                Logout
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+<!-- =========================
+     MAIN
+========================= -->
+
+<main class="container">
+
+
+    <div class="page-header">
+
+        <div class="eyebrow">
+            Professional Account
+        </div>
+
+        <h1>
+            Professional Profile
+        </h1>
+
+        <p>
+            Keep your professional information complete and accurate.
+            AgencyOS uses this information to understand your expertise,
+            review your profile and match you with suitable projects.
+        </p>
+
+    </div>
+
+
+    <!-- =========================
+         FLASH MESSAGES
+    ========================= -->
+
+    <div class="flash-container">
+
+        {% with messages = get_flashed_messages() %}
+
+            {% if messages %}
+
+                {% for message in messages %}
+
+                    <div class="flash">
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+        {% endwith %}
+
+    </div>
+
+
+    <!-- =========================
+         PROFILE SUMMARY
+    ========================= -->
+
+    <div class="summary-grid">
+
+
+        <div class="summary-card">
+
+            <div class="summary-label">
+                Professional Account
+            </div>
+
+            <div class="summary-name">
+                {{ current_user.name }}
+            </div>
+
+            <div class="summary-email">
+                {{ current_user.email }}
+            </div>
+
+            <div class="summary-meta">
+
+                <span class="meta-pill">
+                    Professional
+                </span>
+
+                {% if profile.verification_status == "Verified" %}
+
+                    <span class="meta-pill">
+                        Verified
+                    </span>
+
+                {% elif profile.verification_status == "Rejected" %}
+
+                    <span class="meta-pill">
+                        Verification Rejected
+                    </span>
+
+                {% else %}
+
+                    <span class="meta-pill">
+                        Verification Pending
+                    </span>
+
+                {% endif %}
+
+                {% if profile.location %}
+
+                    <span class="meta-pill">
+                        {{ profile.location }}
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <!-- COMPLETION -->
+
+        <div class="completion-card">
+
+            <div class="completion-top">
+
+                <div class="completion-title">
+                    Profile Completion
+                </div>
+
+                {% if profile_completion == 100 %}
+
+                    <div class="completion-percent completion-complete">
+                        Completed ✓
+                    </div>
+
+                {% else %}
+
+                    <div class="completion-percent">
+                        {{ profile_completion }}% Complete
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="progress-bar">
+
+                <div
+                    class="progress-fill"
+                    id="profileProgressFill"
+                    data-progress="{{ profile_completion }}"
+                ></div>
+
+            </div>
+
+
+            <div class="completion-note">
+
+                {% if profile_completion == 100 %}
+
+                    Your professional profile is complete.
+
+                {% else %}
+
+                    Complete the remaining information to build a stronger
+                    professional profile for AgencyOS verification and
+                    project matching.
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         FORM
+    ========================= -->
+
+    <form
+        method="POST"
+        action="{{ url_for('professional_profile') }}"
+    >
+
+
+        <!-- =========================
+             BASIC INFORMATION
+        ========================= -->
+
+        <div class="card">
+
+            <div class="section-heading">
+
+                <div class="section-number">
+                    01
+                </div>
+
+                <div class="section-title-wrap">
+
+                    <h2>
+                        Basic Information
+                    </h2>
+
+                    <p class="card-description">
+                        Your primary professional identity and contact information.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-grid">
+
+
+                <!-- NAME -->
+
+                <div class="form-group">
+
+                    <label for="name">
+                        Full Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="name"
+                        value="{{ current_user.name }}"
+                        class="readonly-box"
+                        readonly
+                    >
+
+                    <div class="help-text">
+                        Your account name cannot be changed here.
+                    </div>
+
+                </div>
+
+
+                <!-- EMAIL -->
+
+                <div class="form-group">
+
+                    <label for="email">
+                        Email
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        value="{{ current_user.email }}"
+                        class="readonly-box"
+                        readonly
+                    >
+
+                    <div class="help-text">
+                        Your account email cannot be changed here.
+                    </div>
+
+                </div>
+
+
+                <!-- EXPERTISE -->
+
+                <div class="form-group full">
+
+                    <label>
+                        Professional Expertise
+                        <span class="required">*</span>
+                    </label>
+
+                    <div class="expertise-options">
+
+
+                        <!-- WEBSITE -->
+
+                        <div class="expertise-option">
+
+                            <input
+                                type="checkbox"
+                                id="expertise_website"
+                                name="expertise"
+                                value="Website Design & Development"
+
+                                {% if "Website Design & Development" in selected_expertise %}
+                                    checked
+                                {% endif %}
+                            >
+
+                            <label
+                                for="expertise_website"
+                                class="expertise-label"
+                            >
+
+                                <span class="expertise-check">
+                                    ✓
+                                </span>
+
+                                <span class="expertise-description">
+
+                                    <span class="expertise-name">
+                                        Website Design & Development
+                                    </span>
+
+                                    <span class="expertise-note">
+                                        Business websites, e-commerce and web development
+                                    </span>
+
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                        <!-- SEO -->
+
+                        <div class="expertise-option">
+
+                            <input
+                                type="checkbox"
+                                id="expertise_seo"
+                                name="expertise"
+                                value="SEO"
+
+                                {% if "SEO" in selected_expertise %}
+                                    checked
+                                {% endif %}
+                            >
+
+                            <label
+                                for="expertise_seo"
+                                class="expertise-label"
+                            >
+
+                                <span class="expertise-check">
+                                    ✓
+                                </span>
+
+                                <span class="expertise-description">
+
+                                    <span class="expertise-name">
+                                        SEO
+                                    </span>
+
+                                    <span class="expertise-note">
+                                        Search optimization, keywords and organic growth
+                                    </span>
+
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                        <!-- UI/UX -->
+
+                        <div class="expertise-option">
+
+                            <input
+                                type="checkbox"
+                                id="expertise_uiux"
+                                name="expertise"
+                                value="UI/UX Design"
+
+                                {% if "UI/UX Design" in selected_expertise %}
+                                    checked
+                                {% endif %}
+                            >
+
+                            <label
+                                for="expertise_uiux"
+                                class="expertise-label"
+                            >
+
+                                <span class="expertise-check">
+                                    ✓
+                                </span>
+
+                                <span class="expertise-description">
+
+                                    <span class="expertise-name">
+                                        UI/UX Design
+                                    </span>
+
+                                    <span class="expertise-note">
+                                        User interfaces, user experience and visual design
+                                    </span>
+
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                    </div>
+
+                    <div class="help-text">
+                        Select every expertise area you can professionally handle.
+                        You can select multiple areas.
+                    </div>
+
+                </div>
+
+
+                <!-- EXPERIENCE -->
+
+                <div class="form-group">
+
+                    <label for="experience">
+                        Professional Experience
+                        <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        id="experience"
+                        name="experience"
+                        value="{{ profile.experience or '' }}"
+                        placeholder="Example: Fresher / 1 year / 2 years"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- PHONE -->
+
+                <div class="form-group">
+
+                    <label for="phone">
+                        Phone Number
+                    </label>
+
+                    <input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        value="{{ profile.phone or '' }}"
+                        placeholder="Your phone number"
+                    >
+
+                </div>
+
+
+                <!-- LOCATION -->
+
+                <div class="form-group">
+
+                    <label for="location">
+                        Location
+                    </label>
+
+                    <input
+                        type="text"
+                        id="location"
+                        name="location"
+                        value="{{ profile.location or '' }}"
+                        placeholder="City, State, Country"
+                    >
+
+                </div>
+
+
+                <!-- ABOUT -->
+
+                <div class="form-group full">
+
+                    <label for="about">
+                        Professional Summary
+                    </label>
+
+                    <textarea
+                        id="about"
+                        name="about"
+                        placeholder="Describe your professional background, strengths and approach..."
+                    >{{ profile.about or '' }}</textarea>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             SKILLS
+        ========================= -->
+
+        <div class="card">
+
+            <div class="section-heading">
+
+                <div class="section-number">
+                    02
+                </div>
+
+                <div class="section-title-wrap">
+
+                    <h2>
+                        Skills & Expertise
+                    </h2>
+
+                    <p class="card-description">
+                        Tell AgencyOS about your practical skills, tools and preferred project types.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-grid">
+
+
+                <!-- SKILLS -->
+
+                <div class="form-group full">
+
+                    <label>
+                        Skills
+                    </label>
+
+                    <div class="skills-options">
+
+
+                        <!-- HTML -->
+
+                        <div class="skill-option">
+
+                            <input
+                                type="checkbox"
+                                id="skill_html"
+                                name="skills"
+                                value="HTML"
+                                {% if "HTML" in selected_skills %}
+                                    checked
+                                {% endif %}
+                            >
+
+                            <label
+                                for="skill_html"
+                                class="skill-label"
+                            >
+                                <span class="skill-check">✓</span>
+                                <span>HTML</span>
+                            </label>
+
+                        </div>
+
+
+                        <!-- CSS -->
+
+                        <div class="skill-option">
+
+                            <input
+                                type="checkbox"
+                                id="skill_css"
+                                name="skills"
+                                value="CSS"
+                                {% if "CSS" in selected_skills %}
+                                    checked
+                                {% endif %}
+                            >
+
+                            <label
+                                for="skill_css"
+                                class="skill-label"
+                            >
+                                <span class="skill-check">✓</span>
+                                <span>CSS</span>
+                            </label>
+
+                        </div>
+
+
+                        <!-- JAVASCRIPT -->
+
+                        <div class="skill-option">
+
+                            <input
+                                type="checkbox"
+                                id="skill_javascript"
+                                name="skills"
+                                value="JavaScript"
+                                {% if "JavaScript" in selected_skills %}
+                                    checked
+                                {% endif %}
+                            >
+
+                            <label
+                                for="skill_javascript"
+                                class="skill-label"
+                            >
+                                <span class="skill-check">✓</span>
+                                <span>JavaScript</span>
+                            </label>
+
+                        </div>
+
+
+                        <!-- PYTHON -->
+
+                        <div class="skill-option">
+
+                            <input
+                                type="checkbox"
+                                id="skill_python"
+                                name="skills"
+                                value="Python"
+                                {% if "Python" in selected_skills %}
+                                    checked
+                                {% endif %}
+                            >
+
+                            <label
+                                for="skill_python"
+                                class="skill-label"
+                            >
+                                <span class="skill-check">✓</span>
+                                <span>Python</span>
+                            </label>
+
+                        </div>
+
+
+                        <!-- FLASK -->
+
+                        <div class="skill-option">
+
+                            <input
+                                type="checkbox"
+                                id="skill_flask"
+                                name="skills"
+                                value="Flask"
+                                {% if "Flask" in selected_skills %}
+                                    checked
+                                {% endif %}
+                            >
+
+                            <label
+                                for="skill_flask"
+                                class="skill-label"
+                            >
+                                <span class="skill-check">✓</span>
+                                <span>Flask</span>
+                            </label>
+
+                        </div>
+
+
+                        <!-- SQL -->
+
+                        <div class="skill-option">
+
+                            <input
+                                type="checkbox"
+                                id="skill_sql"
+                                name="skills"
+                                value="SQL"
+                                {% if "SQL" in selected_skills %}
+                                    checked
+                                {% endif %}
+                            >
+
+                            <label
+                                for="skill_sql"
+                                class="skill-label"
+                            >
+                                <span class="skill-check">✓</span>
+                                <span>SQL</span>
+                            </label>
+
+                        </div>
+
+
+                        <!-- SQLITE -->
+
+                        <div class="skill-option">
+
+                            <input
+                                type="checkbox"
+                                id="skill_sqlite"
+                                name="skills"
+                                value="SQLite"
+                                {% if "SQLite" in selected_skills %}
+                                    checked
+                                {% endif %}
+                            >
+
+                            <label
+                                for="skill_sqlite"
+                                class="skill-label"
+                            >
+                                <span class="skill-check">✓</span>
+                                <span>SQLite</span>
+                            </label>
+
+                        </div>
+
+
+                        <!-- MYSQL -->
+
+                        <div class="skill-option">
+
+                            <input
+                                type="checkbox"
+                                id="skill_mysql"
+                                name="skills"
+                                value="MySQL"
+                                {% if "MySQL" in selected_skills %}
+                                    checked
+                                {% endif %}
+                            >
+
+                            <label
+                                for="skill_mysql"
+                                class="skill-label"
+                            >
+                                <span class="skill-check">✓</span>
+                                <span>MySQL</span>
+                            </label>
+
+                        </div>
+
+
+                        <!-- BOOTSTRAP -->
+
+                        <div class="skill-option">
+
+                            <input
+                                type="checkbox"
+                                id="skill_bootstrap"
+                                name="skills"
+                                value="Bootstrap"
+                                {% if "Bootstrap" in selected_skills %}
+                                    checked
+                                {% endif %}
+                            >
+
+                            <label
+                                for="skill_bootstrap"
+                                class="skill-label"
+                            >
+                                <span class="skill-check">✓</span>
+                                <span>Bootstrap</span>
+                            </label>
+
+                        </div>
+
+
+                        <!-- GIT/GITHUB -->
+
+                        <div class="skill-option">
+
+                            <input
+                                type="checkbox"
+                                id="skill_git"
+                                name="skills"
+                                value="Git/GitHub"
+                                {% if "Git/GitHub" in selected_skills %}
+                                    checked
+                                {% endif %}
+                            >
+
+                            <label
+                                for="skill_git"
+                                class="skill-label"
+                            >
+                                <span class="skill-check">✓</span>
+                                <span>Git / GitHub</span>
+                            </label>
+
+                        </div>
+
+
+                        <!-- KEYWORD RESEARCH -->
+
+                        <div class="skill-option">
+
+                            <input
+                                type="checkbox"
+                                id="skill_keyword"
+                                name="skills"
+                                value="Keyword Research"
+                                {% if "Keyword Research" in selected_skills %}
+                                    checked
+                                {% endif %}
+                            >
+
+                            <label
+                                for="skill_keyword"
+                                class="skill-label"
+                            >
+                                <span class="skill-check">✓</span>
+                                <span>Keyword Research</span>
+                            </label>
+
+                        </div>
+
+
+                        <!-- ON PAGE SEO -->
+
+                        <div class="skill-option">
+
+                            <input
+                                type="checkbox"
+                                id="skill_onpage"
+                                name="skills"
+                                value="On-Page SEO"
+                                {% if "On-Page SEO" in selected_skills %}
+                                    checked
+                                {% endif %}
+                            >
+
+                            <label
+                                for="skill_onpage"
+                                class="skill-label"
+                            >
+                                <span class="skill-check">✓</span>
+                                <span>On-Page SEO</span>
+                            </label>
+
+                        </div>
+
+
+                        <!-- TECHNICAL SEO -->
+
+                        <div class="skill-option">
+
+                            <input
+                                type="checkbox"
+                                id="skill_technical"
+                                name="skills"
+                                value="Technical SEO"
+                                {% if "Technical SEO" in selected_skills %}
+                                    checked
+                                {% endif %}
+                            >
+
+                            <label
+                                for="skill_technical"
+                                class="skill-label"
+                            >
+                                <span class="skill-check">✓</span>
+                                <span>Technical SEO</span>
+                            </label>
+
+                        </div>
+
+
+                        <!-- LINK BUILDING -->
+
+                        <div class="skill-option">
+
+                            <input
+                                type="checkbox"
+                                id="skill_linkbuilding"
+                                name="skills"
+                                value="Link Building"
+                                {% if "Link Building" in selected_skills %}
+                                    checked
+                                {% endif %}
+                            >
+
+                            <label
+                                for="skill_linkbuilding"
+                                class="skill-label"
+                            >
+                                <span class="skill-check">✓</span>
+                                <span>Link Building</span>
+                            </label>
+
+                        </div>
+
+
+                        <!-- GOOGLE SEARCH CONSOLE -->
+
+                        <div class="skill-option">
+
+                            <input
+                                type="checkbox"
+                                id="skill_gsc"
+                                name="skills"
+                                value="Google Search Console"
+                                {% if "Google Search Console" in selected_skills %}
+                                    checked
+                                {% endif %}
+                            >
+
+                            <label
+                                for="skill_gsc"
+                                class="skill-label"
+                            >
+                                <span class="skill-check">✓</span>
+                                <span>Google Search Console</span>
+                            </label>
+
+                        </div>
+
+
+                        <!-- GOOGLE ANALYTICS -->
+
+                        <div class="skill-option">
+
+                            <input
+                                type="checkbox"
+                                id="skill_analytics"
+                                name="skills"
+                                value="Google Analytics"
+                                {% if "Google Analytics" in selected_skills %}
+                                    checked
+                                {% endif %}
+                            >
+
+                            <label
+                                for="skill_analytics"
+                                class="skill-label"
+                            >
+                                <span class="skill-check">✓</span>
+                                <span>Google Analytics</span>
+                            </label>
+
+                        </div>
+
+
+                    </div>
+
+                    <div class="help-text">
+                        Select all skills you can professionally handle.
+                        You can select multiple skills.
+                    </div>
+
+                </div>
+
+
+                <!-- TECHNOLOGIES -->
+
+                <div class="form-group">
+
+                    <label for="technologies">
+                        Technologies & Tools
+                    </label>
+
+                    <textarea
+                        id="technologies"
+                        name="technologies"
+                        placeholder="Example: Flask, MySQL, SQLite, Bootstrap, Git"
+                    >{{ profile.technologies or '' }}</textarea>
+
+                </div>
+
+
+                <!-- SKILL LEVEL -->
+
+                <div class="form-group">
+
+                    <label for="skill_level">
+                        Skill Level
+                    </label>
+
+                    <select
+                        id="skill_level"
+                        name="skill_level"
+                    >
+
+                        <option value="">
+                            Select level
+                        </option>
+
+                        <option
+                            value="Beginner"
+                            {% if profile.skill_level == "Beginner" %}
+                                selected
+                            {% endif %}
+                        >
+                            Beginner
+                        </option>
+
+                        <option
+                            value="Intermediate"
+                            {% if profile.skill_level == "Intermediate" %}
+                                selected
+                            {% endif %}
+                        >
+                            Intermediate
+                        </option>
+
+                        <option
+                            value="Advanced"
+                            {% if profile.skill_level == "Advanced" %}
+                                selected
+                            {% endif %}
+                        >
+                            Advanced
+                        </option>
+
+                        <option
+                            value="Expert"
+                            {% if profile.skill_level == "Expert" %}
+                                selected
+                            {% endif %}
+                        >
+                            Expert
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- PROJECT TYPES -->
+
+                <div class="form-group full">
+
+                    <label for="project_types">
+                        Preferred Project Types
+                    </label>
+
+                    <textarea
+                        id="project_types"
+                        name="project_types"
+                        placeholder="Example: Business Websites, E-commerce Websites, Landing Pages, SEO Projects"
+                    >{{ profile.project_types or '' }}</textarea>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             PORTFOLIO
+        ========================= -->
+
+        <div class="card">
+
+            <div class="section-heading">
+
+                <div class="section-number">
+                    03
+                </div>
+
+                <div class="section-title-wrap">
+
+                    <h2>
+                        Portfolio & Professional Links
+                    </h2>
+
+                    <p class="card-description">
+                        Provide links that help AgencyOS review your professional work.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-grid">
+
+
+                <!-- PORTFOLIO -->
+
+                <div class="form-group full">
+
+                    <label for="portfolio">
+                        Portfolio URL
+                    </label>
+
+                    <input
+                        type="url"
+                        id="portfolio"
+                        name="portfolio"
+                        value="{{ profile.portfolio or '' }}"
+                        placeholder="https://yourportfolio.com"
+                    >
+
+                    <div class="help-text">
+                        Add your main portfolio or professional website.
+                    </div>
+
+                </div>
+
+
+                <!-- GITHUB -->
+
+                <div class="form-group">
+
+                    <label for="github">
+                        GitHub URL
+                    </label>
+
+                    <input
+                        type="url"
+                        id="github"
+                        name="github"
+                        value="{{ profile.github or '' }}"
+                        placeholder="https://github.com/username"
+                    >
+
+                </div>
+
+
+                <!-- LINKEDIN -->
+
+                <div class="form-group">
+
+                    <label for="linkedin">
+                        LinkedIn URL
+                    </label>
+
+                    <input
+                        type="url"
+                        id="linkedin"
+                        name="linkedin"
+                        value="{{ profile.linkedin or '' }}"
+                        placeholder="https://linkedin.com/in/username"
+                    >
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             EDUCATION
+        ========================= -->
+
+        <div class="card">
+
+            <div class="section-heading">
+
+                <div class="section-number">
+                    04
+                </div>
+
+                <div class="section-title-wrap">
+
+                    <h2>
+                        Education & Professional Background
+                    </h2>
+
+                    <p class="card-description">
+                        Add education, certifications and previous professional experience.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-grid">
+
+
+                <!-- EDUCATION -->
+
+                <div class="form-group">
+
+                    <label for="education">
+                        Education
+                    </label>
+
+                    <textarea
+                        id="education"
+                        name="education"
+                        placeholder="Example: B.Tech in Computer Science..."
+                    >{{ profile.education or '' }}</textarea>
+
+                </div>
+
+
+                <!-- CERTIFICATIONS -->
+
+                <div class="form-group">
+
+                    <label for="certifications">
+                        Certifications
+                    </label>
+
+                    <textarea
+                        id="certifications"
+                        name="certifications"
+                        placeholder="Example: Python, SQL, SEO certifications..."
+                    >{{ profile.certifications or '' }}</textarea>
+
+                </div>
+
+
+                <!-- WORK EXPERIENCE -->
+
+                <div class="form-group full">
+
+                    <label for="work_experience">
+                        Work Experience
+                    </label>
+
+                    <textarea
+                        id="work_experience"
+                        name="work_experience"
+                        placeholder="Describe previous work, freelance projects or practical experience..."
+                    >{{ profile.work_experience or '' }}</textarea>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             AVAILABILITY
+        ========================= -->
+
+        <div class="card">
+
+            <div class="section-heading">
+
+                <div class="section-number">
+                    05
+                </div>
+
+                <div class="section-title-wrap">
+
+                    <h2>
+                        Availability & Workload
+                    </h2>
+
+                    <p class="card-description">
+                        Help AgencyOS understand when you can work and how much capacity you currently have.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-grid">
+
+
+                <!-- AVAILABILITY -->
+
+                <div class="form-group">
+
+                    <label for="availability">
+                        Availability
+                    </label>
+
+                    <select
+                        id="availability"
+                        name="availability"
+                    >
+
+                        <option value="">
+                            Select availability
+                        </option>
+
+                        <option
+                            value="Full-time"
+                            {% if profile.availability == "Full-time" %}
+                                selected
+                            {% endif %}
+                        >
+                            Full-time
+                        </option>
+
+                        <option
+                            value="Part-time"
+                            {% if profile.availability == "Part-time" %}
+                                selected
+                            {% endif %}
+                        >
+                            Part-time
+                        </option>
+
+                        <option
+                            value="Weekends"
+                            {% if profile.availability == "Weekends" %}
+                                selected
+                            {% endif %}
+                        >
+                            Weekends
+                        </option>
+
+                        <option
+                            value="Flexible"
+                            {% if profile.availability == "Flexible" %}
+                                selected
+                            {% endif %}
+                        >
+                            Flexible
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- CURRENT WORKLOAD -->
+
+                <div class="form-group">
+
+                    <label for="current_workload">
+                        Current Workload
+                    </label>
+
+                    <select
+                        id="current_workload"
+                        name="current_workload"
+                    >
+
+                        <option value="">
+                            Select workload
+                        </option>
+
+                        <option
+                            value="Available"
+                            {% if profile.current_workload == "Available" %}
+                                selected
+                            {% endif %}
+                        >
+                            Available
+                        </option>
+
+                        <option
+                            value="Low"
+                            {% if profile.current_workload == "Low" %}
+                                selected
+                            {% endif %}
+                        >
+                            Low
+                        </option>
+
+                        <option
+                            value="Medium"
+                            {% if profile.current_workload == "Medium" %}
+                                selected
+                            {% endif %}
+                        >
+                            Medium
+                        </option>
+
+                        <option
+                            value="High"
+                            {% if profile.current_workload == "High" %}
+                                selected
+                            {% endif %}
+                        >
+                            High
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             VERIFICATION
+        ========================= -->
+
+        <div class="card">
+
+            <div class="section-heading">
+
+                <div class="section-number">
+                    06
+                </div>
+
+                <div class="section-title-wrap">
+
+                    <h2>
+                        Account Verification
+                    </h2>
+
+                    <p class="card-description">
+                        Verification is controlled by AgencyOS administration.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            {% if profile.verification_status == "Verified" %}
+
+                <div class="verification-box verified">
+
+                    <div class="verification-head">
+
+                        <div class="verification-title">
+                            ✓ Your professional account is verified.
+                        </div>
+
+                        <div class="status verified">
+                            Verified
+                        </div>
+
+                    </div>
+
+                    You can access available projects and apply for
+                    projects matching your selected expertise.
+
+                </div>
+
+
+            {% elif profile.verification_status == "Rejected" %}
+
+                <div class="verification-box rejected">
+
+                    <div class="verification-head">
+
+                        <div class="verification-title">
+                            Your account is currently rejected.
+                        </div>
+
+                        <div class="status rejected">
+                            Rejected
+                        </div>
+
+                    </div>
+
+
+                    {% if profile.verification_notes %}
+
+                        {{ profile.verification_notes }}
+
+                    {% else %}
+
+                        Please contact AgencyOS administration for
+                        further information.
+
+                    {% endif %}
+
+                </div>
+
+
+            {% else %}
+
+                <div class="verification-box">
+
+                    <div class="verification-head">
+
+                        <div class="verification-title">
+                            Your account is waiting for verification.
+                        </div>
+
+                        <div class="status pending">
+                            Pending Verification
+                        </div>
+
+                    </div>
+
+                    An AgencyOS administrator will review your
+                    professional profile before giving you access
+                    to available projects.
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- =========================
+             ACTIONS
+        ========================= -->
+
+        <div class="actions">
+
+            <a
+                href="{{ url_for('professional_dashboard') }}"
+                class="btn btn-secondary"
+            >
+                Cancel
+            </a>
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+            >
+                Save Professional Profile
+            </button>
+
+        </div>
+
+
+    </form>
+
+</main>
+
+
+<!-- =========================
+     PROGRESS SCRIPT
+========================= -->
+
+<script>
+
+    const profileProgressFill =
+        document.getElementById(
+            "profileProgressFill"
+        );
+
+    if (profileProgressFill) {
+
+        const progress =
+            Number(
+                profileProgressFill.dataset.progress || 0
+            );
+
+        const safeProgress =
+            Math.max(
+                0,
+                Math.min(
+                    100,
+                    progress
+                )
+            );
+
+        profileProgressFill.style.width =
+            safeProgress + "%";
+    }
+
+</script>
+
+
+</body>
+
+</html>

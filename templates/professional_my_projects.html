@@ -1,0 +1,1736 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0"
+
+>
+
+<title>My Projects - AgencyOS</title>
+
+<style>
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        background: #f5f7fb;
+        color: #111827;
+        font-family: Arial, sans-serif;
+    }
+
+    /* =========================
+       NAVBAR
+    ========================= */
+
+    .navbar {
+        background: #111827;
+        color: white;
+        padding: 16px 40px;
+    }
+
+    .nav-container {
+        max-width: 1200px;
+        margin: auto;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        gap: 20px;
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        text-decoration: none;
+        color: white;
+
+        font-size: 23px;
+        font-weight: 700;
+    }
+
+    .logo-mark {
+        width: 34px;
+        height: 34px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        background: #2563eb;
+
+        border-radius: 9px;
+
+        font-weight: 800;
+    }
+
+    .logo-accent {
+        color: #60a5fa;
+    }
+
+    .nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .nav-link {
+        color: #d1d5db;
+
+        text-decoration: none;
+
+        padding: 9px 13px;
+
+        border-radius: 7px;
+
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .nav-link:hover {
+        background: #1f2937;
+        color: white;
+    }
+
+    .logout-btn {
+        color: white;
+
+        background: #dc2626;
+
+        text-decoration: none;
+
+        padding: 9px 15px;
+
+        border-radius: 7px;
+
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .logout-btn:hover {
+        background: #b91c1c;
+    }
+
+    /* =========================
+       MAIN
+    ========================= */
+
+    .container {
+        max-width: 1150px;
+
+        margin: 35px auto;
+
+        padding: 0 20px 60px;
+    }
+
+    .back-btn {
+        display: inline-block;
+
+        margin-bottom: 20px;
+
+        color: #475569;
+
+        text-decoration: none;
+
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .back-btn:hover {
+        color: #2563eb;
+    }
+
+    .page-header {
+        margin-bottom: 25px;
+    }
+
+    .page-header h1 {
+        margin: 0 0 8px;
+
+        font-size: 32px;
+
+        letter-spacing: -0.5px;
+    }
+
+    .page-header p {
+        margin: 0;
+
+        color: #64748b;
+
+        line-height: 1.6;
+
+        font-size: 15px;
+    }
+
+    /* =========================
+       FLASH MESSAGE
+    ========================= */
+
+    .message {
+        margin-bottom: 20px;
+
+        padding: 14px 17px;
+
+        background: #eff6ff;
+
+        border: 1px solid #bfdbfe;
+
+        border-radius: 9px;
+
+        color: #1d4ed8;
+
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    /* =========================
+       FILTER SECTION
+    ========================= */
+
+    .filter-card {
+        background: white;
+
+        border: 1px solid #e5e7eb;
+
+        border-radius: 14px;
+
+        padding: 18px;
+
+        margin-bottom: 22px;
+
+        box-shadow:
+            0 4px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .filter-title {
+        margin: 0 0 13px;
+
+        font-size: 14px;
+
+        font-weight: 700;
+
+        color: #334155;
+    }
+
+    .filter-buttons {
+        display: flex;
+
+        flex-wrap: wrap;
+
+        gap: 9px;
+    }
+
+    .filter-btn {
+        border: 1px solid #dbe2ea;
+
+        background: #f8fafc;
+
+        color: #475569;
+
+        padding: 9px 14px;
+
+        border-radius: 8px;
+
+        font-size: 13px;
+
+        font-weight: 700;
+
+        cursor: pointer;
+
+        transition:
+            background 0.2s ease,
+            color 0.2s ease,
+            border-color 0.2s ease,
+            transform 0.2s ease;
+    }
+
+    .filter-btn:hover {
+        border-color: #93c5fd;
+
+        color: #1d4ed8;
+
+        transform: translateY(-1px);
+    }
+
+    .filter-btn.active {
+        background: #2563eb;
+
+        border-color: #2563eb;
+
+        color: white;
+    }
+
+    .filter-count {
+        margin-top: 13px;
+
+        color: #64748b;
+
+        font-size: 13px;
+    }
+
+    /* =========================
+       PROJECT CARD
+    ========================= */
+
+    .project-card {
+        background: white;
+
+        border: 1px solid #e5e7eb;
+
+        border-radius: 15px;
+
+        padding: 25px;
+
+        margin-bottom: 20px;
+
+        box-shadow:
+            0 4px 15px rgba(0, 0, 0, 0.06);
+
+        transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease;
+    }
+
+    .project-card:hover {
+        transform: translateY(-2px);
+
+        box-shadow:
+            0 8px 22px rgba(0, 0, 0, 0.09);
+    }
+
+    .project-card.hidden {
+        display: none;
+    }
+
+    /* =========================
+       PROJECT HEADER
+    ========================= */
+
+    .project-header {
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: flex-start;
+
+        gap: 20px;
+    }
+
+    .project-heading h2 {
+        margin: 0 0 6px;
+
+        font-size: 21px;
+    }
+
+    .project-heading p {
+        margin: 0;
+
+        color: #64748b;
+
+        font-size: 13px;
+    }
+
+    /* =========================
+       STATUS
+    ========================= */
+
+    .status {
+        display: inline-flex;
+
+        align-items: center;
+
+        padding: 7px 12px;
+
+        border-radius: 999px;
+
+        font-size: 12px;
+
+        font-weight: 700;
+
+        white-space: nowrap;
+    }
+
+    .status-assigned {
+        background: #eff6ff;
+        color: #1d4ed8;
+    }
+
+    .status-progress {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .status-submitted {
+        background: #ecfdf5;
+        color: #047857;
+    }
+
+    .status-revision {
+        background: #fff7ed;
+        color: #c2410c;
+    }
+
+    .status-completed {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .status-payment {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .status-pending {
+        background: #f3f4f6;
+        color: #4b5563;
+    }
+
+    /* =========================
+       SUMMARY
+    ========================= */
+
+    .project-summary {
+        display: grid;
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 13px;
+
+        margin-top: 20px;
+    }
+
+    .summary-item {
+        padding: 14px;
+
+        background: #f8fafc;
+
+        border: 1px solid #e2e8f0;
+
+        border-radius: 10px;
+    }
+
+    .summary-label {
+        display: block;
+
+        margin-bottom: 5px;
+
+        color: #64748b;
+
+        font-size: 11px;
+
+        font-weight: 700;
+
+        text-transform: uppercase;
+
+        letter-spacing: 0.4px;
+    }
+
+    .summary-value {
+        color: #0f172a;
+
+        font-size: 14px;
+
+        font-weight: 600;
+
+        word-break: break-word;
+    }
+
+    /* =========================
+       COMPLETION BANNER
+    ========================= */
+
+    .completion-banner {
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+
+        gap: 15px;
+
+        padding: 15px 17px;
+
+        margin-top: 20px;
+
+        margin-bottom: 22px;
+
+        border-radius: 10px;
+
+        font-size: 14px;
+    }
+
+    .completion-banner strong {
+        display: block;
+
+        margin-bottom: 3px;
+    }
+
+    .completion-banner.completed {
+        background: #ecfdf5;
+
+        border: 1px solid #bbf7d0;
+
+        color: #166534;
+    }
+
+    .completion-banner.incomplete {
+        background: #eff6ff;
+
+        border: 1px solid #bfdbfe;
+
+        color: #1e40af;
+    }
+
+    .completion-icon {
+        font-size: 24px;
+
+        flex-shrink: 0;
+    }
+
+    /* =========================
+       DETAILS TOGGLE
+    ========================= */
+
+    .details-toggle {
+        width: 100%;
+
+        margin-top: 18px;
+
+        padding: 12px 15px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+
+        background: #f8fafc;
+
+        border: 1px solid #e2e8f0;
+
+        border-radius: 9px;
+
+        color: #334155;
+
+        cursor: pointer;
+
+        font-size: 14px;
+
+        font-weight: 700;
+
+        transition:
+            background 0.2s ease,
+            border-color 0.2s ease;
+    }
+
+    .details-toggle:hover {
+        background: #eff6ff;
+
+        border-color: #bfdbfe;
+
+        color: #1d4ed8;
+    }
+
+    .arrow {
+        font-size: 17px;
+
+        transition: transform 0.25s ease;
+    }
+
+    .details-toggle.open .arrow {
+        transform: rotate(180deg);
+    }
+
+    /* =========================
+       FULL DETAILS
+    ========================= */
+
+    .full-details {
+        display: none;
+
+        margin-top: 20px;
+
+        padding-top: 20px;
+
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .full-details.open {
+        display: block;
+    }
+
+    /* =========================
+       PROJECT DETAILS
+    ========================= */
+
+    .info-grid {
+        display: grid;
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 13px;
+
+        margin-bottom: 22px;
+    }
+
+    .info-item {
+        padding: 15px;
+
+        background: #f8fafc;
+
+        border: 1px solid #e2e8f0;
+
+        border-radius: 10px;
+    }
+
+    .info-label {
+        display: block;
+
+        margin-bottom: 5px;
+
+        color: #64748b;
+
+        font-size: 11px;
+
+        font-weight: 700;
+
+        text-transform: uppercase;
+
+        letter-spacing: 0.4px;
+    }
+
+    .info-value {
+        color: #0f172a;
+
+        font-size: 14px;
+
+        font-weight: 600;
+
+        word-break: break-word;
+    }
+
+    /* =========================
+       REQUIREMENTS
+    ========================= */
+
+    .requirements-section {
+        margin-bottom: 22px;
+    }
+
+    .requirements-title {
+        margin: 0 0 10px;
+
+        font-size: 15px;
+
+        font-weight: 700;
+    }
+
+    .requirements-box {
+        padding: 16px;
+
+        background: #f8fafc;
+
+        border: 1px solid #e2e8f0;
+
+        border-radius: 10px;
+
+        color: #475569;
+
+        font-size: 14px;
+
+        line-height: 1.7;
+
+        white-space: pre-wrap;
+
+        word-break: break-word;
+    }
+
+    /* =========================
+       REVISION NOTICE
+    ========================= */
+
+    .revision-box {
+        margin-bottom: 20px;
+
+        padding: 15px;
+
+        background: #fff7ed;
+
+        border: 1px solid #fed7aa;
+
+        border-radius: 10px;
+
+        color: #9a3412;
+
+        line-height: 1.6;
+
+        font-size: 14px;
+    }
+
+    .revision-title {
+        margin-bottom: 5px;
+
+        font-weight: 700;
+    }
+
+    /* =========================
+       PROJECT FOOTER
+    ========================= */
+
+    .project-footer {
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+
+        gap: 15px;
+
+        padding-top: 20px;
+
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .created {
+        color: #64748b;
+
+        font-size: 13px;
+    }
+
+    .action {
+        display: inline-flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        padding: 11px 18px;
+
+        background: #2563eb;
+
+        color: white;
+
+        border-radius: 8px;
+
+        text-decoration: none;
+
+        font-size: 14px;
+
+        font-weight: 700;
+
+        transition:
+            background 0.2s ease,
+            transform 0.2s ease;
+    }
+
+    .action:hover {
+        background: #1d4ed8;
+
+        transform: translateY(-1px);
+    }
+
+    /* =========================
+       NO FILTER RESULTS
+    ========================= */
+
+    .no-filter-results {
+        display: none;
+
+        background: white;
+
+        border: 1px solid #e5e7eb;
+
+        border-radius: 15px;
+
+        padding: 45px 25px;
+
+        text-align: center;
+
+        margin-bottom: 20px;
+    }
+
+    .no-filter-results.show {
+        display: block;
+    }
+
+    .no-filter-results h2 {
+        margin: 0 0 8px;
+
+        font-size: 20px;
+    }
+
+    .no-filter-results p {
+        margin: 0;
+
+        color: #64748b;
+
+        font-size: 14px;
+
+        line-height: 1.6;
+    }
+
+    /* =========================
+       EMPTY STATE
+    ========================= */
+
+    .empty-card {
+        background: white;
+
+        border: 1px solid #e5e7eb;
+
+        border-radius: 15px;
+
+        padding: 60px 25px;
+
+        text-align: center;
+
+        box-shadow:
+            0 4px 15px rgba(0, 0, 0, 0.06);
+    }
+
+    .empty-icon {
+        width: 60px;
+
+        height: 60px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        margin: 0 auto 18px;
+
+        background: #eff6ff;
+
+        color: #2563eb;
+
+        border-radius: 15px;
+
+        font-size: 25px;
+    }
+
+    .empty-card h2 {
+        margin: 0 0 8px;
+
+        font-size: 21px;
+    }
+
+    .empty-card p {
+        max-width: 520px;
+
+        margin: 0 auto 22px;
+
+        color: #64748b;
+
+        line-height: 1.6;
+
+        font-size: 14px;
+    }
+
+    /* =========================
+       RESPONSIVE
+    ========================= */
+
+    @media (max-width: 700px) {
+
+        .navbar {
+            padding: 15px 20px;
+        }
+
+        .nav-link {
+            display: none;
+        }
+
+        .container {
+            margin: 25px auto;
+
+            padding: 0 15px 45px;
+        }
+
+        .page-header h1 {
+            font-size: 27px;
+        }
+
+        .project-card {
+            padding: 20px;
+        }
+
+        .project-header {
+            flex-direction: column;
+        }
+
+        .project-summary {
+            grid-template-columns: 1fr;
+        }
+
+        .completion-banner {
+            align-items: flex-start;
+        }
+
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .project-footer {
+            flex-direction: column;
+
+            align-items: stretch;
+        }
+
+        .action {
+            width: 100%;
+        }
+
+        .filter-buttons {
+            gap: 7px;
+        }
+
+        .filter-btn {
+            flex: 1 1 auto;
+        }
+
+    }
+
+</style>
+
+</head>
+
+<body>
+
+<!-- =========================
+     NAVBAR
+========================= -->
+
+<nav class="navbar">
+
+```
+<div class="nav-container">
+
+    <a
+        href="{{ url_for('professional_dashboard') }}"
+        class="logo"
+    >
+
+        <div class="logo-mark">
+            A
+        </div>
+
+        Agency<span class="logo-accent">OS</span>
+
+    </a>
+
+    <div class="nav-actions">
+
+        <a
+            href="{{ url_for('professional_dashboard') }}"
+            class="nav-link"
+        >
+            Dashboard
+        </a>
+
+        <a
+            href="{{ url_for('professional_projects') }}"
+            class="nav-link"
+        >
+            Available Projects
+        </a>
+
+        <a
+            href="{{ url_for('logout') }}"
+            class="logout-btn"
+        >
+            Logout
+        </a>
+
+    </div>
+
+</div>
+```
+
+</nav>
+
+<!-- =========================
+     MAIN
+========================= -->
+
+<main class="container">
+
+```
+<a
+    href="{{ url_for('professional_dashboard') }}"
+    class="back-btn"
+>
+    ← Back to Professional Dashboard
+</a>
+
+<div class="page-header">
+
+    <h1>
+        My Projects
+    </h1>
+
+    <p>
+        Track every project assigned to you and clearly see
+        whether your work is completed or still in progress.
+    </p>
+
+</div>
+
+<!-- =========================
+     FLASH MESSAGES
+========================= -->
+
+{% with messages = get_flashed_messages() %}
+
+    {% if messages %}
+
+        {% for message in messages %}
+
+            <div class="message">
+                {{ message }}
+            </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+{% endwith %}
+
+
+{% if projects %}
+
+    <!-- =========================
+         FILTERS
+    ========================= -->
+
+    <div class="filter-card">
+
+        <div class="filter-title">
+            Filter Projects
+        </div>
+
+        <div class="filter-buttons">
+
+            <button
+                type="button"
+                class="filter-btn active"
+                data-filter="all"
+            >
+                All
+            </button>
+
+            <button
+                type="button"
+                class="filter-btn"
+                data-filter="completed"
+            >
+                Completed
+            </button>
+
+            <button
+                type="button"
+                class="filter-btn"
+                data-filter="incomplete"
+            >
+                Not Completed
+            </button>
+
+            <button
+                type="button"
+                class="filter-btn"
+                data-filter="in_progress"
+            >
+                In Progress
+            </button>
+
+            <button
+                type="button"
+                class="filter-btn"
+                data-filter="submitted"
+            >
+                Submitted
+            </button>
+
+            <button
+                type="button"
+                class="filter-btn"
+                data-filter="revision"
+            >
+                Revision Required
+            </button>
+
+            <button
+                type="button"
+                class="filter-btn"
+                data-filter="assigned"
+            >
+                Assigned
+            </button>
+
+            <button
+                type="button"
+                class="filter-btn"
+                data-filter="payment_pending"
+            >
+                Payment Pending
+            </button>
+
+        </div>
+
+        <div class="filter-count">
+            Showing
+            <strong id="visibleCount">{{ projects|length }}</strong>
+            of
+            <strong>{{ projects|length }}</strong>
+            projects
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         PROJECT LIST
+    ========================= -->
+
+    <div id="projectList">
+
+        {% for project in projects %}
+
+            {% if project.status == "Completed" %}
+
+                {% set filter_status = "completed" %}
+
+            {% elif project.status == "In Progress" %}
+
+                {% set filter_status = "in_progress" %}
+
+            {% elif project.status == "Submitted" %}
+
+                {% set filter_status = "submitted" %}
+
+            {% elif project.status == "Revision" %}
+
+                {% set filter_status = "revision" %}
+
+            {% elif project.status == "Assigned" %}
+
+                {% set filter_status = "assigned" %}
+
+            {% elif project.status == "Payment Pending" %}
+
+                {% set filter_status = "payment_pending" %}
+
+            {% else %}
+
+                {% set filter_status = "other" %}
+
+            {% endif %}
+
+
+            <div
+                class="project-card"
+                data-status="{{ filter_status }}"
+            >
+
+                <!-- =========================
+                     PROJECT HEADER
+                ========================= -->
+
+                <div class="project-header">
+
+                    <div class="project-heading">
+
+                        <h2>
+                            Project #{{ project.id }}
+                        </h2>
+
+                        <p>
+                            AgencyOS professional project
+                        </p>
+
+                    </div>
+
+
+                    {% if project.status == "Assigned" %}
+
+                        <span class="status status-assigned">
+                            Assigned
+                        </span>
+
+                    {% elif project.status == "In Progress" %}
+
+                        <span class="status status-progress">
+                            In Progress
+                        </span>
+
+                    {% elif project.status == "Submitted" %}
+
+                        <span class="status status-submitted">
+                            Submitted for Review
+                        </span>
+
+                    {% elif project.status == "Revision" %}
+
+                        <span class="status status-revision">
+                            Revision Required
+                        </span>
+
+                    {% elif project.status == "Completed" %}
+
+                        <span class="status status-completed">
+                            ✓ Completed
+                        </span>
+
+                    {% elif project.status == "Payment Pending" %}
+
+                        <span class="status status-payment">
+                            Payment Pending
+                        </span>
+
+                    {% elif project.status == "Pending Assignment" %}
+
+                        <span class="status status-pending">
+                            Pending Assignment
+                        </span>
+
+                    {% else %}
+
+                        <span class="status status-assigned">
+                            {{ project.status }}
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- =========================
+                     QUICK SUMMARY
+                ========================= -->
+
+                <div class="project-summary">
+
+                    <div class="summary-item">
+
+                        <span class="summary-label">
+                            Service
+                        </span>
+
+                        <span class="summary-value">
+                            {{ project.service }}
+                        </span>
+
+                    </div>
+
+
+                    <div class="summary-item">
+
+                        <span class="summary-label">
+                            Package
+                        </span>
+
+                        <span class="summary-value">
+                            {{ project.package }}
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =========================
+                     COMPLETION STATUS
+                ========================= -->
+
+                {% if project.status == "Completed" %}
+
+                    <div class="completion-banner completed">
+
+                        <div>
+
+                            <strong>
+                                ✓ PROJECT COMPLETED
+                            </strong>
+
+                            Your work on this project has been
+                            approved and the project is complete.
+
+                        </div>
+
+                        <div class="completion-icon">
+                            ✓
+                        </div>
+
+                    </div>
+
+                {% else %}
+
+                    <div class="completion-banner incomplete">
+
+                        <div>
+
+                            <strong>
+                                PROJECT NOT COMPLETED
+                            </strong>
+
+                            Current stage:
+
+                            {% if project.status == "Assigned" %}
+
+                                Assigned — waiting to be started.
+
+                            {% elif project.status == "In Progress" %}
+
+                                In Progress — work is currently underway.
+
+                            {% elif project.status == "Submitted" %}
+
+                                Submitted — waiting for admin review.
+
+                            {% elif project.status == "Revision" %}
+
+                                Revision Required — changes are required
+                                before completion.
+
+                            {% elif project.status == "Payment Pending" %}
+
+                                Payment Pending — project has not reached
+                                final completion.
+
+                            {% elif project.status == "Pending Assignment" %}
+
+                                Pending Assignment — the project has not
+                                been assigned yet.
+
+                            {% else %}
+
+                                {{ project.status }}
+
+                            {% endif %}
+
+                        </div>
+
+                        <div class="completion-icon">
+                            ⏳
+                        </div>
+
+                    </div>
+
+                {% endif %}
+
+
+                <!-- =========================
+                     VIEW FULL DETAILS
+                ========================= -->
+
+                <button
+                    type="button"
+                    class="details-toggle"
+                    onclick="toggleDetails(this)"
+                >
+
+                    <span>
+                        View Full Details
+                    </span>
+
+                    <span class="arrow">
+                        ▼
+                    </span>
+
+                </button>
+
+
+                <!-- =========================
+                     FULL DETAILS
+                ========================= -->
+
+                <div class="full-details">
+
+                    <div class="info-grid">
+
+                        <div class="info-item">
+
+                            <span class="info-label">
+                                Service
+                            </span>
+
+                            <span class="info-value">
+                                {{ project.service }}
+                            </span>
+
+                        </div>
+
+
+                        <div class="info-item">
+
+                            <span class="info-label">
+                                Package
+                            </span>
+
+                            <span class="info-value">
+                                {{ project.package }}
+                            </span>
+
+                        </div>
+
+
+                        <div class="info-item">
+
+                            <span class="info-label">
+                                Customer
+                            </span>
+
+                            <span class="info-value">
+                                {{ project.customer.name }}
+                            </span>
+
+                        </div>
+
+
+                        <div class="info-item">
+
+                            <span class="info-label">
+                                Customer Email
+                            </span>
+
+                            <span class="info-value">
+                                {{ project.customer.email }}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =========================
+                         CUSTOMER REQUIREMENTS
+                    ========================= -->
+
+                    <div class="requirements-section">
+
+                        <h3 class="requirements-title">
+                            Customer Requirements
+                        </h3>
+
+                        <div class="requirements-box">
+
+                            {% if project.requirements %}
+
+                                {{ project.requirements }}
+
+                            {% else %}
+
+                                No additional requirements
+                                provided.
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =========================
+                         REVISION NOTICE
+                    ========================= -->
+
+                    {% if project.status == "Revision"
+                          and project.revision_comment %}
+
+                        <div class="revision-box">
+
+                            <div class="revision-title">
+                                ⚠ Revision Requested
+                            </div>
+
+                            {{ project.revision_comment }}
+
+                        </div>
+
+                    {% endif %}
+
+
+                    <!-- =========================
+                         PROJECT FOOTER
+                    ========================= -->
+
+                    <div class="project-footer">
+
+                        <div class="created">
+
+                            Created:
+
+                            {% if project.created_at %}
+
+                                {{ project.created_at.strftime(
+                                    '%d %b %Y, %I:%M %p'
+                                ) }}
+
+                            {% else %}
+
+                                Date unavailable
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <a
+                            href="{{ url_for(
+                                'professional_project_workspace',
+                                project_id=project.id
+                            ) }}"
+                            class="action"
+                        >
+                            Open Project →
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+
+    <!-- =========================
+         NO FILTER RESULTS
+    ========================= -->
+
+    <div
+        id="noFilterResults"
+        class="no-filter-results"
+    >
+
+        <h2>
+            No Projects Found
+        </h2>
+
+        <p>
+            There are no projects matching this filter.
+            Select another status to view your projects.
+        </p>
+
+    </div>
+
+
+{% else %}
+
+
+    <!-- =========================
+         EMPTY STATE
+    ========================= -->
+
+    <div class="empty-card">
+
+        <div class="empty-icon">
+            📁
+        </div>
+
+        <h2>
+            No Assigned Projects
+        </h2>
+
+        <p>
+            You currently have no projects assigned to you.
+            Check Available Projects for new opportunities.
+        </p>
+
+        <a
+            href="{{ url_for('professional_projects') }}"
+            class="action"
+        >
+            View Available Projects
+        </a>
+
+    </div>
+
+{% endif %}
+```
+
+</main>
+
+<script>
+
+    /* =========================
+       EXPAND / COLLAPSE DETAILS
+    ========================= */
+
+    function toggleDetails(button) {
+
+        const details =
+            button.nextElementSibling;
+
+        const isOpen =
+            details.classList.contains("open");
+
+        if (isOpen) {
+
+            details.classList.remove("open");
+
+            button.classList.remove("open");
+
+            button.querySelector("span:first-child")
+                .textContent = "View Full Details";
+
+        } else {
+
+            details.classList.add("open");
+
+            button.classList.add("open");
+
+            button.querySelector("span:first-child")
+                .textContent = "Hide Full Details";
+
+        }
+
+    }
+
+
+    /* =========================
+       PROJECT FILTERS
+    ========================= */
+
+    const filterButtons =
+        document.querySelectorAll(".filter-btn");
+
+    const projectCards =
+        document.querySelectorAll(".project-card");
+
+    const visibleCount =
+        document.getElementById("visibleCount");
+
+    const noFilterResults =
+        document.getElementById("noFilterResults");
+
+
+    filterButtons.forEach(function(button) {
+
+        button.addEventListener(
+            "click",
+            function() {
+
+                const filter =
+                    this.dataset.filter;
+
+                let count = 0;
+
+
+                /* -------------------------
+                   ACTIVE BUTTON
+                ------------------------- */
+
+                filterButtons.forEach(function(btn) {
+
+                    btn.classList.remove("active");
+
+                });
+
+                this.classList.add("active");
+
+
+                /* -------------------------
+                   FILTER CARDS
+                ------------------------- */
+
+                projectCards.forEach(function(card) {
+
+                    const status =
+                        card.dataset.status;
+
+                    let shouldShow = false;
+
+
+                    if (filter === "all") {
+
+                        shouldShow = true;
+
+                    }
+
+                    else if (filter === "incomplete") {
+
+                        shouldShow =
+                            status !== "completed";
+
+                    }
+
+                    else {
+
+                        shouldShow =
+                            status === filter;
+
+                    }
+
+
+                    if (shouldShow) {
+
+                        card.classList.remove("hidden");
+
+                        count++;
+
+                    }
+
+                    else {
+
+                        card.classList.add("hidden");
+
+                    }
+
+                });
+
+
+                /* -------------------------
+                   UPDATE COUNT
+                ------------------------- */
+
+                visibleCount.textContent =
+                    count;
+
+
+                /* -------------------------
+                   EMPTY FILTER RESULT
+                ------------------------- */
+
+                if (count === 0) {
+
+                    noFilterResults.classList.add(
+                        "show"
+                    );
+
+                }
+
+                else {
+
+                    noFilterResults.classList.remove(
+                        "show"
+                    );
+
+                }
+
+            }
+        );
+
+    });
+
+</script>
+
+</body>
+
+</html>

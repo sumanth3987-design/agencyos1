@@ -1,0 +1,3040 @@
+{% extends "admin_base.html" %}
+
+{% block title %}
+Professionals - AgencyOS
+{% endblock %}
+
+
+{% block extra_css %}
+
+<style>
+
+    /* =========================================================
+       PROFESSIONALS PAGE
+    ========================================================= */
+
+    .professionals-page {
+        width: 100%;
+    }
+
+
+    /* =========================================================
+       PAGE HEADER
+    ========================================================= */
+
+    .professionals-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 26px;
+    }
+
+    .professionals-heading h1 {
+        margin: 0 0 7px;
+        font-size: 30px;
+        line-height: 1.2;
+        letter-spacing: -0.7px;
+        color: #0f172a;
+    }
+
+    .professionals-heading p {
+        margin: 0;
+        color: #64748b;
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+
+    /* =========================================================
+       SUMMARY STATS
+    ========================================================= */
+
+    .professional-stats {
+        display: grid;
+        grid-template-columns:
+            repeat(4, minmax(0, 1fr));
+        gap: 14px;
+        margin-bottom: 22px;
+    }
+
+    .professional-stat {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 13px;
+        padding: 17px 18px;
+        min-width: 0;
+    }
+
+    .professional-stat-label {
+        color: #64748b;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.45px;
+        margin-bottom: 7px;
+    }
+
+    .professional-stat-value {
+        color: #0f172a;
+        font-size: 24px;
+        font-weight: 800;
+        line-height: 1.15;
+    }
+
+    .professional-stat-note {
+        margin-top: 5px;
+        color: #94a3b8;
+        font-size: 11px;
+    }
+
+
+    /* =========================================================
+       TOOLBAR
+    ========================================================= */
+
+    .professionals-toolbar {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 17px;
+        margin-bottom: 20px;
+    }
+
+    .toolbar-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 14px;
+    }
+
+    .toolbar-title {
+        margin: 0;
+        color: #0f172a;
+        font-size: 14px;
+        font-weight: 800;
+    }
+
+    .toolbar-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .toolbar-btn {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: #334155;
+        padding: 8px 11px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.18s ease;
+    }
+
+    .toolbar-btn:hover {
+        background: #f8fafc;
+        border-color: #94a3b8;
+    }
+
+    .toolbar-btn.primary {
+        background: #0f172a;
+        color: #ffffff;
+        border-color: #0f172a;
+    }
+
+    .toolbar-btn.primary:hover {
+        background: #1e293b;
+        border-color: #1e293b;
+    }
+
+
+    /* =========================================================
+       FILTER GRID
+    ========================================================= */
+
+    .filter-grid {
+        display: grid;
+        grid-template-columns:
+            minmax(220px, 1.7fr)
+            minmax(150px, 1fr)
+            minmax(150px, 1fr)
+            minmax(150px, 1fr);
+        gap: 10px;
+    }
+
+    .filter-field {
+        min-width: 0;
+    }
+
+    .filter-label {
+        display: block;
+        margin: 0 0 6px;
+        color: #64748b;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.35px;
+    }
+
+    .filter-input,
+    .filter-select {
+        width: 100%;
+        min-height: 40px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        background: #ffffff;
+        color: #0f172a;
+        padding: 9px 11px;
+        font-family: inherit;
+        font-size: 13px;
+        outline: none;
+        transition: 0.18s ease;
+        box-sizing: border-box;
+    }
+
+    .filter-input:focus,
+    .filter-select:focus {
+        border-color: #2563eb;
+        box-shadow:
+            0 0 0 3px rgba(37, 99, 235, 0.08);
+    }
+
+
+    /* =========================================================
+       RESULT SUMMARY
+    ========================================================= */
+
+    .result-summary {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin: 0 0 14px;
+        color: #64748b;
+        font-size: 12px;
+    }
+
+    .result-summary strong {
+        color: #334155;
+    }
+
+
+    /* =========================================================
+       PROFESSIONAL CARD
+    ========================================================= */
+
+    .professional-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 15px;
+        margin-bottom: 14px;
+        overflow: hidden;
+        box-shadow:
+            0 2px 8px rgba(15, 23, 42, 0.025);
+    }
+
+    .professional-card.hidden {
+        display: none;
+    }
+
+
+    /* =========================================================
+       PROFESSIONAL SUMMARY
+    ========================================================= */
+
+    .professional-summary {
+        padding: 19px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
+    .professional-main {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        min-width: 0;
+    }
+
+    .avatar {
+        width: 48px;
+        height: 48px;
+        flex: 0 0 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #eff6ff;
+        color: #2563eb;
+        border: 1px solid #dbeafe;
+        border-radius: 12px;
+        font-size: 18px;
+        font-weight: 800;
+    }
+
+    .professional-name {
+        min-width: 0;
+    }
+
+    .professional-name h2 {
+        margin: 0 0 4px;
+        color: #0f172a;
+        font-size: 16px;
+        font-weight: 800;
+        letter-spacing: -0.2px;
+        overflow-wrap: anywhere;
+    }
+
+    .professional-name p {
+        margin: 0;
+        color: #64748b;
+        font-size: 12px;
+        overflow-wrap: anywhere;
+    }
+
+    .professional-meta {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin-top: 7px;
+        flex-wrap: wrap;
+    }
+
+    .meta-chip {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 8px;
+        border-radius: 999px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        color: #475569;
+        font-size: 10px;
+        font-weight: 700;
+    }
+
+
+    /* =========================================================
+       STATUS
+    ========================================================= */
+
+    .status-area {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .status {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px 9px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .status-pending {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .status-verified {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .status-rejected {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .status-default {
+        background: #f1f5f9;
+        color: #475569;
+    }
+
+
+    /* =========================================================
+       VIEW BUTTON
+    ========================================================= */
+
+    .view-profile {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: #334155;
+        min-height: 36px;
+        padding: 8px 11px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.18s ease;
+    }
+
+    .view-profile:hover {
+        background: #f8fafc;
+        border-color: #94a3b8;
+    }
+
+
+    /* =========================================================
+       FULL PROFILE
+    ========================================================= */
+
+    .profile-row {
+        display: none;
+        padding: 0 20px 20px;
+    }
+
+    .profile-row.open {
+        display: block;
+    }
+
+    .profile-content {
+        border-top: 1px solid #e2e8f0;
+        padding-top: 20px;
+    }
+
+
+    /* =========================================================
+       COMPLETION
+    ========================================================= */
+
+    .completion-section {
+        margin-bottom: 18px;
+        padding: 15px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+    }
+
+    .completion-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 9px;
+    }
+
+    .completion-header strong {
+        color: #334155;
+        font-size: 12px;
+    }
+
+    .completion-number {
+        color: #2563eb;
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+    .completion-bar {
+        width: 100%;
+        height: 8px;
+        display: block;
+        border: none;
+        border-radius: 20px;
+        overflow: hidden;
+    }
+
+    .completion-bar::-webkit-progress-bar {
+        background: #e2e8f0;
+        border-radius: 20px;
+    }
+
+    .completion-bar::-webkit-progress-value {
+        background: #2563eb;
+        border-radius: 20px;
+    }
+
+    .completion-bar::-moz-progress-bar {
+        background: #2563eb;
+        border-radius: 20px;
+    }
+
+
+    /* =========================================================
+       DETAILS GRID
+    ========================================================= */
+
+    .details-grid {
+        display: grid;
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .detail-item {
+        min-width: 0;
+        padding: 13px;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 9px;
+    }
+
+    .detail-item.full {
+        grid-column: 1 / -1;
+    }
+
+    .detail-label {
+        display: block;
+        margin-bottom: 5px;
+        color: #64748b;
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+    }
+
+    .detail-value {
+        color: #0f172a;
+        font-size: 13px;
+        line-height: 1.6;
+        word-break: break-word;
+        white-space: pre-wrap;
+    }
+
+
+    /* =========================================================
+       LINKS
+    ========================================================= */
+
+    .profile-link {
+        color: #2563eb;
+        text-decoration: none;
+        font-weight: 700;
+    }
+
+    .profile-link:hover {
+        text-decoration: underline;
+    }
+
+
+    /* =========================================================
+       INTELLIGENCE SECTION
+    ========================================================= */
+
+    .intelligence-section {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .section-heading {
+        margin: 0 0 12px;
+        color: #0f172a;
+        font-size: 14px;
+        font-weight: 800;
+    }
+
+    .section-heading-note {
+        margin: -5px 0 14px;
+        color: #64748b;
+        font-size: 11px;
+        line-height: 1.5;
+    }
+
+
+    /* =========================================================
+       PERFORMANCE GRID
+    ========================================================= */
+
+    .performance-grid {
+        display: grid;
+        grid-template-columns:
+            repeat(4, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .performance-card {
+        min-width: 0;
+        padding: 13px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+    }
+
+    .performance-label {
+        margin-bottom: 6px;
+        color: #64748b;
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.35px;
+    }
+
+    .performance-value {
+        color: #0f172a;
+        font-size: 20px;
+        font-weight: 800;
+        line-height: 1.2;
+    }
+
+    .performance-note {
+        margin-top: 4px;
+        color: #94a3b8;
+        font-size: 10px;
+    }
+
+
+    /* =========================================================
+       SERVICE BREAKDOWN
+    ========================================================= */
+
+    .service-breakdown {
+        display: grid;
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .service-card {
+        padding: 14px;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+    }
+
+    .service-card strong {
+        display: block;
+        margin-bottom: 5px;
+        color: #0f172a;
+        font-size: 13px;
+    }
+
+    .service-card span {
+        color: #64748b;
+        font-size: 11px;
+    }
+
+
+    /* =========================================================
+       HISTORY TABLE
+    ========================================================= */
+
+    .history-section {
+        margin-top: 18px;
+    }
+
+    .history-table-wrap {
+        width: 100%;
+        overflow-x: auto;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        background: #ffffff;
+    }
+
+    .history-table {
+        width: 100%;
+        min-width: 650px;
+        border-collapse: collapse;
+    }
+
+    .history-table th {
+        padding: 10px 12px;
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+        color: #64748b;
+        font-size: 10px;
+        font-weight: 800;
+        text-align: left;
+        text-transform: uppercase;
+        letter-spacing: 0.35px;
+    }
+
+    .history-table td {
+        padding: 11px 12px;
+        border-bottom: 1px solid #f1f5f9;
+        color: #334155;
+        font-size: 11px;
+        vertical-align: top;
+    }
+
+    .history-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .history-status {
+        display: inline-flex;
+        padding: 4px 7px;
+        border-radius: 999px;
+        background: #f1f5f9;
+        color: #475569;
+        font-size: 10px;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .history-empty {
+        padding: 18px;
+        color: #94a3b8;
+        font-size: 12px;
+        text-align: center;
+    }
+
+
+    /* =========================================================
+       ADMIN ACTIONS
+    ========================================================= */
+
+    .admin-actions {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        flex-wrap: wrap;
+        margin-top: 18px;
+        padding-top: 17px;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .admin-actions form {
+        margin: 0;
+    }
+
+    .verify-btn,
+    .reject-btn {
+        min-height: 38px;
+        border: none;
+        padding: 9px 13px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: 0.18s ease;
+    }
+
+    .verify-btn {
+        background: #16a34a;
+        color: #ffffff;
+    }
+
+    .verify-btn:hover {
+        background: #15803d;
+    }
+
+    .reject-btn {
+        background: #dc2626;
+        color: #ffffff;
+    }
+
+    .reject-btn:hover {
+        background: #b91c1c;
+    }
+
+    .verified-message,
+    .rejected-message {
+        display: inline-flex;
+        align-items: center;
+        min-height: 38px;
+        padding: 9px 13px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 800;
+    }
+
+    .verified-message {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .rejected-message {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+
+    /* =========================================================
+       NO FILTER RESULTS
+    ========================================================= */
+
+    .no-filter-results {
+        display: none;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 13px;
+        padding: 38px 20px;
+        text-align: center;
+    }
+
+    .no-filter-results.show {
+        display: block;
+    }
+
+    .no-filter-icon {
+        width: 46px;
+        height: 46px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 12px;
+        background: #f1f5f9;
+        border-radius: 12px;
+        font-size: 20px;
+    }
+
+    .no-filter-results h3 {
+        margin: 0 0 6px;
+        color: #0f172a;
+        font-size: 16px;
+    }
+
+    .no-filter-results p {
+        margin: 0;
+        color: #64748b;
+        font-size: 13px;
+    }
+
+
+    /* =========================================================
+       EMPTY DATABASE STATE
+    ========================================================= */
+
+    .empty-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 15px;
+        padding: 55px 25px;
+        text-align: center;
+    }
+
+    .empty-icon {
+        width: 55px;
+        height: 55px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+        background: #f1f5f9;
+        border-radius: 14px;
+        font-size: 24px;
+    }
+
+    .empty-card h2 {
+        margin: 0 0 7px;
+        color: #0f172a;
+        font-size: 20px;
+    }
+
+    .empty-card p {
+        margin: 0;
+        color: #64748b;
+        font-size: 13px;
+    }
+
+
+    /* =========================================================
+       RESPONSIVE
+    ========================================================= */
+
+    @media (max-width: 1050px) {
+
+        .professional-stats {
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+        }
+
+        .filter-grid {
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+        }
+
+        .performance-grid {
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+        }
+
+    }
+
+
+    @media (max-width: 760px) {
+
+        .professionals-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .professionals-heading h1 {
+            font-size: 27px;
+        }
+
+        .professional-summary {
+            align-items: flex-start;
+            flex-direction: column;
+            padding: 17px;
+        }
+
+        .status-area {
+            width: 100%;
+            justify-content: flex-start;
+        }
+
+        .filter-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .toolbar-top {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .toolbar-actions {
+            width: 100%;
+        }
+
+        .toolbar-btn {
+            flex: 1;
+        }
+
+        .profile-row {
+            padding: 0 17px 17px;
+        }
+
+        .details-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .detail-item.full {
+            grid-column: auto;
+        }
+
+        .service-breakdown {
+            grid-template-columns: 1fr;
+        }
+
+    }
+
+
+    @media (max-width: 480px) {
+
+        .professional-stats {
+            grid-template-columns: 1fr;
+        }
+
+        .performance-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .professional-main {
+            align-items: flex-start;
+        }
+
+        .avatar {
+            width: 43px;
+            height: 43px;
+            flex-basis: 43px;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+
+        .status-area {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .status,
+        .view-profile {
+            width: 100%;
+            text-align: center;
+        }
+
+        .admin-actions {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .admin-actions form,
+        .verify-btn,
+        .reject-btn,
+        .verified-message,
+        .rejected-message {
+            width: 100%;
+        }
+
+        .verified-message,
+        .rejected-message {
+            justify-content: center;
+        }
+
+    }
+
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="professionals-page">
+
+
+    <!-- =====================================================
+         PAGE HEADER
+    ====================================================== -->
+
+    <div class="professionals-header">
+
+        <div class="professionals-heading">
+
+            <h1>
+                Professionals
+            </h1>
+
+            <p>
+                Review professional profiles, verification status,
+                skills, experience, availability and work history.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         SUMMARY STATS
+    ====================================================== -->
+
+    {% set total_professionals = profiles|length %}
+
+    {% set verified_count =
+        profiles
+        |selectattr('verification_status', 'equalto', 'Verified')
+        |list
+        |length
+    %}
+
+    {% set pending_count =
+        profiles
+        |selectattr('verification_status', 'equalto', 'Pending')
+        |list
+        |length
+    %}
+
+    {% set rejected_count =
+        profiles
+        |selectattr('verification_status', 'equalto', 'Rejected')
+        |list
+        |length
+    %}
+
+
+    <div class="professional-stats">
+
+        <div class="professional-stat">
+
+            <div class="professional-stat-label">
+                Total Professionals
+            </div>
+
+            <div class="professional-stat-value">
+                {{ total_professionals }}
+            </div>
+
+            <div class="professional-stat-note">
+                Registered professional accounts
+            </div>
+
+        </div>
+
+
+        <div class="professional-stat">
+
+            <div class="professional-stat-label">
+                Verified
+            </div>
+
+            <div class="professional-stat-value">
+                {{ verified_count }}
+            </div>
+
+            <div class="professional-stat-note">
+                Eligible for assigned work
+            </div>
+
+        </div>
+
+
+        <div class="professional-stat">
+
+            <div class="professional-stat-label">
+                Pending
+            </div>
+
+            <div class="professional-stat-value">
+                {{ pending_count }}
+            </div>
+
+            <div class="professional-stat-note">
+                Awaiting verification
+            </div>
+
+        </div>
+
+
+        <div class="professional-stat">
+
+            <div class="professional-stat-label">
+                Rejected
+            </div>
+
+            <div class="professional-stat-value">
+                {{ rejected_count }}
+            </div>
+
+            <div class="professional-stat-note">
+                Verification rejected
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         FILTER TOOLBAR
+    ====================================================== -->
+
+    {% if profiles %}
+
+    <div class="professionals-toolbar">
+
+        <div class="toolbar-top">
+
+            <h2 class="toolbar-title">
+                Professional Directory
+            </h2>
+
+            <div class="toolbar-actions">
+
+                <button
+                    type="button"
+                    class="toolbar-btn"
+                    id="expandAllBtn"
+                >
+                    Expand All
+                </button>
+
+                <button
+                    type="button"
+                    class="toolbar-btn"
+                    id="collapseAllBtn"
+                >
+                    Collapse All
+                </button>
+
+                <button
+                    type="button"
+                    class="toolbar-btn primary"
+                    id="clearFiltersBtn"
+                >
+                    Clear Filters
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="filter-grid">
+
+            <div class="filter-field">
+
+                <label
+                    for="professionalSearch"
+                    class="filter-label"
+                >
+                    Search
+                </label>
+
+                <input
+                    type="search"
+                    id="professionalSearch"
+                    class="filter-input"
+                    placeholder="Name, email or expertise..."
+                    autocomplete="off"
+                >
+
+            </div>
+
+
+            <div class="filter-field">
+
+                <label
+                    for="verificationFilter"
+                    class="filter-label"
+                >
+                    Verification
+                </label>
+
+                <select
+                    id="verificationFilter"
+                    class="filter-select"
+                >
+
+                    <option value="all">
+                        All statuses
+                    </option>
+
+                    <option value="Pending">
+                        Pending
+                    </option>
+
+                    <option value="Verified">
+                        Verified
+                    </option>
+
+                    <option value="Rejected">
+                        Rejected
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="filter-field">
+
+                <label
+                    for="completionFilter"
+                    class="filter-label"
+                >
+                    Profile
+                </label>
+
+                <select
+                    id="completionFilter"
+                    class="filter-select"
+                >
+
+                    <option value="all">
+                        All profiles
+                    </option>
+
+                    <option value="complete">
+                        Complete
+                    </option>
+
+                    <option value="incomplete">
+                        Incomplete
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="filter-field">
+
+                <label
+                    for="availabilityFilter"
+                    class="filter-label"
+                >
+                    Availability
+                </label>
+
+                <select
+                    id="availabilityFilter"
+                    class="filter-select"
+                >
+
+                    <option value="all">
+                        All availability
+                    </option>
+
+                    <option value="available">
+                        Available
+                    </option>
+
+                    <option value="unavailable">
+                        Unavailable
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="result-summary">
+
+        <div>
+            Showing
+            <strong id="visibleCount">
+                {{ total_professionals }}
+            </strong>
+            of
+            <strong>
+                {{ total_professionals }}
+            </strong>
+            professionals
+        </div>
+
+        <div>
+            Use filters to narrow the directory.
+        </div>
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- =====================================================
+         PROFESSIONAL LIST
+    ====================================================== -->
+
+    {% if profiles %}
+
+        <div id="professionalsList">
+
+        {% for professional in profiles %}
+
+        {% set completion_value =
+            completion_map[professional.id]
+            if professional.id in completion_map
+            else (
+                100
+                if professional.profile_completed
+                else 0
+            )
+        %}
+
+        {% set stats =
+            professional_stats[professional.id]
+            if professional.id in professional_stats
+            else {}
+        %}
+
+
+        <div
+            class="professional-card"
+            data-name="{{ professional.user.name|lower }}"
+            data-email="{{ professional.user.email|lower }}"
+            data-expertise="{{ (professional.expertise or '')|lower }}"
+            data-status="{{ professional.verification_status or 'Pending' }}"
+            data-completion="{{ 'complete' if completion_value >= 100 else 'incomplete' }}"
+            data-availability="{{ 'available' if professional.availability else 'unavailable' }}"
+        >
+
+
+            <!-- =================================================
+                 PROFESSIONAL SUMMARY
+            ================================================== -->
+
+            <div class="professional-summary">
+
+                <div class="professional-main">
+
+                    <div class="avatar">
+                        {{ professional.user.name[0]|upper }}
+                    </div>
+
+                    <div class="professional-name">
+
+                        <h2>
+                            {{ professional.user.name }}
+                        </h2>
+
+                        <p>
+                            {{ professional.user.email }}
+                        </p>
+
+                        <div class="professional-meta">
+
+                            {% if professional.expertise %}
+                                <span class="meta-chip">
+                                    {{ professional.expertise }}
+                                </span>
+                            {% endif %}
+
+                            {% if professional.experience %}
+                                <span class="meta-chip">
+                                    {{ professional.experience }}
+                                </span>
+                            {% endif %}
+
+                            {% if professional.availability %}
+                                <span class="meta-chip">
+                                    {{ professional.availability }}
+                                </span>
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="status-area">
+
+                    {% if professional.verification_status == "Verified" %}
+
+                        <span class="status status-verified">
+                            Verified
+                        </span>
+
+                    {% elif professional.verification_status == "Rejected" %}
+
+                        <span class="status status-rejected">
+                            Rejected
+                        </span>
+
+                    {% elif professional.verification_status == "Pending" %}
+
+                        <span class="status status-pending">
+                            Pending
+                        </span>
+
+                    {% else %}
+
+                        <span class="status status-default">
+                            {{ professional.verification_status or "Pending" }}
+                        </span>
+
+                    {% endif %}
+
+
+                    <button
+                        type="button"
+                        class="view-profile"
+                        onclick="toggleProfile(
+                            'profile-{{ professional.id }}',
+                            this
+                        )"
+                    >
+                        View Full Profile
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 FULL PROFILE
+            ================================================== -->
+
+            <div
+                id="profile-{{ professional.id }}"
+                class="profile-row"
+            >
+
+                <div class="profile-content">
+
+
+                    <!-- PROFILE COMPLETION -->
+
+                    <div class="completion-section">
+
+                        <div class="completion-header">
+
+                            <strong>
+                                Profile Completion
+                            </strong>
+
+                            <div class="completion-number">
+                                {{ completion_value }}%
+                            </div>
+
+                        </div>
+
+                        <progress
+                            class="completion-bar"
+                            value="{{ completion_value }}"
+                            max="100"
+                        ></progress>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         PROFESSIONAL INTELLIGENCE
+                    ================================================== -->
+
+                    <div class="intelligence-section">
+
+                        <h3 class="section-heading">
+                            Work &amp; Performance
+                        </h3>
+
+                        <p class="section-heading-note">
+                            Project and application activity recorded by AgencyOS.
+                        </p>
+
+
+                        <div class="performance-grid">
+
+
+                            <div class="performance-card">
+
+                                <div class="performance-label">
+                                    Applications
+                                </div>
+
+                                <div class="performance-value">
+                                    {{ stats.get("total_applications", 0) }}
+                                </div>
+
+                                <div class="performance-note">
+                                    Total applications
+                                </div>
+
+                            </div>
+
+
+                            <div class="performance-card">
+
+                                <div class="performance-label">
+                                    Applied
+                                </div>
+
+                                <div class="performance-value">
+                                    {{ stats.get("applied_count", 0) }}
+                                </div>
+
+                                <div class="performance-note">
+                                    Awaiting assignment
+                                </div>
+
+                            </div>
+
+
+                            <div class="performance-card">
+
+                                <div class="performance-label">
+                                    Assigned
+                                </div>
+
+                                <div class="performance-value">
+                                    {{ stats.get("assigned_application_count", 0) }}
+                                </div>
+
+                                <div class="performance-note">
+                                    Assigned applications
+                                </div>
+
+                            </div>
+
+
+                            <div class="performance-card">
+
+                                <div class="performance-label">
+                                    Not Selected
+                                </div>
+
+                                <div class="performance-value">
+                                    {{ stats.get("not_selected_count", 0) }}
+                                </div>
+
+                                <div class="performance-note">
+                                    Unselected applications
+                                </div>
+
+                            </div>
+
+
+                            <div class="performance-card">
+
+                                <div class="performance-label">
+                                    Total Projects
+                                </div>
+
+                                <div class="performance-value">
+                                    {{ stats.get("total_assigned_projects", 0) }}
+                                </div>
+
+                                <div class="performance-note">
+                                    Assigned projects
+                                </div>
+
+                            </div>
+
+
+                            <div class="performance-card">
+
+                                <div class="performance-label">
+                                    Active
+                                </div>
+
+                                <div class="performance-value">
+                                    {{ stats.get("active_project_count", 0) }}
+                                </div>
+
+                                <div class="performance-note">
+                                    Current active work
+                                </div>
+
+                            </div>
+
+
+                            <div class="performance-card">
+
+                                <div class="performance-label">
+                                    In Progress
+                                </div>
+
+                                <div class="performance-value">
+                                    {{ stats.get("in_progress_count", 0) }}
+                                </div>
+
+                                <div class="performance-note">
+                                    Currently being worked on
+                                </div>
+
+                            </div>
+
+
+                            <div class="performance-card">
+
+                                <div class="performance-label">
+                                    Submitted
+                                </div>
+
+                                <div class="performance-value">
+                                    {{ stats.get("submitted_count", 0) }}
+                                </div>
+
+                                <div class="performance-note">
+                                    Awaiting admin review
+                                </div>
+
+                            </div>
+
+
+                            <div class="performance-card">
+
+                                <div class="performance-label">
+                                    Revisions
+                                </div>
+
+                                <div class="performance-value">
+                                    {{ stats.get("revision_count", 0) }}
+                                </div>
+
+                                <div class="performance-note">
+                                    Revision projects
+                                </div>
+
+                            </div>
+
+
+                            <div class="performance-card">
+
+                                <div class="performance-label">
+                                    Completed
+                                </div>
+
+                                <div class="performance-value">
+                                    {{ stats.get("completed_count", 0) }}
+                                </div>
+
+                                <div class="performance-note">
+                                    Completed projects
+                                </div>
+
+                            </div>
+
+
+                            <div class="performance-card">
+
+                                <div class="performance-label">
+                                    Submissions
+                                </div>
+
+                                <div class="performance-value">
+                                    {{ stats.get("total_submissions", 0) }}
+                                </div>
+
+                                <div class="performance-note">
+                                    Total work submissions
+                                </div>
+
+                            </div>
+
+
+                            <div class="performance-card">
+
+                                <div class="performance-label">
+                                    Completion Rate
+                                </div>
+
+                                <div class="performance-value">
+                                    {{ stats.get("completion_rate", 0) }}%
+                                </div>
+
+                                <div class="performance-note">
+                                    Completed / assigned
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- SERVICE BREAKDOWN -->
+
+                        <div class="service-breakdown">
+
+                            <div class="service-card">
+
+                                <strong>
+                                    🌐 Website Projects
+                                </strong>
+
+                                <span>
+                                    {{ stats.get("website_project_count", 0) }}
+                                    assigned website projects
+                                </span>
+
+                            </div>
+
+
+                            <div class="service-card">
+
+                                <strong>
+                                    📈 SEO Projects
+                                </strong>
+
+                                <span>
+                                    {{ stats.get("seo_project_count", 0) }}
+                                    assigned SEO projects
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         DETAILS
+                    ================================================== -->
+
+                    <div class="details-grid">
+
+                        <div class="detail-item">
+
+                            <span class="detail-label">
+                                Name
+                            </span>
+
+                            <div class="detail-value">
+                                {{ professional.user.name }}
+                            </div>
+
+                        </div>
+
+
+                        <div class="detail-item">
+
+                            <span class="detail-label">
+                                Email
+                            </span>
+
+                            <div class="detail-value">
+                                {{ professional.user.email }}
+                            </div>
+
+                        </div>
+
+
+                        <div class="detail-item">
+
+                            <span class="detail-label">
+                                Phone
+                            </span>
+
+                            <div class="detail-value">
+                                {{ professional.phone or "Not provided" }}
+                            </div>
+
+                        </div>
+
+
+                        <div class="detail-item">
+
+                            <span class="detail-label">
+                                Location
+                            </span>
+
+                            <div class="detail-value">
+                                {{ professional.location or "Not provided" }}
+                            </div>
+
+                        </div>
+
+
+                        <div class="detail-item">
+
+                            <span class="detail-label">
+                                Expertise
+                            </span>
+
+                            <div class="detail-value">
+                                {{ professional.expertise or "Not provided" }}
+                            </div>
+
+                        </div>
+
+
+                        <div class="detail-item">
+
+                            <span class="detail-label">
+                                Experience
+                            </span>
+
+                            <div class="detail-value">
+                                {{ professional.experience or "Not provided" }}
+                            </div>
+
+                        </div>
+
+
+                        <div class="detail-item full">
+
+                            <span class="detail-label">
+                                About
+                            </span>
+
+                            <div class="detail-value">
+                                {{ professional.about or "Not provided" }}
+                            </div>
+
+                        </div>
+
+
+                        <div class="detail-item">
+
+                            <span class="detail-label">
+                                Skills
+                            </span>
+
+                            <div class="detail-value">
+                                {{ professional.skills or "Not provided" }}
+                            </div>
+
+                        </div>
+
+
+                        <div class="detail-item">
+
+                            <span class="detail-label">
+                                Technologies
+                            </span>
+
+                            <div class="detail-value">
+                                {{ professional.technologies or "Not provided" }}
+                            </div>
+
+                        </div>
+
+
+                        <div class="detail-item">
+
+                            <span class="detail-label">
+                                Skill Level
+                            </span>
+
+                            <div class="detail-value">
+                                {{ professional.skill_level or "Not provided" }}
+                            </div>
+
+                        </div>
+
+
+                        <div class="detail-item">
+
+                            <span class="detail-label">
+                                Project Types
+                            </span>
+
+                            <div class="detail-value">
+                                {{ professional.project_types or "Not provided" }}
+                            </div>
+
+                        </div>
+                        <div class="detail-item full">
+
+            <span class="detail-label">
+                Portfolio
+            </span>
+
+            <div class="detail-value">
+
+                {% if professional.portfolio %}
+
+                    <a
+                        href="{{ professional.portfolio }}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="profile-link"
+                    >
+                        Open Portfolio →
+                    </a>
+
+                {% else %}
+
+                    Not provided
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <div class="detail-item">
+
+            <span class="detail-label">
+                GitHub
+            </span>
+
+            <div class="detail-value">
+
+                {% if professional.github %}
+
+                    <a
+                        href="{{ professional.github }}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="profile-link"
+                    >
+                        Open GitHub →
+                    </a>
+
+                {% else %}
+
+                    Not provided
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <div class="detail-item">
+
+            <span class="detail-label">
+                LinkedIn
+            </span>
+
+            <div class="detail-value">
+
+                {% if professional.linkedin %}
+
+                    <a
+                        href="{{ professional.linkedin }}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="profile-link"
+                    >
+                        Open LinkedIn →
+                    </a>
+
+                {% else %}
+
+                    Not provided
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <div class="detail-item">
+
+            <span class="detail-label">
+                Education
+            </span>
+
+            <div class="detail-value">
+                {{ professional.education or "Not provided" }}
+            </div>
+
+        </div>
+
+
+        <div class="detail-item">
+
+            <span class="detail-label">
+                Certifications
+            </span>
+
+            <div class="detail-value">
+                {{ professional.certifications or "Not provided" }}
+            </div>
+
+        </div>
+
+
+        <div class="detail-item full">
+
+            <span class="detail-label">
+                Work Experience
+            </span>
+
+            <div class="detail-value">
+                {{ professional.work_experience or "Not provided" }}
+            </div>
+
+        </div>
+
+
+        <div class="detail-item">
+
+            <span class="detail-label">
+                Availability
+            </span>
+
+            <div class="detail-value">
+                {{ professional.availability or "Not provided" }}
+            </div>
+
+        </div>
+
+
+        <div class="detail-item">
+
+            <span class="detail-label">
+                Current Workload
+            </span>
+
+            <div class="detail-value">
+                {{ professional.current_workload or "Not provided" }}
+            </div>
+
+        </div>
+
+
+        <div class="detail-item">
+
+            <span class="detail-label">
+                Verification Status
+            </span>
+
+            <div class="detail-value">
+                {{ professional.verification_status or "Pending" }}
+            </div>
+
+        </div>
+
+
+        <div class="detail-item">
+
+            <span class="detail-label">
+                Verification Notes
+            </span>
+
+            <div class="detail-value">
+                {{ professional.verification_notes or "No notes" }}
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         PROJECT HISTORY
+    ====================================================== -->
+
+    <div class="intelligence-section">
+
+        <h3 class="section-heading">
+            Project History
+        </h3>
+
+        <p class="section-heading-note">
+            Projects assigned to this professional, including their current status.
+        </p>
+
+
+        {% if stats.get("project_history") %}
+
+            <div class="history-table-wrap">
+
+                <table class="history-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Project
+                            </th>
+
+                            <th>
+                                Service
+                            </th>
+
+                            <th>
+                                Package
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Created
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for project in stats.get("project_history") %}
+
+                            <tr>
+
+                                <td>
+                                    #{{ project.id }}
+                                </td>
+
+                                <td>
+                                    {{ project.service or "—" }}
+                                </td>
+
+                                <td>
+                                    {{ project.package or "—" }}
+                                </td>
+
+                                <td>
+
+                                    <span class="history-status">
+                                        {{ project.status or "—" }}
+                                    </span>
+
+                                </td>
+
+                                <td>
+                                    {{ project.created_at.strftime("%d %b %Y") if project.created_at else "—" }}
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        {% else %}
+
+            <div class="history-table-wrap">
+
+                <div class="history-empty">
+                    No projects have been assigned to this professional yet.
+                </div>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- =====================================================
+         APPLICATION HISTORY
+    ====================================================== -->
+
+    <div class="history-section">
+
+        <h3 class="section-heading">
+            Application History
+        </h3>
+
+        <p class="section-heading-note">
+            Every project application submitted by this professional.
+        </p>
+
+
+        {% if stats.get("application_history") %}
+
+            <div class="history-table-wrap">
+
+                <table class="history-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Project
+                            </th>
+
+                            <th>
+                                Service
+                            </th>
+
+                            <th>
+                                Package
+                            </th>
+
+                            <th>
+                                Application Status
+                            </th>
+
+                            <th>
+                                Applied
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for application in stats.get("application_history") %}
+
+                            <tr>
+
+                                <td>
+                                    #{{ application.project.id if application.project else "—" }}
+                                </td>
+
+                                <td>
+                                    {{ application.project.service if application.project else "—" }}
+                                </td>
+
+                                <td>
+                                    {{ application.project.package if application.project else "—" }}
+                                </td>
+
+                                <td>
+
+                                    <span class="history-status">
+                                        {{ application.status or "—" }}
+                                    </span>
+
+                                </td>
+
+                                <td>
+                                    {{ application.created_at.strftime("%d %b %Y") if application.created_at else "—" }}
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        {% else %}
+
+            <div class="history-table-wrap">
+
+                <div class="history-empty">
+                    No project applications have been submitted yet.
+                </div>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- =====================================================
+         DELIVERY / SUBMISSION HISTORY
+    ====================================================== -->
+
+    <div class="history-section">
+
+        <h3 class="section-heading">
+            Delivery &amp; Submission History
+        </h3>
+
+        <p class="section-heading-note">
+            Work submissions made by this professional across assigned projects.
+        </p>
+
+
+        {% set has_deliveries = false %}
+
+        {% for project in stats.get("project_history", []) %}
+
+            {% if stats.get("delivery_map", {}).get(project.id) %}
+
+                {% set has_deliveries = true %}
+
+            {% endif %}
+
+        {% endfor %}
+
+
+        {% if stats.get("total_submissions", 0) > 0 %}
+
+            <div class="history-table-wrap">
+
+                <table class="history-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Project
+                            </th>
+
+                            <th>
+                                Submission
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Submitted
+                            </th>
+
+                            <th>
+                                Live URL
+                            </th>
+
+                            <th>
+                                Preview URL
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for project in stats.get("project_history", []) %}
+
+                            {% for delivery in stats.get("delivery_map", {}).get(project.id, []) %}
+
+                                <tr>
+
+                                    <td>
+                                        #{{ project.id }}
+                                    </td>
+
+                                    <td>
+                                        #{{ delivery.submission_number or "—" }}
+                                    </td>
+
+                                    <td>
+
+                                        <span class="history-status">
+                                            {{ delivery.status or "—" }}
+                                        </span>
+
+                                    </td>
+
+                                    <td>
+                                        {{ delivery.submitted_at.strftime("%d %b %Y") if delivery.submitted_at else "—" }}
+                                    </td>
+
+                                    <td>
+
+                                        {% if delivery.live_url %}
+
+                                            <a
+                                                href="{{ delivery.live_url }}"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                class="profile-link"
+                                            >
+                                                Open →
+                                            </a>
+
+                                        {% else %}
+
+                                            —
+
+                                        {% endif %}
+
+                                    </td>
+
+                                    <td>
+
+                                        {% if delivery.preview_url %}
+
+                                            <a
+                                                href="{{ delivery.preview_url }}"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                class="profile-link"
+                                            >
+                                                Preview →
+                                            </a>
+
+                                        {% else %}
+
+                                            —
+
+                                        {% endif %}
+
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        {% else %}
+
+            <div class="history-table-wrap">
+
+                <div class="history-empty">
+                    No work submissions have been recorded yet.
+                </div>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- =====================================================
+         ADMIN VERIFICATION ACTIONS
+    ====================================================== -->
+
+    <div class="admin-actions">
+
+        {% if professional.verification_status != "Verified" %}
+
+            <form
+                method="POST"
+                action="{{ url_for(
+                    'verify_professional',
+                    profile_id=professional.id
+                ) }}"
+            >
+
+                <button
+                    type="submit"
+                    class="verify-btn"
+                    onclick="return confirm(
+                        'Verify this professional?'
+                    );"
+                >
+                    ✓ Verify Professional
+                </button>
+
+            </form>
+
+        {% else %}
+
+            <div class="verified-message">
+                ✓ Professional Verified
+            </div>
+
+        {% endif %}
+
+
+        {% if professional.verification_status != "Rejected" %}
+
+            <form
+                method="POST"
+                action="{{ url_for(
+                    'reject_professional',
+                    profile_id=professional.id
+                ) }}"
+            >
+
+                <button
+                    type="submit"
+                    class="reject-btn"
+                    onclick="return confirm(
+                        'Reject this professional?'
+                    );"
+                >
+                    ✕ Reject Professional
+                </button>
+
+            </form>
+
+        {% else %}
+
+            <div class="rejected-message">
+                Professional Rejected
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+        {% endfor %}
+
+
+        </div>
+
+
+        <!-- =====================================================
+             NO FILTER RESULTS
+        ====================================================== -->
+
+        <div
+            class="no-filter-results"
+            id="noFilterResults"
+        >
+
+            <div class="no-filter-icon">
+                🔎
+            </div>
+
+            <h3>
+                No matching professionals
+            </h3>
+
+            <p>
+                Try changing the search text or filters.
+            </p>
+
+        </div>
+
+
+    {% else %}
+
+
+        <!-- =====================================================
+             EMPTY DATABASE STATE
+        ====================================================== -->
+
+        <div class="empty-card">
+
+            <div class="empty-icon">
+                👤
+            </div>
+
+            <h2>
+                No Professionals Found
+            </h2>
+
+            <p>
+                No professional accounts have been registered yet.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script>
+
+(function () {
+
+    "use strict";
+
+
+    /* =========================================================
+       ELEMENTS
+    ========================================================= */
+
+    const searchInput =
+        document.getElementById("professionalSearch");
+
+    const verificationFilter =
+        document.getElementById("verificationFilter");
+
+    const completionFilter =
+        document.getElementById("completionFilter");
+
+    const availabilityFilter =
+        document.getElementById("availabilityFilter");
+
+    const clearFiltersBtn =
+        document.getElementById("clearFiltersBtn");
+
+    const expandAllBtn =
+        document.getElementById("expandAllBtn");
+
+    const collapseAllBtn =
+        document.getElementById("collapseAllBtn");
+
+    const visibleCount =
+        document.getElementById("visibleCount");
+
+    const noFilterResults =
+        document.getElementById("noFilterResults");
+
+    const cards =
+        Array.from(
+            document.querySelectorAll(".professional-card")
+        );
+
+
+    /* =========================================================
+       TOGGLE PROFILE
+    ========================================================= */
+
+    window.toggleProfile = function (profileId, button) {
+
+        const row =
+            document.getElementById(profileId);
+
+        if (!row) {
+            return;
+        }
+
+
+        const isOpen =
+            row.classList.contains("open");
+
+
+        document
+            .querySelectorAll(".profile-row.open")
+            .forEach(function (profileRow) {
+
+                profileRow.classList.remove("open");
+
+            });
+
+
+        document
+            .querySelectorAll(".view-profile")
+            .forEach(function (viewButton) {
+
+                viewButton.textContent =
+                    "View Full Profile";
+
+            });
+
+
+        if (!isOpen) {
+
+            row.classList.add("open");
+
+            if (button) {
+
+                button.textContent =
+                    "Hide Full Profile";
+
+            }
+
+        }
+
+    };
+
+
+    /* =========================================================
+       FILTERING
+    ========================================================= */
+
+    function applyFilters() {
+
+        if (!cards.length) {
+            return;
+        }
+
+
+        const searchTerm =
+            searchInput
+                ? searchInput.value
+                    .trim()
+                    .toLowerCase()
+                : "";
+
+
+        const verificationValue =
+            verificationFilter
+                ? verificationFilter.value
+                : "all";
+
+
+        const completionValue =
+            completionFilter
+                ? completionFilter.value
+                : "all";
+
+
+        const availabilityValue =
+            availabilityFilter
+                ? availabilityFilter.value
+                : "all";
+
+
+        let count = 0;
+
+
+        cards.forEach(function (card) {
+
+            const name =
+                card.dataset.name || "";
+
+            const email =
+                card.dataset.email || "";
+
+            const expertise =
+                card.dataset.expertise || "";
+
+            const status =
+                card.dataset.status || "";
+
+            const completion =
+                card.dataset.completion || "";
+
+            const availability =
+                card.dataset.availability || "";
+
+
+            const matchesSearch =
+                !searchTerm ||
+                name.includes(searchTerm) ||
+                email.includes(searchTerm) ||
+                expertise.includes(searchTerm);
+
+
+            const matchesVerification =
+                verificationValue === "all" ||
+                status === verificationValue;
+
+
+            const matchesCompletion =
+                completionValue === "all" ||
+                completion === completionValue;
+
+
+            const matchesAvailability =
+                availabilityValue === "all" ||
+                availability === availabilityValue;
+
+
+            const matches =
+                matchesSearch &&
+                matchesVerification &&
+                matchesCompletion &&
+                matchesAvailability;
+
+
+            if (matches) {
+
+                card.classList.remove("hidden");
+
+                count++;
+
+            } else {
+
+                card.classList.add("hidden");
+
+
+                const openProfile =
+                    card.querySelector(".profile-row.open");
+
+                if (openProfile) {
+
+                    openProfile.classList.remove("open");
+
+                }
+
+
+                const viewButton =
+                    card.querySelector(".view-profile");
+
+                if (viewButton) {
+
+                    viewButton.textContent =
+                        "View Full Profile";
+
+                }
+
+            }
+
+        });
+
+
+        if (visibleCount) {
+
+            visibleCount.textContent =
+                count;
+
+        }
+
+
+        if (noFilterResults) {
+
+            if (count === 0) {
+
+                noFilterResults.classList.add("show");
+
+            } else {
+
+                noFilterResults.classList.remove("show");
+
+            }
+
+        }
+
+    }
+
+
+    /* =========================================================
+       CLEAR FILTERS
+    ========================================================= */
+
+    function clearFilters() {
+
+        if (searchInput) {
+            searchInput.value = "";
+        }
+
+        if (verificationFilter) {
+            verificationFilter.value = "all";
+        }
+
+        if (completionFilter) {
+            completionFilter.value = "all";
+        }
+
+        if (availabilityFilter) {
+            availabilityFilter.value = "all";
+        }
+
+
+        applyFilters();
+
+    }
+
+
+    /* =========================================================
+       EXPAND ALL
+    ========================================================= */
+
+    function expandAll() {
+
+        cards.forEach(function (card) {
+
+            if (card.classList.contains("hidden")) {
+                return;
+            }
+
+
+            const row =
+                card.querySelector(".profile-row");
+
+            const button =
+                card.querySelector(".view-profile");
+
+
+            if (row) {
+
+                row.classList.add("open");
+
+            }
+
+
+            if (button) {
+
+                button.textContent =
+                    "Hide Full Profile";
+
+            }
+
+        });
+
+    }
+
+
+    /* =========================================================
+       COLLAPSE ALL
+    ========================================================= */
+
+    function collapseAll() {
+
+        cards.forEach(function (card) {
+
+            const row =
+                card.querySelector(".profile-row");
+
+            const button =
+                card.querySelector(".view-profile");
+
+
+            if (row) {
+
+                row.classList.remove("open");
+
+            }
+
+
+            if (button) {
+
+                button.textContent =
+                    "View Full Profile";
+
+            }
+
+        });
+
+    }
+
+
+    /* =========================================================
+       EVENT LISTENERS
+    ========================================================= */
+
+    if (searchInput) {
+
+        searchInput.addEventListener(
+            "input",
+            applyFilters
+        );
+
+    }
+
+
+    if (verificationFilter) {
+
+        verificationFilter.addEventListener(
+            "change",
+            applyFilters
+        );
+
+    }
+
+
+    if (completionFilter) {
+
+        completionFilter.addEventListener(
+            "change",
+            applyFilters
+        );
+
+    }
+
+
+    if (availabilityFilter) {
+
+        availabilityFilter.addEventListener(
+            "change",
+            applyFilters
+        );
+
+    }
+
+
+    if (clearFiltersBtn) {
+
+        clearFiltersBtn.addEventListener(
+            "click",
+            clearFilters
+        );
+
+    }
+
+
+    if (expandAllBtn) {
+
+        expandAllBtn.addEventListener(
+            "click",
+            expandAll
+        );
+
+    }
+
+
+    if (collapseAllBtn) {
+
+        collapseAllBtn.addEventListener(
+            "click",
+            collapseAll
+        );
+
+    }
+
+
+    /* =========================================================
+       KEYBOARD SHORTCUTS
+    ========================================================= */
+
+    document.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (
+                event.key === "/" &&
+                document.activeElement !== searchInput &&
+                document.activeElement.tagName !== "INPUT" &&
+                document.activeElement.tagName !== "SELECT" &&
+                document.activeElement.tagName !== "TEXTAREA"
+            ) {
+
+                event.preventDefault();
+
+                if (searchInput) {
+
+                    searchInput.focus();
+
+                }
+
+            }
+
+
+            if (
+                event.key === "Escape" &&
+                document.activeElement === searchInput
+            ) {
+
+                if (searchInput.value) {
+
+                    searchInput.value = "";
+
+                    applyFilters();
+
+                }
+
+            }
+
+        }
+    );
+
+
+    /* =========================================================
+       INITIAL FILTER STATE
+    ========================================================= */
+
+    applyFilters();
+
+
+})();
+
+</script>
+
+{% endblock %}

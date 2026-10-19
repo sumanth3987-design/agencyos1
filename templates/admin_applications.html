@@ -1,0 +1,2404 @@
+{% extends "admin_base.html" %}
+
+{% block title %}
+Applications - AgencyOS Admin
+{% endblock %}
+
+
+{% block extra_css %}
+
+<style>
+
+/* =========================================================
+   APPLICATIONS — SIMPLE WHITE PROFESSIONAL UI
+========================================================= */
+
+.applications-page {
+    width: 100%;
+    max-width: 1480px;
+    margin: 0 auto;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.applications-header {
+    margin-bottom: 28px;
+}
+
+.applications-eyebrow {
+    margin-bottom: 7px;
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.applications-header h1 {
+    margin: 0 0 7px;
+    color: #0f172a;
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: -.02em;
+}
+
+.applications-header p {
+    margin: 0;
+    max-width: 800px;
+    color: #64748b;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   SUMMARY
+========================================================= */
+
+.application-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 24px;
+}
+
+.summary-stat {
+    padding: 18px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, .04);
+    transition: .2s ease;
+}
+
+.summary-stat:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 18px rgba(15, 23, 42, .07);
+}
+
+.summary-stat-label {
+    margin-bottom: 9px;
+    color: #64748b;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+}
+
+.summary-stat-value {
+    color: #0f172a;
+    font-size: 28px;
+    font-weight: 800;
+}
+
+.summary-stat-note {
+    margin-top: 6px;
+    color: #94a3b8;
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   FILTER PANEL
+========================================================= */
+
+.filter-panel {
+    margin-bottom: 24px;
+    padding: 20px;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+
+    background: #ffffff;
+
+    box-shadow: 0 2px 8px rgba(15, 23, 42, .04);
+}
+
+.filter-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 17px;
+}
+
+.filter-heading h2 {
+    margin: 0;
+    color: #0f172a;
+    font-size: 15px;
+    font-weight: 750;
+}
+
+.filter-heading span {
+    color: #94a3b8;
+    font-size: 11px;
+}
+
+.filter-grid {
+    display: grid;
+    grid-template-columns:
+        minmax(230px, 2fr)
+        repeat(4, minmax(140px, 1fr));
+    gap: 12px;
+}
+
+.filter-field label {
+    display: block;
+    margin-bottom: 6px;
+    color: #334155;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+}
+
+.filter-input,
+.filter-select {
+    width: 100%;
+    min-height: 42px;
+    padding: 9px 11px;
+
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+
+    background: #ffffff;
+    color: #0f172a;
+
+    font-size: 13px;
+    outline: none;
+
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.filter-input::placeholder {
+    color: #94a3b8;
+}
+
+.filter-input:hover,
+.filter-select:hover {
+    border-color: #94a3b8;
+}
+
+.filter-input:focus,
+.filter-select:focus {
+    border-color: #64748b;
+    box-shadow: 0 0 0 3px rgba(100, 116, 139, .10);
+}
+
+.filter-select option {
+    background: #ffffff;
+    color: #0f172a;
+}
+
+.filter-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    margin-top: 16px;
+    padding-top: 15px;
+
+    border-top: 1px solid #eef2f7;
+}
+
+.filter-button {
+    min-height: 37px;
+    padding: 8px 13px;
+
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+
+    background: #ffffff;
+    color: #334155;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: .2s ease;
+}
+
+.filter-button:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+}
+
+.filter-button.primary {
+    background: #0f172a;
+    border-color: #0f172a;
+    color: #ffffff;
+}
+
+.filter-button.primary:hover {
+    background: #1e293b;
+}
+
+.filter-result {
+    margin-left: auto;
+    color: #64748b;
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   APPLICATION CARD
+========================================================= */
+
+.applications-list {
+    display: grid;
+    gap: 13px;
+}
+
+.application-card {
+    overflow: hidden;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+
+    background: #ffffff;
+
+    box-shadow: 0 2px 8px rgba(15, 23, 42, .035);
+
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease;
+}
+
+.application-card:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 7px 20px rgba(15, 23, 42, .06);
+}
+
+.application-card.hidden {
+    display: none;
+}
+
+
+/* =========================================================
+   APPLICATION HEADER
+========================================================= */
+
+.application-summary {
+    width: 100%;
+    padding: 18px 20px;
+
+    border: none;
+
+    background: #ffffff;
+    color: #0f172a;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+
+    text-align: left;
+    cursor: pointer;
+
+    transition: background .2s ease;
+}
+
+.application-summary:hover {
+    background: #f8fafc;
+}
+
+.application-summary:focus {
+    outline: 2px solid #94a3b8;
+    outline-offset: -2px;
+}
+
+.application-main {
+    min-width: 0;
+}
+
+.application-label {
+    margin-bottom: 5px;
+    color: #94a3b8;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.application-title {
+    margin: 0 0 7px;
+    color: #0f172a;
+    font-size: 17px;
+    font-weight: 750;
+}
+
+.application-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+
+    color: #64748b;
+    font-size: 12px;
+}
+
+.application-meta strong {
+    color: #334155;
+    font-weight: 700;
+}
+
+.application-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+
+    padding: 5px 9px;
+
+    border-radius: 999px;
+
+    font-size: 10px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.status-badge::before {
+    content: "";
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.status-applied {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.status-assigned {
+    background: #ecfdf5;
+    color: #15803d;
+}
+
+.status-not-selected {
+    background: #f8fafc;
+    color: #64748b;
+}
+
+.status-other {
+    background: #fffbeb;
+    color: #b45309;
+}
+
+
+/* =========================================================
+   EXPAND
+========================================================= */
+
+.expand-control {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    color: #64748b;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.expand-arrow {
+    transition: transform .2s ease;
+}
+
+.application-card.open .expand-arrow {
+    transform: rotate(180deg);
+}
+
+
+/* =========================================================
+   DETAILS
+========================================================= */
+
+.application-details {
+    display: none;
+
+    padding: 0 20px 22px;
+
+    border-top: 1px solid #e2e8f0;
+
+    background: #ffffff;
+}
+
+.application-card.open .application-details {
+    display: block;
+    animation: detailsOpen .18s ease;
+}
+
+@keyframes detailsOpen {
+    from {
+        opacity: 0;
+        transform: translateY(-3px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* =========================================================
+   DETAIL SECTIONS
+========================================================= */
+
+.detail-section {
+    margin-top: 20px;
+    padding-top: 20px;
+
+    border-top: 1px solid #eef2f7;
+}
+
+.detail-section:first-child {
+    border-top: none;
+}
+
+.detail-heading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    margin: 0 0 13px;
+
+    color: #1e293b;
+    font-size: 13px;
+    font-weight: 750;
+}
+
+.detail-heading::before {
+    content: "";
+
+    width: 3px;
+    height: 14px;
+
+    border-radius: 99px;
+
+    background: #64748b;
+}
+
+
+/* =========================================================
+   INFO GRID
+========================================================= */
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 9px;
+
+    overflow: hidden;
+
+    background: #e2e8f0;
+}
+
+.info-item {
+    min-width: 0;
+    padding: 12px;
+
+    background: #ffffff;
+
+    color: #475569;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.info-item strong {
+    display: block;
+    margin-bottom: 3px;
+
+    color: #94a3b8;
+
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+}
+
+.info-status {
+    color: #334155;
+    font-weight: 750;
+}
+
+
+/* =========================================================
+   REQUIREMENTS
+========================================================= */
+
+.requirements-box {
+    padding: 14px;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 9px;
+
+    background: #f8fafc;
+
+    color: #475569;
+
+    font-size: 13px;
+    line-height: 1.7;
+
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+
+/* =========================================================
+   PROFESSIONAL
+========================================================= */
+
+.professional-box {
+    padding: 17px;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+
+    background: #f8fafc;
+}
+
+.professional-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 15px;
+    margin-bottom: 16px;
+    padding-bottom: 14px;
+
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.professional-name {
+    margin-bottom: 4px;
+    color: #0f172a;
+    font-size: 16px;
+    font-weight: 750;
+}
+
+.professional-email {
+    color: #64748b;
+    font-size: 12px;
+}
+
+.verification-badge {
+    display: inline-flex;
+    padding: 5px 9px;
+
+    border-radius: 999px;
+
+    font-size: 10px;
+    font-weight: 750;
+}
+
+.verification-verified {
+    background: #ecfdf5;
+    color: #15803d;
+}
+
+.verification-pending {
+    background: #fffbeb;
+    color: #b45309;
+}
+
+.verification-rejected {
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+.professional-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px 20px;
+}
+
+.professional-item {
+    color: #475569;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.professional-item strong {
+    color: #64748b;
+    font-weight: 750;
+}
+
+.professional-wide {
+    grid-column: 1 / -1;
+}
+
+.professional-text {
+    margin-top: 4px;
+    color: #475569;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+
+/* =========================================================
+   PROFILE LINKS
+========================================================= */
+
+.profile-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+
+    margin-top: 16px;
+    padding-top: 14px;
+
+    border-top: 1px solid #e2e8f0;
+}
+
+.profile-link {
+    display: inline-flex;
+    align-items: center;
+
+    padding: 6px 10px;
+
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+
+    background: #ffffff;
+    color: #334155;
+
+    text-decoration: none;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    transition: .2s ease;
+}
+
+.profile-link:hover {
+    background: #f1f5f9;
+    border-color: #94a3b8;
+}
+
+
+/* =========================================================
+   ACTIONS
+========================================================= */
+
+.application-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-top: 20px;
+    padding-top: 17px;
+
+    border-top: 1px solid #e2e8f0;
+}
+
+.action-text {
+    margin: 0;
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.assign-button {
+    min-height: 40px;
+    padding: 9px 15px;
+    border: 1px solid #cbd5e1;
+    border-radius: 7px;
+    background: #ffffff;
+    color: #334155;
+    font-size: 11px;
+    font-weight: 750;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.assign-button:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+    color: #0f172a;
+    transform: translateY(-1px);
+}
+    
+.assigned-message {
+    padding: 9px 13px;
+
+    border-radius: 7px;
+
+    background: #ecfdf5;
+    color: #15803d;
+
+    font-size: 11px;
+    font-weight: 750;
+}
+
+.unavailable-message {
+    margin: 0;
+    color: #94a3b8;
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   NO RESULTS
+========================================================= */
+
+.no-results {
+    display: none;
+
+    padding: 50px 20px;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+
+    background: #ffffff;
+
+    text-align: center;
+}
+
+.no-results.visible {
+    display: block;
+}
+
+.no-results-icon {
+    margin-bottom: 12px;
+    font-size: 25px;
+}
+
+.no-results h2 {
+    margin: 0 0 6px;
+    color: #1e293b;
+    font-size: 18px;
+}
+
+.no-results p {
+    margin: 0;
+    color: #64748b;
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   EMPTY
+========================================================= */
+
+.applications-empty {
+    padding: 60px 20px;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+
+    background: #ffffff;
+
+    text-align: center;
+}
+
+.empty-icon {
+    margin-bottom: 13px;
+    font-size: 28px;
+}
+
+.applications-empty h2 {
+    margin: 0 0 6px;
+    color: #1e293b;
+    font-size: 20px;
+}
+
+.applications-empty p {
+    margin: 0;
+    color: #64748b;
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1180px) {
+
+    .filter-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .application-summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+
+@media (max-width: 850px) {
+
+    .info-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .professional-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .professional-wide {
+        grid-column: auto;
+    }
+
+}
+
+
+@media (max-width: 650px) {
+
+    .application-summary-grid,
+    .filter-grid,
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .filter-result {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .application-summary {
+        padding: 15px;
+    }
+
+    .application-right {
+        gap: 7px;
+    }
+
+    .status-badge {
+        display: none;
+    }
+
+    .application-details {
+        padding: 0 15px 20px;
+    }
+
+    .professional-header,
+    .application-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .assign-button {
+        width: 100%;
+    }
+
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    * {
+        animation: none !important;
+        transition: none !important;
+    }
+
+}
+
+</style>
+
+{% endblock %}
+
+
+
+{% block content %}
+
+<div class="applications-page">
+
+
+    <!-- HEADER -->
+
+    <div class="applications-header">
+
+        <div class="applications-eyebrow">
+            Admin Operations
+        </div>
+
+        <h1>
+            Professional Applications
+        </h1>
+
+        <p>
+            Review professional applications, inspect project requirements,
+            evaluate applicant profiles and assign professionals to projects.
+        </p>
+
+    </div>
+
+
+    <!-- SUMMARY -->
+
+    {% if applications %}
+
+        {% set applied_count =
+            applications
+            |selectattr("status", "equalto", "Applied")
+            |list
+            |length
+        %}
+
+        {% set assigned_count =
+            applications
+            |selectattr("status", "equalto", "Assigned")
+            |list
+            |length
+        %}
+
+        {% set not_selected_count =
+            applications
+            |selectattr("status", "equalto", "Not Selected")
+            |list
+            |length
+        %}
+
+
+        <div class="application-summary-grid">
+
+            <div class="summary-stat">
+
+                <div class="summary-stat-label">
+                    Total Applications
+                </div>
+
+                <div class="summary-stat-value">
+                    {{ applications|length }}
+                </div>
+
+                <div class="summary-stat-note">
+                    All recorded applications
+                </div>
+
+            </div>
+
+
+            <div class="summary-stat">
+
+                <div class="summary-stat-label">
+                    Awaiting Assignment
+                </div>
+
+                <div class="summary-stat-value">
+                    {{ applied_count }}
+                </div>
+
+                <div class="summary-stat-note">
+                    Currently applied
+                </div>
+
+            </div>
+
+
+            <div class="summary-stat">
+
+                <div class="summary-stat-label">
+                    Assigned
+                </div>
+
+                <div class="summary-stat-value">
+                    {{ assigned_count }}
+                </div>
+
+                <div class="summary-stat-note">
+                    Professionals selected
+                </div>
+
+            </div>
+
+
+            <div class="summary-stat">
+
+                <div class="summary-stat-label">
+                    Not Selected
+                </div>
+
+                <div class="summary-stat-value">
+                    {{ not_selected_count }}
+                </div>
+
+                <div class="summary-stat-note">
+                    Inactive applications
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- FILTERS -->
+
+        <div class="filter-panel">
+
+            <div class="filter-heading">
+
+                <h2>
+                    Application Filters
+                </h2>
+
+                <span>
+                    Search and filter the application queue
+                </span>
+
+            </div>
+
+
+            <div class="filter-grid">
+
+
+                <div class="filter-field">
+
+                    <label for="applicationSearch">
+                        Search
+                    </label>
+
+                    <input
+                        type="search"
+                        id="applicationSearch"
+                        class="filter-input"
+                        placeholder="Project, customer, professional, email..."
+                        autocomplete="off"
+                    >
+
+                </div>
+
+
+                <div class="filter-field">
+
+                    <label for="applicationStatus">
+                        Application Status
+                    </label>
+
+                    <select
+                        id="applicationStatus"
+                        class="filter-select"
+                    >
+
+                        <option value="">
+                            All statuses
+                        </option>
+
+                        <option value="Applied">
+                            Applied
+                        </option>
+
+                        <option value="Assigned">
+                            Assigned
+                        </option>
+
+                        <option value="Not Selected">
+                            Not Selected
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="filter-field">
+
+                    <label for="projectStatus">
+                        Project Status
+                    </label>
+
+                    <select
+                        id="projectStatus"
+                        class="filter-select"
+                    >
+
+                        <option value="">
+                            All projects
+                        </option>
+
+                        <option value="Payment Pending">
+                            Payment Pending
+                        </option>
+
+                        <option value="Pending Assignment">
+                            Pending Assignment
+                        </option>
+
+                        <option value="Assigned">
+                            Assigned
+                        </option>
+
+                        <option value="In Progress">
+                            In Progress
+                        </option>
+
+                        <option value="Submitted">
+                            Submitted
+                        </option>
+
+                        <option value="Revision">
+                            Revision
+                        </option>
+
+                        <option value="Completed">
+                            Completed
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="filter-field">
+
+                    <label for="serviceFilter">
+                        Service
+                    </label>
+
+                    <select
+                        id="serviceFilter"
+                        class="filter-select"
+                    >
+
+                        <option value="">
+                            All services
+                        </option>
+
+                        <option value="Website Design & Development">
+                            Website Design & Development
+                        </option>
+
+                        <option value="SEO">
+                            SEO
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="filter-field">
+
+                    <label for="verificationFilter">
+                        Verification
+                    </label>
+
+                    <select
+                        id="verificationFilter"
+                        class="filter-select"
+                    >
+
+                        <option value="">
+                            All professionals
+                        </option>
+
+                        <option value="Verified">
+                            Verified
+                        </option>
+
+                        <option value="Pending">
+                            Pending
+                        </option>
+
+                        <option value="Rejected">
+                            Rejected
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="filter-actions">
+
+                <button
+                    type="button"
+                    class="filter-button primary"
+                    id="expandAllButton"
+                >
+                    Expand All
+                </button>
+
+                <button
+                    type="button"
+                    class="filter-button"
+                    id="collapseAllButton"
+                >
+                    Collapse All
+                </button>
+
+                <button
+                    type="button"
+                    class="filter-button"
+                    id="clearFiltersButton"
+                >
+                    Clear Filters
+                </button>
+
+                <span
+                    class="filter-result"
+                    id="filterResult"
+                >
+                    Showing {{ applications|length }} applications
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- APPLICATIONS -->
+
+        <div
+            class="applications-list"
+            id="applicationsList"
+        >
+
+            {% for application in applications %}
+
+                {% set project = application.project %}
+
+                {% set professional = application.professional %}
+
+                {% set profile =
+                    professional.professional_profile
+                    if professional and professional.professional_profile
+                    else none
+                %}
+
+
+                <article
+                    class="application-card"
+
+                    data-search="
+                        {{ application.id }}
+                        {{ project.id if project else '' }}
+                        {{ project.customer.name if project and project.customer else '' }}
+                        {{ professional.name if professional else '' }}
+                        {{ professional.email if professional else '' }}
+                        {{ project.service if project else '' }}
+                        {{ project.package if project else '' }}
+                    "
+
+                    data-application-status="{{ application.status or '' }}"
+
+                    data-project-status="{{ project.status if project else '' }}"
+
+                    data-service="{{ project.service if project else '' }}"
+
+                    data-verification="{{ profile.verification_status if profile else 'Pending' }}"
+                >
+
+
+                    <!-- SUMMARY -->
+
+                    <button
+                        type="button"
+                        class="application-summary"
+                        aria-expanded="false"
+                        aria-controls="application-details-{{ application.id }}"
+                    >
+
+                        <div class="application-main">
+
+                            <div class="application-label">
+                                Application #{{ application.id }}
+                            </div>
+
+                            <h2 class="application-title">
+                                Project #{{ project.id if project else '—' }}
+                            </h2>
+
+                            <div class="application-meta">
+
+                                <span>
+                                    Customer:
+                                    <strong>
+                                        {{ project.customer.name if project and project.customer else '—' }}
+                                    </strong>
+                                </span>
+
+                                <span>
+                                    Professional:
+                                    <strong>
+                                        {{ professional.name if professional else '—' }}
+                                    </strong>
+                                </span>
+
+                                <span>
+                                    Service:
+                                    <strong>
+                                        {{ project.service if project else '—' }}
+                                    </strong>
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="application-right">
+
+
+                            {% if application.status == "Applied" %}
+
+                                <span class="status-badge status-applied">
+                                    Applied
+                                </span>
+
+                            {% elif application.status == "Assigned" %}
+
+                                <span class="status-badge status-assigned">
+                                    Assigned
+                                </span>
+
+                            {% elif application.status == "Not Selected" %}
+
+                                <span class="status-badge status-not-selected">
+                                    Not Selected
+                                </span>
+
+                            {% else %}
+
+                                <span class="status-badge status-other">
+                                    {{ application.status or 'Unknown' }}
+                                </span>
+
+                            {% endif %}
+
+
+                            <div class="expand-control">
+
+                                <span>
+                                    Details
+                                </span>
+
+                                <span class="expand-arrow">
+                                    ▼
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </button>
+
+
+                    <!-- DETAILS -->
+
+                    <div
+                        class="application-details"
+                        id="application-details-{{ application.id }}"
+                    >
+
+
+                        <!-- PROJECT -->
+
+                        <section class="detail-section">
+
+                            <h3 class="detail-heading">
+                                Project Details
+                            </h3>
+
+
+                            <div class="info-grid">
+
+
+                                <div class="info-item">
+
+                                    <strong>
+                                        Project
+                                    </strong>
+
+                                    #{{ project.id if project else '—' }}
+
+                                </div>
+
+
+                                <div class="info-item">
+
+                                    <strong>
+                                        Service
+                                    </strong>
+
+                                    {{ project.service if project else '—' }}
+
+                                </div>
+
+
+                                <div class="info-item">
+
+                                    <strong>
+                                        Package
+                                    </strong>
+
+                                    {{ project.package if project else '—' }}
+
+                                </div>
+
+
+                                <div class="info-item">
+
+                                    <strong>
+                                        Project Status
+                                    </strong>
+
+                                    <span class="info-status">
+                                        {{ project.status if project else '—' }}
+                                    </span>
+
+                                </div>
+
+
+                                <div class="info-item">
+
+                                    <strong>
+                                        Customer
+                                    </strong>
+
+                                    {{ project.customer.name if project and project.customer else '—' }}
+
+                                </div>
+
+
+                                <div class="info-item">
+
+                                    <strong>
+                                        Customer Email
+                                    </strong>
+
+                                    {{ project.customer.email if project and project.customer else '—' }}
+
+                                </div>
+
+
+                                <div class="info-item">
+
+                                    <strong>
+                                        Application Date
+                                    </strong>
+
+                                    {% if application.created_at %}
+                                        {{ application.created_at.strftime("%d %b %Y, %I:%M %p") }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+
+                                </div>
+
+
+                                <div class="info-item">
+
+                                    <strong>
+                                        Project Created
+                                    </strong>
+
+                                    {% if project and project.created_at %}
+                                        {{ project.created_at.strftime("%d %b %Y, %I:%M %p") }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+
+                                </div>
+
+
+                                <div class="info-item">
+
+                                    <strong>
+                                        Application Status
+                                    </strong>
+
+                                    <span class="info-status">
+                                        {{ application.status or '—' }}
+                                    </span>
+
+                                </div>
+
+
+                            </div>
+
+                        </section>
+
+
+                        <!-- REQUIREMENTS -->
+
+                        {% if project and project.requirements %}
+
+                            <section class="detail-section">
+
+                                <h3 class="detail-heading">
+                                    Customer Requirements
+                                </h3>
+
+                                <div class="requirements-box">
+                                    {{ project.requirements }}
+                                </div>
+
+                            </section>
+
+                        {% endif %}
+
+
+                        <!-- PROFESSIONAL -->
+
+                        <section class="detail-section">
+
+                            <h3 class="detail-heading">
+                                Professional Profile
+                            </h3>
+
+
+                            <div class="professional-box">
+
+
+                                <div class="professional-header">
+
+                                    <div>
+
+                                        <div class="professional-name">
+                                            {{ professional.name if professional else 'Unknown Professional' }}
+                                        </div>
+
+                                        <div class="professional-email">
+                                            {{ professional.email if professional else '—' }}
+                                        </div>
+
+                                    </div>
+
+
+                                    {% if profile %}
+
+                                        {% if profile.verification_status == "Verified" %}
+
+                                            <span class="verification-badge verification-verified">
+                                                ✓ Verified
+                                            </span>
+
+                                        {% elif profile.verification_status == "Rejected" %}
+
+                                            <span class="verification-badge verification-rejected">
+                                                Rejected
+                                            </span>
+
+                                        {% else %}
+
+                                            <span class="verification-badge verification-pending">
+                                                {{ profile.verification_status or 'Pending' }}
+                                            </span>
+
+                                        {% endif %}
+
+                                    {% endif %}
+
+                                </div>
+
+
+                                {% if profile %}
+
+                                    <div class="professional-grid">
+
+
+                                        <div class="professional-item">
+                                            <strong>Expertise:</strong>
+                                            {{ profile.expertise or 'Not provided' }}
+                                        </div>
+
+
+                                        <div class="professional-item">
+                                            <strong>Experience:</strong>
+                                            {{ profile.experience or 'Not provided' }}
+                                        </div>
+
+
+                                        <div class="professional-item">
+                                            <strong>Phone:</strong>
+                                            {{ profile.phone or 'Not provided' }}
+                                        </div>
+
+
+                                        <div class="professional-item">
+                                            <strong>Location:</strong>
+                                            {{ profile.location or 'Not provided' }}
+                                        </div>
+
+
+                                        <div class="professional-item">
+                                            <strong>Skill Level:</strong>
+                                            {{ profile.skill_level or 'Not provided' }}
+                                        </div>
+
+
+                                        <div class="professional-item">
+                                            <strong>Availability:</strong>
+                                            {{ profile.availability or 'Not provided' }}
+                                        </div>
+
+
+                                        <div class="professional-item">
+                                            <strong>Current Workload:</strong>
+                                            {{ profile.current_workload or 'Not provided' }}
+                                        </div>
+
+
+                                        <div class="professional-item">
+                                            <strong>Verification:</strong>
+                                            {{ profile.verification_status or 'Pending' }}
+                                        </div>
+
+
+                                        {% if profile.skills %}
+
+                                            <div class="professional-item professional-wide">
+
+                                                <strong>
+                                                    Skills:
+                                                </strong>
+
+                                                <div class="professional-text">
+                                                    {{ profile.skills }}
+                                                </div>
+
+                                            </div>
+
+                                        {% endif %}
+
+
+                                        {% if profile.technologies %}
+
+                                            <div class="professional-item professional-wide">
+
+                                                <strong>
+                                                    Technologies:
+                                                </strong>
+
+                                                <div class="professional-text">
+                                                    {{ profile.technologies }}
+                                                </div>
+
+                                            </div>
+
+                                        {% endif %}
+
+
+                                        {% if profile.project_types %}
+
+                                            <div class="professional-item professional-wide">
+
+                                                <strong>
+                                                    Project Types:
+                                                </strong>
+
+                                                <div class="professional-text">
+                                                    {{ profile.project_types }}
+                                                </div>
+
+                                            </div>
+
+                                        {% endif %}
+
+
+                                        {% if profile.about %}
+
+                                            <div class="professional-item professional-wide">
+
+                                                <strong>
+                                                    About:
+                                                </strong>
+
+                                                <div class="professional-text">
+                                                    {{ profile.about }}
+                                                </div>
+
+                                            </div>
+
+                                        {% endif %}
+
+
+                                    </div>
+
+
+                                    <div class="profile-links">
+
+
+                                        {% if profile.portfolio %}
+
+                                            <a
+                                                href="{{ profile.portfolio }}"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                class="profile-link"
+                                            >
+                                                Portfolio ↗
+                                            </a>
+
+                                        {% endif %}
+
+
+                                        {% if profile.github %}
+
+                                            <a
+                                                href="{{ profile.github }}"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                class="profile-link"
+                                            >
+                                                GitHub ↗
+                                            </a>
+
+                                        {% endif %}
+
+
+                                        {% if profile.linkedin %}
+
+                                            <a
+                                                href="{{ profile.linkedin }}"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                class="profile-link"
+                                            >
+                                                LinkedIn ↗
+                                            </a>
+
+                                        {% endif %}
+
+
+                                    </div>
+
+
+                                {% else %}
+
+                                    <p class="unavailable-message">
+                                        Professional profile has not been completed.
+                                    </p>
+
+                                {% endif %}
+
+
+                            </div>
+
+                        </section>
+
+
+                        <!-- ACTION -->
+
+                        <section class="detail-section">
+
+                            <div class="application-actions">
+
+
+                                {% if project
+                                    and project.status == "Pending Assignment"
+                                    and application.status == "Applied" %}
+
+
+                                    <p class="action-text">
+                                        This professional has applied for this
+                                        project. Review the profile and assign
+                                        the professional if appropriate.
+                                    </p>
+
+
+                                    <form
+                                        method="POST"
+                                        action="{{ url_for(
+                                            'assign_professional',
+                                            application_id=application.id
+                                        ) }}"
+                                    >
+
+                                        <button
+                                            type="submit"
+                                            class="assign-button"
+                                        >
+                                            Assign Professional
+                                        </button>
+
+                                    </form>
+
+
+                                {% elif application.status == "Assigned" %}
+
+                                    <div class="assigned-message">
+                                        ✓ Professional Assigned
+                                    </div>
+
+
+                                {% else %}
+
+                                    <p class="unavailable-message">
+                                        This application is no longer available
+                                        for assignment.
+                                    </p>
+
+                                {% endif %}
+
+
+                            </div>
+
+                        </section>
+
+
+                    </div>
+
+                </article>
+
+            {% endfor %}
+
+        </div>
+
+
+        <!-- NO RESULTS -->
+
+        <div
+            class="no-results"
+            id="noResults"
+        >
+
+            <div class="no-results-icon">
+                🔎
+            </div>
+
+            <h2>
+                No Matching Applications
+            </h2>
+
+            <p>
+                No applications match the selected filters.
+            </p>
+
+        </div>
+
+
+    {% else %}
+
+
+        <div class="applications-empty">
+
+            <div class="empty-icon">
+                📋
+            </div>
+
+            <h2>
+                No Applications Yet
+            </h2>
+
+            <p>
+                No professionals have applied for customer projects.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+
+</div>
+
+{% endblock %}
+
+
+
+{% block extra_js %}
+
+<script>
+
+(function () {
+
+    "use strict";
+
+
+    const cards =
+        Array.from(
+            document.querySelectorAll(".application-card")
+        );
+
+
+    const searchInput =
+        document.getElementById("applicationSearch");
+
+    const applicationStatus =
+        document.getElementById("applicationStatus");
+
+    const projectStatus =
+        document.getElementById("projectStatus");
+
+    const serviceFilter =
+        document.getElementById("serviceFilter");
+
+    const verificationFilter =
+        document.getElementById("verificationFilter");
+
+    const filterResult =
+        document.getElementById("filterResult");
+
+    const noResults =
+        document.getElementById("noResults");
+
+    const expandAllButton =
+        document.getElementById("expandAllButton");
+
+    const collapseAllButton =
+        document.getElementById("collapseAllButton");
+
+    const clearFiltersButton =
+        document.getElementById("clearFiltersButton");
+
+
+    function normalize(value) {
+
+        return String(value || "")
+            .replace(/\s+/g, " ")
+            .trim()
+            .toLowerCase();
+
+    }
+
+
+    function toggleApplication(card) {
+
+        const button =
+            card.querySelector(".application-summary");
+
+        const isOpen =
+            card.classList.contains("open");
+
+
+        card.classList.toggle(
+            "open",
+            !isOpen
+        );
+
+
+        if (button) {
+
+            button.setAttribute(
+                "aria-expanded",
+                String(!isOpen)
+            );
+
+        }
+
+    }
+
+
+    cards.forEach(function (card) {
+
+        const button =
+            card.querySelector(".application-summary");
+
+
+        if (button) {
+
+            button.addEventListener(
+                "click",
+                function () {
+
+                    toggleApplication(card);
+
+                }
+            );
+
+        }
+
+    });
+
+
+    function applyFilters() {
+
+        const searchValue =
+            normalize(
+                searchInput
+                    ? searchInput.value
+                    : ""
+            );
+
+
+        const selectedApplicationStatus =
+            normalize(
+                applicationStatus
+                    ? applicationStatus.value
+                    : ""
+            );
+
+
+        const selectedProjectStatus =
+            normalize(
+                projectStatus
+                    ? projectStatus.value
+                    : ""
+            );
+
+
+        const selectedService =
+            normalize(
+                serviceFilter
+                    ? serviceFilter.value
+                    : ""
+            );
+
+
+        const selectedVerification =
+            normalize(
+                verificationFilter
+                    ? verificationFilter.value
+                    : ""
+            );
+
+
+        let visibleCount = 0;
+
+
+        cards.forEach(function (card) {
+
+            const searchText =
+                normalize(
+                    card.getAttribute("data-search")
+                );
+
+
+            const cardApplicationStatus =
+                normalize(
+                    card.getAttribute(
+                        "data-application-status"
+                    )
+                );
+
+
+            const cardProjectStatus =
+                normalize(
+                    card.getAttribute(
+                        "data-project-status"
+                    )
+                );
+
+
+            const cardService =
+                normalize(
+                    card.getAttribute(
+                        "data-service"
+                    )
+                );
+
+
+            const cardVerification =
+                normalize(
+                    card.getAttribute(
+                        "data-verification"
+                    )
+                );
+
+
+            const matches =
+                (
+                    searchValue === ""
+                    ||
+                    searchText.includes(searchValue)
+                )
+                &&
+                (
+                    selectedApplicationStatus === ""
+                    ||
+                    cardApplicationStatus ===
+                        selectedApplicationStatus
+                )
+                &&
+                (
+                    selectedProjectStatus === ""
+                    ||
+                    cardProjectStatus ===
+                        selectedProjectStatus
+                )
+                &&
+                (
+                    selectedService === ""
+                    ||
+                    cardService === selectedService
+                )
+                &&
+                (
+                    selectedVerification === ""
+                    ||
+                    cardVerification ===
+                        selectedVerification
+                );
+
+
+            if (matches) {
+
+                card.classList.remove("hidden");
+
+                visibleCount++;
+
+            } else {
+
+                card.classList.add("hidden");
+                card.classList.remove("open");
+
+            }
+
+        });
+
+
+        if (filterResult) {
+
+            filterResult.textContent =
+                "Showing "
+                + visibleCount
+                + " of "
+                + cards.length
+                + " applications";
+
+        }
+
+
+        if (noResults) {
+
+            noResults.classList.toggle(
+                "visible",
+                visibleCount === 0
+            );
+
+        }
+
+    }
+
+
+    if (searchInput) {
+
+        searchInput.addEventListener(
+            "input",
+            applyFilters
+        );
+
+    }
+
+
+    if (applicationStatus) {
+
+        applicationStatus.addEventListener(
+            "change",
+            applyFilters
+        );
+
+    }
+
+
+    if (projectStatus) {
+
+        projectStatus.addEventListener(
+            "change",
+            applyFilters
+        );
+
+    }
+
+
+    if (serviceFilter) {
+
+        serviceFilter.addEventListener(
+            "change",
+            applyFilters
+        );
+
+    }
+
+
+    if (verificationFilter) {
+
+        verificationFilter.addEventListener(
+            "change",
+            applyFilters
+        );
+
+    }
+
+
+    if (expandAllButton) {
+
+        expandAllButton.addEventListener(
+            "click",
+            function () {
+
+                cards.forEach(function (card) {
+
+                    if (
+                        card.classList.contains("hidden")
+                    ) {
+                        return;
+                    }
+
+                    card.classList.add("open");
+
+                    const button =
+                        card.querySelector(
+                            ".application-summary"
+                        );
+
+                    if (button) {
+
+                        button.setAttribute(
+                            "aria-expanded",
+                            "true"
+                        );
+
+                    }
+
+                });
+
+            }
+        );
+
+    }
+
+
+    if (collapseAllButton) {
+
+        collapseAllButton.addEventListener(
+            "click",
+            function () {
+
+                cards.forEach(function (card) {
+
+                    card.classList.remove("open");
+
+                    const button =
+                        card.querySelector(
+                            ".application-summary"
+                        );
+
+                    if (button) {
+
+                        button.setAttribute(
+                            "aria-expanded",
+                            "false"
+                        );
+
+                    }
+
+                });
+
+            }
+        );
+
+    }
+
+
+    if (clearFiltersButton) {
+
+        clearFiltersButton.addEventListener(
+            "click",
+            function () {
+
+                if (searchInput) {
+                    searchInput.value = "";
+                }
+
+                if (applicationStatus) {
+                    applicationStatus.value = "";
+                }
+
+                if (projectStatus) {
+                    projectStatus.value = "";
+                }
+
+                if (serviceFilter) {
+                    serviceFilter.value = "";
+                }
+
+                if (verificationFilter) {
+                    verificationFilter.value = "";
+                }
+
+                applyFilters();
+
+            }
+        );
+
+    }
+
+
+    document.addEventListener(
+        "keydown",
+        function (event) {
+
+            const active =
+                document.activeElement;
+
+            const editing =
+                active
+                &&
+                (
+                    active.tagName === "INPUT"
+                    ||
+                    active.tagName === "SELECT"
+                    ||
+                    active.tagName === "TEXTAREA"
+                );
+
+
+            if (
+                event.key === "/"
+                &&
+                !editing
+                &&
+                searchInput
+            ) {
+
+                event.preventDefault();
+
+                searchInput.focus();
+
+            }
+
+
+            if (
+                event.key === "Escape"
+                &&
+                searchInput
+                &&
+                document.activeElement === searchInput
+            ) {
+
+                searchInput.value = "";
+
+                applyFilters();
+
+                searchInput.blur();
+
+            }
+
+        }
+    );
+
+
+    applyFilters();
+
+
+})();
+
+</script>
+
+{% endblock %}

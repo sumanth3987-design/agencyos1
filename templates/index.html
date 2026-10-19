@@ -1,0 +1,1730 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        AgencyOS | Digital Services Platform
+    </title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+
+        body {
+            font-family: Arial, sans-serif;
+            color: #111827;
+            background: #ffffff;
+            line-height: 1.5;
+        }
+
+
+        /* =====================================================
+           NAVBAR
+           ===================================================== */
+
+        .navbar {
+            height: 72px;
+            padding: 0 7%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #e5e7eb;
+            background: #ffffff;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+
+        .logo {
+            color: #635bff;
+            font-size: 25px;
+            font-weight: 800;
+            text-decoration: none;
+        }
+
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+        }
+
+
+        .nav-links a {
+            text-decoration: none;
+            color: #4b5563;
+            font-size: 14px;
+            font-weight: 600;
+            transition: color 0.2s ease;
+        }
+
+
+        .nav-links a:hover {
+            color: #635bff;
+        }
+
+
+        .nav-buttons {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+
+        .btn {
+            text-decoration: none;
+            padding: 11px 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            transition: all 0.2s ease;
+        }
+
+
+        .btn-outline {
+            color: #635bff;
+            border: 1px solid #635bff;
+            background: #ffffff;
+        }
+
+
+        .btn-outline:hover {
+            background: #f5f3ff;
+        }
+
+
+        .btn-primary {
+            color: #ffffff;
+            background: #635bff;
+        }
+
+
+        .btn-primary:hover {
+            background: #5148e5;
+            transform: translateY(-1px);
+        }
+
+
+        /* =====================================================
+           HERO
+           ===================================================== */
+
+        .hero {
+            background:
+                linear-gradient(
+                    135deg,
+                    #f5f3ff,
+                    #ffffff
+                );
+
+            padding: 90px 7%;
+        }
+
+
+        .hero-content {
+            max-width: 850px;
+            margin: auto;
+            text-align: center;
+        }
+
+
+        .hero-badge {
+            display: inline-block;
+            padding: 7px 14px;
+            background: #eef2ff;
+            color: #4f46e5;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+
+        .hero h1 {
+            font-size: 52px;
+            line-height: 1.1;
+            margin-bottom: 20px;
+        }
+
+
+        .hero h1 span {
+            color: #635bff;
+        }
+
+
+        .hero p {
+            color: #6b7280;
+            font-size: 18px;
+            line-height: 1.7;
+            max-width: 700px;
+            margin: auto;
+        }
+
+
+        .hero-actions {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+        }
+
+
+        .hero-actions a {
+            padding: 14px 24px;
+            border-radius: 9px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.2s ease;
+        }
+
+
+        .hero-main {
+            background: #635bff;
+            color: white;
+        }
+
+
+        .hero-main:hover {
+            background: #5148e5;
+            transform: translateY(-2px);
+        }
+
+
+        .hero-secondary {
+            border: 1px solid #d1d5db;
+            color: #374151;
+            background: white;
+        }
+
+
+        .hero-secondary:hover {
+            border-color: #635bff;
+            color: #635bff;
+            transform: translateY(-2px);
+        }
+
+
+        /* =====================================================
+           GENERAL SECTION
+           ===================================================== */
+
+        .services,
+        .about-agency,
+        .process,
+        .cta {
+            scroll-margin-top: 90px;
+        }
+
+
+        .section-heading {
+            text-align: center;
+            margin-bottom: 45px;
+        }
+
+
+        .section-heading h2 {
+            font-size: 34px;
+            margin-bottom: 12px;
+        }
+
+
+        .section-heading p {
+            color: #6b7280;
+            max-width: 650px;
+            margin: auto;
+            line-height: 1.6;
+        }
+
+
+        /* =====================================================
+           SERVICES
+           ===================================================== */
+
+        .services {
+            padding: 80px 7%;
+        }
+
+
+        .service-grid {
+            max-width: 1050px;
+            margin: auto;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+        }
+
+
+        .service-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 30px;
+            background: white;
+            box-shadow:
+                0 8px 25px rgba(0, 0, 0, 0.04);
+
+            transition:
+                transform 0.25s ease,
+                box-shadow 0.25s ease,
+                border-color 0.25s ease;
+        }
+
+
+        .service-card:hover {
+            transform: translateY(-6px);
+            border-color: #c7c2ff;
+            box-shadow:
+                0 18px 40px rgba(99, 91, 255, 0.12);
+        }
+
+
+        .service-icon {
+            font-size: 35px;
+            margin-bottom: 18px;
+        }
+
+
+        .service-card h3 {
+            font-size: 22px;
+            margin-bottom: 12px;
+        }
+
+
+        .service-card p {
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 22px;
+        }
+
+
+        .service-link {
+            display: inline-block;
+            text-decoration: none;
+            color: #635bff;
+            font-weight: 700;
+            font-size: 14px;
+            transition: transform 0.2s ease;
+        }
+
+
+        .service-link:hover {
+            transform: translateX(4px);
+        }
+
+
+        /* =====================================================
+           ABOUT AGENCYOS
+           ===================================================== */
+
+        .about-agency {
+            padding: 90px 7%;
+            background: #f8fafc;
+        }
+
+
+        .about-container {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+
+        .about-header {
+            max-width: 750px;
+            margin: 0 auto 50px;
+            text-align: center;
+        }
+
+
+        .about-label {
+            display: inline-block;
+            margin-bottom: 12px;
+            color: #635bff;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+        }
+
+
+        .about-header h2 {
+            font-size: 38px;
+            line-height: 1.2;
+            margin-bottom: 15px;
+        }
+
+
+        .about-header p {
+            color: #6b7280;
+            line-height: 1.7;
+        }
+
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px;
+            margin-bottom: 75px;
+        }
+
+
+        .about-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 18px;
+            padding: 30px;
+            transition:
+                transform 0.25s ease,
+                box-shadow 0.25s ease,
+                border-color 0.25s ease;
+        }
+
+
+        .about-card:hover {
+            transform: translateY(-7px);
+            border-color: #c7c2ff;
+            box-shadow:
+                0 18px 40px rgba(99, 91, 255, 0.10);
+        }
+
+
+        .about-icon {
+            width: 55px;
+            height: 55px;
+            border-radius: 14px;
+            background: #eef2ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            margin-bottom: 20px;
+        }
+
+
+        .about-card h3 {
+            font-size: 21px;
+            margin-bottom: 12px;
+        }
+
+
+        .about-card p {
+            color: #6b7280;
+            line-height: 1.65;
+            font-size: 14px;
+        }
+
+
+        /* =====================================================
+           ABOUT SERVICES
+           ===================================================== */
+
+        .about-services {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+
+        .about-services > h2 {
+            font-size: 32px;
+            margin-bottom: 35px;
+        }
+
+
+        .service-info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 22px;
+            text-align: left;
+        }
+
+
+        .service-info-card {
+            position: relative;
+            overflow: hidden;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 18px;
+            padding: 32px;
+            transition:
+                transform 0.25s ease,
+                box-shadow 0.25s ease;
+        }
+
+
+        .service-info-card:hover {
+            transform: translateY(-5px);
+            box-shadow:
+                0 18px 35px rgba(0, 0, 0, 0.07);
+        }
+
+
+        .service-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: #635bff;
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 800;
+            margin-bottom: 18px;
+        }
+
+
+        .service-info-card h3 {
+            font-size: 21px;
+            margin-bottom: 10px;
+        }
+
+
+        .service-info-card p {
+            color: #6b7280;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+
+        /* =====================================================
+           HOW IT WORKS
+           ===================================================== */
+
+        .process {
+            padding: 80px 7%;
+            background: #f8fafc;
+        }
+
+
+        .process-grid {
+            max-width: 1050px;
+            margin: auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+
+        .process-card {
+            text-align: center;
+            padding: 20px;
+            border-radius: 15px;
+            transition:
+                background 0.25s ease,
+                transform 0.25s ease;
+        }
+
+
+        .process-card:hover {
+            background: #ffffff;
+            transform: translateY(-5px);
+        }
+
+
+        .process-number {
+            width: 45px;
+            height: 45px;
+            margin: 0 auto 15px;
+            border-radius: 50%;
+            background: #635bff;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+
+        .process-card h3 {
+            margin-bottom: 10px;
+            font-size: 17px;
+        }
+
+
+        .process-card p {
+            color: #6b7280;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+
+        /* =====================================================
+           WHY AGENCYOS
+           ===================================================== */
+
+        .why-agency {
+            padding: 90px 7%;
+            background: #ffffff;
+        }
+
+
+        .why-container {
+            max-width: 1050px;
+            margin: auto;
+        }
+
+
+        .why-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px;
+        }
+
+
+        .why-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 28px;
+            background: #ffffff;
+            transition:
+                transform 0.25s ease,
+                box-shadow 0.25s ease;
+        }
+
+
+        .why-card:hover {
+            transform: translateY(-5px);
+            box-shadow:
+                0 16px 35px rgba(0, 0, 0, 0.06);
+        }
+
+
+        .why-card-icon {
+            font-size: 30px;
+            margin-bottom: 15px;
+        }
+
+
+        .why-card h3 {
+            font-size: 19px;
+            margin-bottom: 10px;
+        }
+
+
+        .why-card p {
+            color: #6b7280;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+
+        /* =====================================================
+           FUTURE VISION
+           ===================================================== */
+
+        .future-vision {
+            margin-top: 75px;
+            padding: 50px 35px;
+            border-radius: 22px;
+            background:
+                linear-gradient(
+                    135deg,
+                    #111827,
+                    #1f2937
+                );
+            color: #ffffff;
+            text-align: center;
+        }
+
+
+        .future-vision .about-label {
+            color: #a5b4fc;
+        }
+
+
+        .future-vision h2 {
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+
+
+        .future-vision p {
+            max-width: 720px;
+            margin: auto;
+            color: #d1d5db;
+            line-height: 1.7;
+        }
+
+
+        /* =====================================================
+           CTA
+           ===================================================== */
+
+        .cta {
+            padding: 80px 7%;
+            text-align: center;
+        }
+
+
+        .cta-box {
+            max-width: 900px;
+            margin: auto;
+            padding: 55px 30px;
+            border-radius: 20px;
+            background: #111827;
+            color: white;
+        }
+
+
+        .cta-box h2 {
+            font-size: 34px;
+            margin-bottom: 15px;
+        }
+
+
+        .cta-box p {
+            color: #d1d5db;
+            margin-bottom: 25px;
+        }
+
+
+        .cta-button {
+            display: inline-block;
+            background: #635bff;
+            color: white;
+            text-decoration: none;
+            padding: 13px 24px;
+            border-radius: 9px;
+            font-weight: 700;
+            transition:
+                background 0.2s ease,
+                transform 0.2s ease;
+        }
+
+
+        .cta-button:hover {
+            background: #5148e5;
+            transform: translateY(-2px);
+        }
+
+
+        /* =====================================================
+           FOOTER
+           ===================================================== */
+
+        footer {
+            padding: 30px 7%;
+            border-top: 1px solid #e5e7eb;
+            text-align: center;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+
+        /* =====================================================
+           MOBILE MENU BUTTON
+           ===================================================== */
+
+        .mobile-menu-btn {
+            display: none;
+            border: none;
+            background: #f5f3ff;
+            color: #635bff;
+            width: 42px;
+            height: 42px;
+            border-radius: 8px;
+            font-size: 21px;
+            cursor: pointer;
+        }
+
+
+        .mobile-menu {
+            display: none;
+            position: absolute;
+            top: 72px;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 20px 7%;
+            box-shadow:
+                0 10px 25px rgba(0, 0, 0, 0.08);
+        }
+
+
+        .mobile-menu.active {
+            display: block;
+        }
+
+
+        .mobile-menu a {
+            display: block;
+            padding: 13px 0;
+            text-decoration: none;
+            color: #374151;
+            font-weight: 600;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+
+        .mobile-menu a:last-child {
+            border-bottom: none;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+           ===================================================== */
+
+        @media (max-width: 950px) {
+
+            .nav-links {
+                gap: 16px;
+            }
+
+
+            .about-grid {
+                grid-template-columns: 1fr;
+            }
+
+
+            .why-grid {
+                grid-template-columns: 1fr;
+            }
+
+
+            .process-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+
+        @media (max-width: 850px) {
+
+            .nav-links {
+                display: none;
+            }
+
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+
+            .nav-buttons .btn-outline {
+                display: none;
+            }
+
+
+            .hero h1 {
+                font-size: 40px;
+            }
+
+
+            .service-grid {
+                grid-template-columns: 1fr;
+            }
+
+
+            .service-info-grid {
+                grid-template-columns: 1fr;
+            }
+
+
+            .process-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+
+        @media (max-width: 550px) {
+
+            .navbar {
+                padding: 0 6%;
+            }
+
+
+            .hero {
+                padding: 65px 6%;
+            }
+
+
+            .hero h1 {
+                font-size: 34px;
+            }
+
+
+            .hero p {
+                font-size: 16px;
+            }
+
+
+            .hero-actions {
+                flex-direction: column;
+            }
+
+
+            .hero-actions a {
+                width: 100%;
+            }
+
+
+            .services,
+            .about-agency,
+            .why-agency,
+            .process,
+            .cta {
+                padding-left: 6%;
+                padding-right: 6%;
+            }
+
+
+            .section-heading h2,
+            .about-header h2 {
+                font-size: 30px;
+            }
+
+
+            .about-services > h2 {
+                font-size: 28px;
+            }
+
+
+            .future-vision h2 {
+                font-size: 27px;
+            }
+
+
+            .future-vision {
+                padding: 40px 22px;
+            }
+
+
+            .process-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     NAVBAR
+     ========================================================= -->
+
+<nav class="navbar">
+
+    <a
+        href="{{ url_for('index') }}"
+        class="logo"
+    >
+        AgencyOS
+    </a>
+
+
+    <div class="nav-links">
+
+        <a href="{{ url_for('index') }}">
+            Home
+        </a>
+
+        <a href="#about">
+            About
+        </a>
+
+        <a href="#services">
+            Services
+        </a>
+
+        <a href="#how-it-works">
+            How It Works
+        </a>
+
+    </div>
+
+
+    <div class="nav-buttons">
+
+        <a
+            href="{{ url_for('login') }}"
+            class="btn btn-outline"
+        >
+            Login
+        </a>
+
+
+        <a
+            href="{{ url_for('register') }}"
+            class="btn btn-primary"
+        >
+            Get Started
+        </a>
+
+
+        <button
+            type="button"
+            class="mobile-menu-btn"
+            id="mobileMenuButton"
+            aria-label="Open menu"
+        >
+            ☰
+        </button>
+
+    </div>
+
+
+    <div
+        class="mobile-menu"
+        id="mobileMenu"
+    >
+
+        <a href="{{ url_for('index') }}">
+            Home
+        </a>
+
+        <a href="#about">
+            About
+        </a>
+
+        <a href="#services">
+            Services
+        </a>
+
+        <a href="#how-it-works">
+            How It Works
+        </a>
+
+        <a href="{{ url_for('login') }}">
+            Login
+        </a>
+
+        <a href="{{ url_for('register') }}">
+            Get Started
+        </a>
+
+    </div>
+
+</nav>
+
+
+<!-- =========================================================
+     HERO
+     ========================================================= -->
+
+<section class="hero">
+
+    <div class="hero-content">
+
+        <span class="hero-badge">
+            DIGITAL SERVICES PLATFORM
+        </span>
+
+
+        <h1>
+            Build Your Business
+            <span>Online</span>
+        </h1>
+
+
+        <p>
+            AgencyOS connects businesses with professional digital
+            services through one simple platform.
+        </p>
+
+
+        <div class="hero-actions">
+
+            <a
+                href="{{ url_for('register') }}"
+                class="hero-main"
+            >
+                Start a Project
+            </a>
+
+
+            <a
+                href="#about"
+                class="hero-secondary"
+            >
+                Explore AgencyOS
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     ABOUT AGENCYOS
+     ========================================================= -->
+
+<section
+    class="about-agency"
+    id="about"
+>
+
+    <div class="about-container">
+
+
+        <div class="about-header">
+
+            <span class="about-label">
+                ABOUT AGENCYOS
+            </span>
+
+
+            <h2>
+                Your Digital Growth Partner
+            </h2>
+
+
+            <p>
+                AgencyOS is a digital services platform designed
+                to help businesses access professional website
+                design, development, and SEO services through
+                one connected platform.
+            </p>
+
+        </div>
+
+
+        <!-- =================================================
+             VISION / MISSION / PLATFORM
+             ================================================= -->
+
+        <div class="about-grid">
+
+
+            <div class="about-card">
+
+                <div class="about-icon">
+                    🎯
+                </div>
+
+
+                <h3>
+                    Our Vision
+                </h3>
+
+
+                <p>
+                    To create a single platform where businesses
+                    can access digital services and professional
+                    expertise for their online growth.
+                </p>
+
+            </div>
+
+
+            <div class="about-card">
+
+                <div class="about-icon">
+                    🚀
+                </div>
+
+
+                <h3>
+                    Our Mission
+                </h3>
+
+
+                <p>
+                    To simplify the process of getting professional
+                    digital services through a structured project
+                    workflow.
+                </p>
+
+            </div>
+
+
+            <div class="about-card">
+
+                <div class="about-icon">
+                    💡
+                </div>
+
+
+                <h3>
+                    One Platform
+                </h3>
+
+
+                <p>
+                    Customers can submit requirements, make payments,
+                    track projects, and receive completed work through
+                    the AgencyOS platform.
+                </p>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =================================================
+             OUR SERVICES
+             ================================================= -->
+
+        <div class="about-services">
+
+            <span class="about-label">
+                OUR SERVICES
+            </span>
+
+
+            <h2>
+                Digital Services for Your Business
+            </h2>
+
+
+            <div class="service-info-grid">
+
+
+                <div class="service-info-card">
+
+                    <span class="service-number">
+                        01
+                    </span>
+
+
+                    <h3>
+                        Website Design &amp; Development
+                    </h3>
+
+
+                    <p>
+                        Professional websites designed and developed
+                        for different business requirements and use
+                        cases.
+                    </p>
+
+                </div>
+
+
+                <div class="service-info-card">
+
+                    <span class="service-number">
+                        02
+                    </span>
+
+
+                    <h3>
+                        Search Engine Optimization
+                    </h3>
+
+
+                    <p>
+                        SEO services focused on improving online
+                        visibility and supporting organic growth.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             WHY AGENCYOS
+             ================================================= -->
+
+        <div class="why-agency">
+
+            <div class="section-heading">
+
+                <span class="about-label">
+                    WHY AGENCYOS
+                </span>
+
+
+                <h2>
+                    Built Around the Project
+                </h2>
+
+
+                <p>
+                    AgencyOS brings the major parts of a digital
+                    service project into one connected workflow.
+                </p>
+
+            </div>
+
+
+            <div class="why-grid">
+
+
+                <div class="why-card">
+
+                    <div class="why-card-icon">
+                        📋
+                    </div>
+
+
+                    <h3>
+                        Clear Requirements
+                    </h3>
+
+
+                    <p>
+                        Submit your project requirements in one
+                        organized place before work begins.
+                    </p>
+
+                </div>
+
+
+                <div class="why-card">
+
+                    <div class="why-card-icon">
+                        👨‍💻
+                    </div>
+
+
+                    <h3>
+                        Professional Workflow
+                    </h3>
+
+
+                    <p>
+                        Projects can be handled through a structured
+                        customer and professional workflow.
+                    </p>
+
+                </div>
+
+
+                <div class="why-card">
+
+                    <div class="why-card-icon">
+                        📊
+                    </div>
+
+
+                    <h3>
+                        Project Tracking
+                    </h3>
+
+
+                    <p>
+                        Customers can track the progress and status
+                        of their projects from their dashboard.
+                    </p>
+
+                </div>
+
+
+                <div class="why-card">
+
+                    <div class="why-card-icon">
+                        💳
+                    </div>
+
+
+                    <h3>
+                        Online Payments
+                    </h3>
+
+
+                    <p>
+                        The platform supports online project payments
+                        through the configured payment workflow.
+                    </p>
+
+                </div>
+
+
+                <div class="why-card">
+
+                    <div class="why-card-icon">
+                        🔄
+                    </div>
+
+
+                    <h3>
+                        Revision Workflow
+                    </h3>
+
+
+                    <p>
+                        Submitted work can move through review and
+                        revision before project completion.
+                    </p>
+
+                </div>
+
+
+                <div class="why-card">
+
+                    <div class="why-card-icon">
+                        📈
+                    </div>
+
+
+                    <h3>
+                        Built to Scale
+                    </h3>
+
+
+                    <p>
+                        The platform can support additional digital
+                        service categories as AgencyOS grows.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- =================================================
+                 FUTURE VISION
+                 ================================================= -->
+
+            <div class="future-vision">
+
+                <span class="about-label">
+                    OUR FUTURE
+                </span>
+
+
+                <h2>
+                    One Platform. More Digital Services.
+                </h2>
+
+
+                <p>
+                    AgencyOS is being built as a scalable digital
+                    services platform. Website design and SEO are
+                    the current focus, with additional services
+                    planned for the future.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     SERVICES
+     ========================================================= -->
+
+<section
+    class="services"
+    id="services"
+>
+
+    <div class="section-heading">
+
+        <h2>
+            Our Services
+        </h2>
+
+
+        <p>
+            Choose a service, select a package and submit your
+            requirements. Our platform handles the project workflow.
+        </p>
+
+    </div>
+
+
+    <div class="service-grid">
+
+
+        {% for service in services %}
+
+
+        <div class="service-card">
+
+            <div class="service-icon">
+                {{ service.icon }}
+            </div>
+
+
+            <h3>
+                {{ service.name }}
+            </h3>
+
+
+            <p>
+                {{ service.description }}
+            </p>
+
+
+            <a
+                href="{{ url_for('register') }}"
+                class="service-link"
+            >
+                Get Started →
+            </a>
+
+        </div>
+
+
+        {% endfor %}
+
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     HOW IT WORKS
+     ========================================================= -->
+
+<section
+    class="process"
+    id="how-it-works"
+>
+
+    <div class="section-heading">
+
+        <h2>
+            How It Works
+        </h2>
+
+
+        <p>
+            A simple workflow from your first requirement to project
+            completion.
+        </p>
+
+    </div>
+
+
+    <div class="process-grid">
+
+
+        <div class="process-card">
+
+            <div class="process-number">
+                1
+            </div>
+
+
+            <h3>
+                Register
+            </h3>
+
+
+            <p>
+                Create your AgencyOS customer account.
+            </p>
+
+        </div>
+
+
+        <div class="process-card">
+
+            <div class="process-number">
+                2
+            </div>
+
+
+            <h3>
+                Choose Service
+            </h3>
+
+
+            <p>
+                Select website development or SEO.
+            </p>
+
+        </div>
+
+
+        <div class="process-card">
+
+            <div class="process-number">
+                3
+            </div>
+
+
+            <h3>
+                Submit Requirements
+            </h3>
+
+
+            <p>
+                Tell us about your business and project goals.
+            </p>
+
+        </div>
+
+
+        <div class="process-card">
+
+            <div class="process-number">
+                4
+            </div>
+
+
+            <h3>
+                Track Project
+            </h3>
+
+
+            <p>
+                Monitor your project from your dashboard.
+            </p>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     CTA
+     ========================================================= -->
+
+<section class="cta">
+
+    <div class="cta-box">
+
+        <h2>
+            Ready to Start?
+        </h2>
+
+
+        <p>
+            Create your account and start your first digital project.
+        </p>
+
+
+        <a
+            href="{{ url_for('register') }}"
+            class="cta-button"
+        >
+            Create Account
+        </a>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     FOOTER
+     ========================================================= -->
+
+<footer>
+
+    <p>
+        © 2026 AgencyOS. All rights reserved.
+    </p>
+
+</footer>
+
+
+<!-- =========================================================
+     INTERACTIVE JAVASCRIPT
+     ========================================================= -->
+
+<script>
+
+    const mobileMenuButton =
+        document.getElementById("mobileMenuButton");
+
+    const mobileMenu =
+        document.getElementById("mobileMenu");
+
+
+    /*
+     * Mobile menu toggle
+     */
+
+    mobileMenuButton.addEventListener(
+        "click",
+        function () {
+
+            mobileMenu.classList.toggle(
+                "active"
+            );
+
+        }
+    );
+
+
+    /*
+     * Close mobile menu after
+     * selecting a navigation link
+     */
+
+    const mobileLinks =
+        mobileMenu.querySelectorAll("a");
+
+
+    mobileLinks.forEach(
+        function (link) {
+
+            link.addEventListener(
+                "click",
+                function () {
+
+                    mobileMenu.classList.remove(
+                        "active"
+                    );
+
+                }
+            );
+
+        }
+    );
+
+
+    /*
+     * Close mobile menu if the
+     * user clicks outside it
+     */
+
+    document.addEventListener(
+        "click",
+        function (event) {
+
+            if (
+                !mobileMenu.contains(event.target) &&
+                !mobileMenuButton.contains(event.target)
+            ) {
+
+                mobileMenu.classList.remove(
+                    "active"
+                );
+
+            }
+
+        }
+    );
+
+</script>
+
+
+</body>
+
+</html>

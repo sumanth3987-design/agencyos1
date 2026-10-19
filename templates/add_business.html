@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Add Business | AgencyOS</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --text: #0f172a;
+            --muted: #64748b;
+            --soft: #94a3b8;
+            --border: #e2e8f0;
+            --border-hover: #cbd5e1;
+            --dark: #0f172a;
+            --dark-hover: #1e293b;
+            --soft-bg: #f1f5f9;
+            --danger: #b91c1c;
+        }
+
+        body {
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            background: var(--bg);
+            color: var(--text);
+
+            min-height: 100vh;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        /* ========================================
+           NAVBAR
+        ======================================== */
+
+        .navbar {
+            width: 100%;
+            min-height: 72px;
+
+            background: rgba(255, 255, 255, 0.96);
+
+            border-bottom: 1px solid var(--border);
+
+            position: sticky;
+            top: 0;
+            z-index: 100;
+
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .navbar-inner {
+            width: min(1380px, calc(100% - 40px));
+            min-height: 72px;
+
+            margin: 0 auto;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 24px;
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+
+            flex-shrink: 0;
+
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: -0.4px;
+        }
+
+        .brand-mark {
+            width: 36px;
+            height: 36px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 10px;
+
+            background: var(--dark);
+            color: #ffffff;
+
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .brand-name {
+            color: var(--text);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+
+            gap: 5px;
+
+            flex-shrink: 0;
+            margin-left: auto;
+        }
+
+        .nav-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            min-height: 40px;
+            padding: 0 12px;
+
+            border-radius: 9px;
+
+            color: #475569;
+
+            font-size: 13px;
+            font-weight: 650;
+
+            transition:
+                color 0.2s ease,
+                background 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--text);
+            background: #f8fafc;
+        }
+
+        .nav-link.active {
+            color: var(--text);
+            background: var(--soft-bg);
+        }
+
+        .nav-link.logout:hover {
+            color: var(--danger);
+            background: #fef2f2;
+        }
+
+        /* ========================================
+           PAGE
+        ======================================== */
+
+        .page {
+            width: min(900px, calc(100% - 40px));
+
+            margin: 0 auto;
+
+            padding: 42px 0 70px;
+        }
+
+        .page-header {
+            margin-bottom: 28px;
+        }
+
+        .eyebrow {
+            color: var(--muted);
+
+            font-size: 12px;
+            font-weight: 750;
+
+            text-transform: uppercase;
+            letter-spacing: 0.09em;
+
+            margin-bottom: 9px;
+        }
+
+        h1 {
+            font-size: clamp(30px, 5vw, 40px);
+
+            line-height: 1.08;
+
+            letter-spacing: -1.3px;
+
+            margin-bottom: 10px;
+        }
+
+        .page-description {
+            max-width: 680px;
+
+            color: var(--muted);
+
+            font-size: 15px;
+            line-height: 1.65;
+        }
+
+        /* ========================================
+           FORM CARD
+        ======================================== */
+
+        .form-card {
+            background: var(--surface);
+
+            border: 1px solid var(--border);
+            border-radius: 16px;
+
+            padding: 28px;
+
+            box-shadow:
+                0 8px 25px rgba(15, 23, 42, 0.035);
+        }
+
+        .form-section {
+            padding-bottom: 28px;
+            margin-bottom: 28px;
+
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .form-section:last-of-type {
+            padding-bottom: 0;
+            margin-bottom: 0;
+
+            border-bottom: 0;
+        }
+
+        .section-title {
+            margin-bottom: 4px;
+
+            font-size: 16px;
+            font-weight: 750;
+
+            letter-spacing: -0.2px;
+        }
+
+        .section-description {
+            margin-bottom: 20px;
+
+            color: var(--muted);
+
+            font-size: 13px;
+            line-height: 1.55;
+        }
+
+        /* ========================================
+           FORM GRID
+        ======================================== */
+
+        .form-grid {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 18px;
+        }
+
+        .field {
+            min-width: 0;
+        }
+
+        .field.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+
+            margin-bottom: 7px;
+
+            color: #334155;
+
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .required {
+            color: #dc2626;
+        }
+
+        .optional {
+            color: var(--soft);
+
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+
+            border: 1px solid var(--border);
+            border-radius: 9px;
+
+            background: #ffffff;
+            color: var(--text);
+
+            font-family: inherit;
+            font-size: 14px;
+
+            outline: none;
+
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease,
+                background 0.2s ease;
+        }
+
+        input,
+        select {
+            min-height: 44px;
+
+            padding: 0 13px;
+        }
+
+        textarea {
+            min-height: 110px;
+
+            padding: 12px 13px;
+
+            resize: vertical;
+
+            line-height: 1.55;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #a1aab8;
+        }
+
+        input:hover,
+        select:hover,
+        textarea:hover {
+            border-color: var(--border-hover);
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #94a3b8;
+
+            box-shadow:
+                0 0 0 3px rgba(148, 163, 184, 0.16);
+        }
+
+        .field-help {
+            margin-top: 6px;
+
+            color: var(--soft);
+
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        /* ========================================
+           FORM ACTIONS
+        ======================================== */
+
+        .form-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 14px;
+
+            padding-top: 24px;
+        }
+
+        .secondary-button,
+        .primary-button {
+            min-height: 44px;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 9px;
+
+            padding: 0 17px;
+
+            font-size: 13px;
+            font-weight: 700;
+
+            transition:
+                transform 0.2s ease,
+                background 0.2s ease,
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .secondary-button {
+            border: 1px solid var(--border);
+
+            background: #ffffff;
+            color: #475569;
+        }
+
+        .secondary-button:hover {
+            border-color: var(--border-hover);
+
+            background: #f8fafc;
+
+            transform: translateY(-1px);
+        }
+
+        .primary-button {
+            border: 1px solid var(--dark);
+
+            background: var(--dark);
+            color: #ffffff;
+
+            cursor: pointer;
+        }
+
+        .primary-button:hover {
+            background: var(--dark-hover);
+
+            transform: translateY(-1px);
+
+            box-shadow:
+                0 8px 20px rgba(15, 23, 42, 0.12);
+        }
+
+        .primary-button:active,
+        .secondary-button:active {
+            transform: translateY(0);
+        }
+
+        /* ========================================
+           FLASH
+        ======================================== */
+
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+
+        .flash {
+            padding: 12px 14px;
+
+            background: #ffffff;
+
+            border: 1px solid var(--border);
+            border-radius: 10px;
+
+            color: #334155;
+
+            font-size: 13px;
+        }
+
+        /* ========================================
+           RESPONSIVE
+        ======================================== */
+
+        @media (max-width: 700px) {
+
+            .navbar {
+                position: relative;
+            }
+
+            .navbar-inner {
+                width: calc(100% - 22px);
+
+                min-height: auto;
+
+                padding: 12px 0;
+
+                flex-wrap: wrap;
+
+                gap: 10px 16px;
+            }
+
+            .brand {
+                font-size: 17px;
+            }
+
+            .brand-mark {
+                width: 34px;
+                height: 34px;
+            }
+
+            .nav-actions {
+                width: 100%;
+
+                margin-left: 0;
+
+                gap: 2px;
+
+                overflow-x: auto;
+
+                scrollbar-width: none;
+            }
+
+            .nav-actions::-webkit-scrollbar {
+                display: none;
+            }
+
+            .nav-link {
+                flex-shrink: 0;
+
+                min-height: 38px;
+
+                padding: 0 10px;
+
+                font-size: 12px;
+            }
+
+            .page {
+                width: calc(100% - 28px);
+
+                padding: 30px 0 50px;
+            }
+
+            .form-card {
+                padding: 21px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .field.full {
+                grid-column: auto;
+            }
+
+            .form-actions {
+                flex-direction: column-reverse;
+                align-items: stretch;
+            }
+
+            .secondary-button,
+            .primary-button {
+                width: 100%;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                transition-duration: 0.01ms !important;
+                animation-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="navbar">
+
+    <div class="navbar-inner">
+
+        <a
+            href="{{ url_for('dashboard') }}"
+            class="brand"
+            aria-label="AgencyOS Dashboard"
+        >
+            <span class="brand-mark">
+                AO
+            </span>
+
+            <span class="brand-name">
+                AgencyOS
+            </span>
+        </a>
+
+        <nav
+            class="nav-actions"
+            aria-label="Customer navigation"
+        >
+
+            <a
+                href="{{ url_for('dashboard') }}"
+                class="nav-link"
+            >
+                Dashboard
+            </a>
+
+            <a
+                href="{{ url_for('businesses') }}"
+                class="nav-link active"
+                aria-current="page"
+            >
+                My Businesses
+            </a>
+
+            <a
+                href="{{ url_for('customer_profile') }}"
+                class="nav-link"
+            >
+                Profile
+            </a>
+
+            <a
+                href="{{ url_for('logout') }}"
+                class="nav-link logout"
+            >
+                Logout
+            </a>
+
+        </nav>
+
+    </div>
+
+</header>
+
+
+<main class="page">
+
+    <header class="page-header">
+
+        <div class="eyebrow">
+            Business Management
+        </div>
+
+        <h1>
+            Add a Business
+        </h1>
+
+        <p class="page-description">
+            Create a separate business profile so your
+            website, SEO, and future projects stay organized
+            under the correct business.
+        </p>
+
+    </header>
+
+
+    {% with messages = get_flashed_messages() %}
+
+        {% if messages %}
+
+            <div class="flash-messages">
+
+                {% for message in messages %}
+
+                    <div class="flash">
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% endif %}
+
+    {% endwith %}
+
+
+    <form
+        method="POST"
+        action="{{ url_for('add_business') }}"
+        class="form-card"
+    >
+
+        <!-- ========================================
+             BASIC INFORMATION
+        ======================================== -->
+
+        <section class="form-section">
+
+            <h2 class="section-title">
+                Basic information
+            </h2>
+
+            <p class="section-description">
+                Tell us about the business you want to manage.
+            </p>
+
+            <div class="form-grid">
+
+                <div class="field">
+
+                    <label for="name">
+                        Business Name
+                        <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        placeholder="Example: Sumanth Restaurant"
+                        value="{{ form_data.get('name', '') if form_data else '' }}"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="business_type">
+                        Business Type
+                    </label>
+
+                    <select
+                        id="business_type"
+                        name="business_type"
+                    >
+
+                        <option value="">
+                            Select business type
+                        </option>
+
+                        <option value="Restaurant">
+                            Restaurant
+                        </option>
+
+                        <option value="Retail / Shopping">
+                            Retail / Shopping
+                        </option>
+
+                        <option value="E-commerce">
+                            E-commerce
+                        </option>
+
+                        <option value="Education">
+                            Education
+                        </option>
+
+                        <option value="Healthcare">
+                            Healthcare
+                        </option>
+
+                        <option value="Real Estate">
+                            Real Estate
+                        </option>
+
+                        <option value="Travel & Tourism">
+                            Travel & Tourism
+                        </option>
+
+                        <option value="Finance">
+                            Finance
+                        </option>
+
+                        <option value="Technology">
+                            Technology
+                        </option>
+
+                        <option value="Professional Services">
+                            Professional Services
+                        </option>
+
+                        <option value="Manufacturing">
+                            Manufacturing
+                        </option>
+
+                        <option value="Construction">
+                            Construction
+                        </option>
+
+                        <option value="Beauty & Wellness">
+                            Beauty & Wellness
+                        </option>
+
+                        <option value="Food & Beverage">
+                            Food & Beverage
+                        </option>
+
+                        <option value="Other">
+                            Other
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="field full">
+
+                    <label for="location">
+                        Business Location
+                        <span class="optional">
+                            Optional
+                        </span>
+                    </label>
+
+                    <input
+                        type="text"
+                        id="location"
+                        name="location"
+                        placeholder="Example: Hyderabad, Telangana"
+                        value="{{ form_data.get('location', '') if form_data else '' }}"
+                    >
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ========================================
+             ONLINE PRESENCE
+        ======================================== -->
+
+        <section class="form-section">
+
+            <h2 class="section-title">
+                Online presence
+            </h2>
+
+            <p class="section-description">
+                Add your existing website and social profiles.
+                These details can later be used for website and SEO projects.
+            </p>
+
+            <div class="form-grid">
+
+                <div class="field full">
+
+                    <label for="website">
+                        Website
+                        <span class="optional">
+                            Optional
+                        </span>
+                    </label>
+
+                    <input
+                        type="url"
+                        id="website"
+                        name="website"
+                        placeholder="https://example.com"
+                        value="{{ form_data.get('website', '') if form_data else '' }}"
+                    >
+
+                    <div class="field-help">
+                        Use a complete URL beginning with http:// or https://.
+                    </div>
+
+                </div>
+
+
+                <div class="field full">
+
+                    <label for="social_links">
+                        Social Media Links
+                        <span class="optional">
+                            Optional
+                        </span>
+                    </label>
+
+                    <textarea
+                        id="social_links"
+                        name="social_links"
+                        placeholder="Instagram: https://instagram.com/yourbusiness&#10;Facebook: https://facebook.com/yourbusiness"
+                    >{{ form_data.get('social_links', '') if form_data else '' }}</textarea>
+
+                    <div class="field-help">
+                        You can add multiple social links on separate lines.
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ========================================
+             BUSINESS DETAILS
+        ======================================== -->
+
+        <section class="form-section">
+
+            <h2 class="section-title">
+                Business details
+            </h2>
+
+            <p class="section-description">
+                These details help AgencyOS understand the business
+                before a project is started.
+            </p>
+
+            <div class="form-grid">
+
+                <div class="field full">
+
+                    <label for="description">
+                        Business Description
+                        <span class="optional">
+                            Optional
+                        </span>
+                    </label>
+
+                    <textarea
+                        id="description"
+                        name="description"
+                        placeholder="Describe what your business does, what you sell, and what makes it different."
+                    >{{ form_data.get('description', '') if form_data else '' }}</textarea>
+
+                </div>
+
+
+                <div class="field full">
+
+                    <label for="target_audience">
+                        Target Audience
+                        <span class="optional">
+                            Optional
+                        </span>
+                    </label>
+
+                    <textarea
+                        id="target_audience"
+                        name="target_audience"
+                        placeholder="Who are your ideal customers?"
+                    >{{ form_data.get('target_audience', '') if form_data else '' }}</textarea>
+
+                </div>
+
+
+                <div class="field full">
+
+                    <label for="goals">
+                        Business Goals
+                        <span class="optional">
+                            Optional
+                        </span>
+                    </label>
+
+                    <textarea
+                        id="goals"
+                        name="goals"
+                        placeholder="Example: Get more local customers, increase online sales, improve Google visibility."
+                    >{{ form_data.get('goals', '') if form_data else '' }}</textarea>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="preferred_budget">
+                        Preferred Budget
+                        <span class="optional">
+                            Optional
+                        </span>
+                    </label>
+
+                    <input
+                        type="text"
+                        id="preferred_budget"
+                        name="preferred_budget"
+                        placeholder="Example: ₹10,000 - ₹25,000"
+                        value="{{ form_data.get('preferred_budget', '') if form_data else '' }}"
+                    >
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ========================================
+             ACTIONS
+        ======================================== -->
+
+        <div class="form-actions">
+
+            <a
+                href="{{ url_for('businesses') }}"
+                class="secondary-button"
+            >
+                Cancel
+            </a>
+
+            <button
+                type="submit"
+                class="primary-button"
+            >
+                Create Business
+                <span aria-hidden="true">→</span>
+            </button>
+
+        </div>
+
+    </form>
+
+</main>
+
+</body>
+</html>

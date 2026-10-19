@@ -1,0 +1,2317 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Project Review | AgencyOS{% endblock %}
+
+{% block extra_css %}
+<style>
+/* =========================================================
+   AGENCYOS — PROJECT REVIEW
+   Page-specific styles only
+   ========================================================= */
+
+.review-page {
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 4px 0 32px;
+}
+
+/* Header */
+
+.review-header {
+    margin-bottom: 22px;
+}
+
+.review-header h1 {
+    margin: 0;
+    color: var(--text-primary, #111827);
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+}
+
+.review-header p {
+    margin: 6px 0 0;
+    color: var(--text-secondary, #6b7280);
+    font-size: .9rem;
+}
+
+.review-count {
+    display: inline-flex;
+    margin-top: 12px;
+    padding: 5px 9px;
+    border: 1px solid #e5e7eb;
+    border-radius: 999px;
+    background: #f9fafb;
+    color: #4b5563;
+    font-size: .72rem;
+    font-weight: 700;
+}
+
+/* Controls */
+
+.review-controls {
+    margin-bottom: 18px;
+    padding: 15px;
+    border: 1px solid var(--border-color, #e5e7eb);
+    border-radius: 12px;
+    background: var(--card-bg, #fff);
+}
+
+.review-filter-grid {
+    display: grid;
+    grid-template-columns: minmax(220px, 2fr)
+                           repeat(3, minmax(130px, 1fr));
+    gap: 9px;
+}
+
+.search-wrapper {
+    position: relative;
+}
+
+.search-icon {
+    position: absolute;
+    left: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+    pointer-events: none;
+}
+
+.review-input,
+.review-select {
+    width: 100%;
+    min-height: 38px;
+    box-sizing: border-box;
+    padding: 8px 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #fff;
+    color: #111827;
+    font: inherit;
+    font-size: .8rem;
+    outline: none;
+}
+
+.review-search {
+    padding-left: 32px;
+}
+
+.review-input:focus,
+.review-select:focus {
+    border-color: #6b7280;
+    box-shadow: 0 0 0 3px rgba(107,114,128,.1);
+}
+
+.review-control-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 11px;
+    flex-wrap: wrap;
+}
+
+.review-actions {
+    display: flex;
+    gap: 7px;
+    flex-wrap: wrap;
+}
+
+.review-btn {
+    min-height: 34px;
+    padding: 6px 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+    background: #fff;
+    color: #374151;
+    font: inherit;
+    font-size: .72rem;
+    font-weight: 650;
+    cursor: pointer;
+}
+
+.review-btn:hover {
+    background: #f9fafb;
+    border-color: #9ca3af;
+}
+
+.review-btn:focus-visible,
+.history-toggle:focus-visible,
+.decision-btn:focus-visible {
+    outline: 2px solid #6b7280;
+    outline-offset: 2px;
+}
+
+.results-info {
+    color: #6b7280;
+    font-size: .75rem;
+    font-weight: 600;
+}
+
+.filter-chips {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: #f3f4f6;
+    color: #4b5563;
+    font-size: .68rem;
+    font-weight: 650;
+}
+
+.filter-chip button {
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: #6b7280;
+    cursor: pointer;
+    font-size: 13px;
+    line-height: 1;
+}
+
+/* Project list */
+
+.projects-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.project-card {
+    overflow: hidden;
+    border: 1px solid var(--border-color, #e5e7eb);
+    border-radius: 12px;
+    background: var(--card-bg, #fff);
+}
+
+.project-card:hover {
+    border-color: #d1d5db;
+}
+
+.project-card.hidden {
+    display: none;
+}
+
+.project-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 15px 17px;
+    cursor: pointer;
+}
+
+.project-main {
+    min-width: 0;
+    flex: 1;
+}
+
+.project-title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+}
+
+.project-title {
+    margin: 0;
+    color: #111827;
+    font-size: .95rem;
+    font-weight: 700;
+}
+
+.project-meta {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    color: #6b7280;
+    font-size: .72rem;
+}
+
+.project-meta strong {
+    color: #374151;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 22px;
+    padding: 4px 7px;
+    border-radius: 999px;
+    font-size: .64rem;
+    font-weight: 700;
+    line-height: 1.1;
+    white-space: nowrap;
+}
+
+.status-pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-payment {
+    background: #fff7ed;
+    color: #9a3412;
+}
+
+.status-assigned {
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.status-progress {
+    background: #eef2ff;
+    color: #4338ca;
+}
+
+.status-submitted {
+    background: #f5f3ff;
+    color: #6d28d9;
+}
+
+.status-revision {
+    background: #fff7ed;
+    color: #c2410c;
+}
+
+.status-completed {
+    background: #ecfdf5;
+    color: #047857;
+}
+
+.status-default {
+    background: #f3f4f6;
+    color: #4b5563;
+}
+
+.toggle-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+    border-radius: 7px;
+    background: #f9fafb;
+    color: #6b7280;
+    font-size: 17px;
+    transition: transform .2s ease, background .2s ease;
+}
+
+.project-card.expanded .toggle-icon {
+    transform: rotate(180deg);
+    background: #f3f4f6;
+    color: #374151;
+}
+
+/* Details */
+
+.project-details {
+    display: none;
+    padding: 17px;
+    border-top: 1px solid #eef0f2;
+    background: #fafafa;
+}
+
+.project-card.expanded .project-details {
+    display: block;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.detail-section {
+    min-width: 0;
+    padding: 13px;
+    border: 1px solid #e5e7eb;
+    border-radius: 9px;
+    background: #fff;
+}
+
+.detail-section.full-width {
+    grid-column: 1 / -1;
+}
+
+.detail-section h3 {
+    margin: 0 0 9px;
+    color: #374151;
+    font-size: .7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 6px 0;
+    border-bottom: 1px solid #f3f4f6;
+    font-size: .76rem;
+}
+
+.detail-row:last-child {
+    border-bottom: 0;
+}
+
+.detail-label {
+    color: #6b7280;
+    flex: 0 0 auto;
+}
+
+.detail-value {
+    color: #1f2937;
+    font-weight: 600;
+    text-align: right;
+    overflow-wrap: anywhere;
+}
+
+.requirements-box,
+.notes-box {
+    padding: 10px;
+    border: 1px solid #edf0f2;
+    border-radius: 7px;
+    background: #f9fafb;
+    color: #4b5563;
+    font-size: .76rem;
+    line-height: 1.55;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.muted {
+    color: #9ca3af;
+    font-size: .74rem;
+}
+
+/* Professional */
+
+.professional-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px;
+    border-radius: 8px;
+    background: #f9fafb;
+}
+
+.professional-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    border-radius: 50%;
+    background: #f3f4f6;
+    color: #374151;
+    font-size: .8rem;
+    font-weight: 700;
+}
+
+.professional-name {
+    color: #1f2937;
+    font-size: .76rem;
+    font-weight: 700;
+}
+
+.professional-email {
+    margin-top: 2px;
+    color: #6b7280;
+    font-size: .7rem;
+    overflow-wrap: anywhere;
+}
+
+/* Delivery */
+
+.delivery-links {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 9px;
+}
+
+.delivery-link {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 8px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    background: #fff;
+    color: #374151;
+    text-decoration: none;
+    font-size: .68rem;
+    font-weight: 650;
+}
+
+.delivery-link:hover {
+    background: #f9fafb;
+}
+
+/* History */
+
+.history-toggle {
+    padding: 5px 0;
+    border: 0;
+    background: transparent;
+    color: #4b5563;
+    font: inherit;
+    font-size: .7rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.history-list {
+    display: none;
+    flex-direction: column;
+    gap: 7px;
+    margin-top: 6px;
+}
+
+.history-list.open {
+    display: flex;
+}
+
+.history-item {
+    padding: 10px;
+    border: 1px solid #edf0f2;
+    border-radius: 7px;
+    background: #f9fafb;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+    font-size: .7rem;
+}
+
+.history-number {
+    color: #374151;
+    font-weight: 700;
+}
+
+.history-date {
+    color: #6b7280;
+}
+
+/* Decision */
+
+.decision-panel {
+    margin-top: 13px;
+    padding: 14px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.decision-panel h3 {
+    margin: 0 0 4px;
+    color: #111827;
+    font-size: .86rem;
+    font-weight: 700;
+}
+
+.decision-panel > p {
+    margin: 0 0 12px;
+    color: #6b7280;
+    font-size: .72rem;
+    line-height: 1.45;
+}
+
+.decision-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+}
+
+.decision-form {
+    padding: 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+}
+
+.decision-form.approve {
+    background: #f7fdf8;
+    border-color: #d1fae5;
+}
+
+.decision-form.revision {
+    background: #fffaf5;
+    border-color: #fed7aa;
+}
+
+.decision-form h4 {
+    margin: 0 0 4px;
+    color: #1f2937;
+    font-size: .76rem;
+    font-weight: 700;
+}
+
+.decision-form p {
+    margin: 0 0 9px;
+    color: #6b7280;
+    font-size: .7rem;
+    line-height: 1.45;
+}
+
+.revision-textarea {
+    width: 100%;
+    min-height: 88px;
+    box-sizing: border-box;
+    margin-bottom: 5px;
+    padding: 8px;
+    resize: vertical;
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+    background: #fff;
+    color: #111827;
+    font: inherit;
+    font-size: .74rem;
+    outline: none;
+}
+
+.revision-textarea:focus {
+    border-color: #9ca3af;
+    box-shadow: 0 0 0 3px rgba(107,114,128,.1);
+}
+
+.char-counter {
+    margin-bottom: 7px;
+    color: #9ca3af;
+    font-size: .65rem;
+    text-align: right;
+}
+
+.decision-btn {
+    width: 100%;
+    min-height: 38px;
+    border: 0;
+    border-radius: 7px;
+    cursor: pointer;
+    font: inherit;
+    font-size: .72rem;
+    font-weight: 700;
+}
+
+.decision-btn:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+}
+
+.approve-btn {
+    background: #15803d;
+    color: #fff;
+}
+
+.approve-btn:hover {
+    background: #166534;
+}
+
+.revision-btn {
+    background: #c2410c;
+    color: #fff;
+}
+
+.revision-btn:hover {
+    background: #9a3412;
+}
+
+/* Empty */
+
+.empty-state {
+    display: none;
+    padding: 45px 20px;
+    border: 1px dashed #d1d5db;
+    border-radius: 12px;
+    background: #fff;
+    text-align: center;
+}
+
+.empty-state.visible {
+    display: block;
+}
+
+.empty-state-icon {
+    margin-bottom: 7px;
+    color: #9ca3af;
+    font-size: 28px;
+}
+
+.empty-state h3 {
+    margin: 0 0 4px;
+    color: #374151;
+    font-size: .9rem;
+}
+
+.empty-state p {
+    margin: 0;
+    color: #6b7280;
+    font-size: .74rem;
+}
+
+/* Responsive */
+
+@media (max-width: 1050px) {
+    .review-filter-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .search-wrapper {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 760px) {
+    .review-page {
+        padding-bottom: 24px;
+    }
+
+    .review-header h1 {
+        font-size: 1.45rem;
+    }
+
+    .review-filter-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .search-wrapper {
+        grid-column: auto;
+    }
+
+    .detail-grid,
+    .decision-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .detail-section.full-width {
+        grid-column: auto;
+    }
+
+    .project-summary {
+        padding: 13px;
+    }
+
+    .project-details {
+        padding: 13px;
+    }
+
+    .detail-row {
+        flex-direction: column;
+        gap: 3px;
+    }
+
+    .detail-value {
+        text-align: left;
+    }
+}
+
+@media (max-width: 480px) {
+    .review-controls {
+        padding: 12px;
+    }
+
+    .review-control-row {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .review-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .review-btn {
+        width: 100%;
+    }
+
+    .project-meta {
+        flex-direction: column;
+        gap: 4px;
+    }
+}
+</style>
+{% endblock %}
+
+
+{% block content %}
+<main class="review-page">
+
+    <!-- =====================================================
+         HEADER
+         ===================================================== -->
+
+    <header class="review-header">
+
+        <h1>Project Review</h1>
+
+        <p>
+            Review professional submissions and manage project completion.
+        </p>
+
+        <div class="review-count">
+            {{ projects|length }}
+            Project{% if projects|length != 1 %}s{% endif %}
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         FILTERS
+         ===================================================== -->
+
+    <section
+        class="review-controls"
+        aria-label="Project review filters"
+    >
+
+        <div class="review-filter-grid">
+
+            <div class="search-wrapper">
+
+                <span
+                    class="search-icon"
+                    aria-hidden="true"
+                >
+                    ⌕
+                </span>
+
+                <input
+                    type="search"
+                    id="projectSearch"
+                    class="review-input review-search"
+                    placeholder="Search projects, customers or packages..."
+                    aria-label="Search projects"
+                    autocomplete="off"
+                >
+
+            </div>
+
+
+            <select
+                id="statusFilter"
+                class="review-select"
+                aria-label="Filter by status"
+            >
+                <option value="">All Statuses</option>
+                <option value="Pending Assignment">Pending Assignment</option>
+                <option value="Payment Pending">Payment Pending</option>
+                <option value="Assigned">Assigned</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Submitted">Submitted</option>
+                <option value="Revision">Revision</option>
+                <option value="Completed">Completed</option>
+            </select>
+
+
+            <select
+                id="serviceFilter"
+                class="review-select"
+                aria-label="Filter by service"
+            >
+                <option value="">All Services</option>
+
+                {% set service_names = [] %}
+
+                {% for project in projects %}
+                    {% if project.service not in service_names %}
+                        {% set _ = service_names.append(project.service) %}
+                    {% endif %}
+                {% endfor %}
+
+                {% for service in service_names|sort %}
+                    <option value="{{ service }}">
+                        {{ service }}
+                    </option>
+                {% endfor %}
+
+            </select>
+
+
+            <select
+                id="packageFilter"
+                class="review-select"
+                aria-label="Filter by package"
+            >
+                <option value="">All Packages</option>
+
+                {% set package_names = [] %}
+
+                {% for project in projects %}
+                    {% if project.package and project.package not in package_names %}
+                        {% set _ = package_names.append(project.package) %}
+                    {% endif %}
+                {% endfor %}
+
+                {% for package in package_names|sort %}
+                    <option value="{{ package }}">
+                        {{ package }}
+                    </option>
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+        <div class="review-control-row">
+
+            <div class="review-actions">
+
+                <button
+                    type="button"
+                    class="review-btn"
+                    id="expandAllBtn"
+                >
+                    Expand All
+                </button>
+
+                <button
+                    type="button"
+                    class="review-btn"
+                    id="collapseAllBtn"
+                >
+                    Collapse All
+                </button>
+
+                <button
+                    type="button"
+                    class="review-btn"
+                    id="clearFiltersBtn"
+                >
+                    Clear Filters
+                </button>
+
+            </div>
+
+
+            <div
+                class="results-info"
+                id="resultsInfo"
+                aria-live="polite"
+            >
+                Showing {{ projects|length }}
+                of {{ projects|length }} projects
+            </div>
+
+        </div>
+
+
+        <div
+            class="filter-chips"
+            id="filterChips"
+            aria-live="polite"
+        ></div>
+
+    </section>
+
+
+    <!-- =====================================================
+         PROJECTS
+         ===================================================== -->
+
+    <section
+        class="projects-list"
+        id="projectsList"
+        aria-label="Projects"
+    >
+
+        {% for project in projects %}
+
+            {% set current_delivery = project_deliveries.get(project.id) %}
+            {% set assigned_application = project_applications.get(project.id) %}
+            {% set history_deliveries = project.deliveries|default([]) %}
+
+
+            <article
+                class="project-card"
+                data-project-id="{{ project.id }}"
+                data-status="{{ project.status|default('') }}"
+                data-service="{{ project.service|default('') }}"
+                data-package="{{ project.package|default('') }}"
+                data-search="
+                    {{ project.id }}
+                    {{ project.service|default('') }}
+                    {{ project.package|default('') }}
+                    {{ project.status|default('') }}
+                    {{ project.customer.name|default('') if project.customer else '' }}
+                    {{ project.customer.email|default('') if project.customer else '' }}
+                "
+            >
+
+                <!-- PROJECT SUMMARY -->
+
+                <div
+                    class="project-summary"
+                    role="button"
+                    tabindex="0"
+                    aria-expanded="false"
+                    aria-controls="project-details-{{ project.id }}"
+                >
+
+                    <div class="project-main">
+
+                        <div class="project-title-row">
+
+                            <h2 class="project-title">
+                                Project #{{ project.id }}
+                            </h2>
+
+
+                            {% set status_class = "status-default" %}
+
+                            {% if project.status == "Pending Assignment" %}
+                                {% set status_class = "status-pending" %}
+
+                            {% elif project.status == "Payment Pending" %}
+                                {% set status_class = "status-payment" %}
+
+                            {% elif project.status == "Assigned" %}
+                                {% set status_class = "status-assigned" %}
+
+                            {% elif project.status == "In Progress" %}
+                                {% set status_class = "status-progress" %}
+
+                            {% elif project.status == "Submitted" %}
+                                {% set status_class = "status-submitted" %}
+
+                            {% elif project.status == "Revision" %}
+                                {% set status_class = "status-revision" %}
+
+                            {% elif project.status == "Completed" %}
+                                {% set status_class = "status-completed" %}
+                            {% endif %}
+
+
+                            <span class="status-badge {{ status_class }}">
+                                {{ project.status }}
+                            </span>
+
+                        </div>
+
+
+                        <div class="project-meta">
+
+                            <span>
+                                <strong>Service:</strong>
+                                {{ project.service }}
+                            </span>
+
+
+                            {% if project.package %}
+
+                                <span>
+                                    <strong>Package:</strong>
+                                    {{ project.package }}
+                                </span>
+
+                            {% endif %}
+
+
+                            {% if project.customer %}
+
+                                <span>
+                                    <strong>Customer:</strong>
+                                    {{ project.customer.name }}
+                                </span>
+
+                            {% endif %}
+
+
+                            <span>
+                                <strong>Created:</strong>
+
+                                {{
+                                    project.created_at.strftime(
+                                        '%d %b %Y, %I:%M %p'
+                                    )
+                                    if project.created_at
+                                    else 'N/A'
+                                }}
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        class="toggle-icon"
+                        aria-hidden="true"
+                    >
+                        ⌄
+                    </div>
+
+                </div>
+
+
+                <!-- PROJECT DETAILS -->
+
+                <div
+                    class="project-details"
+                    id="project-details-{{ project.id }}"
+                >
+
+                    <div class="detail-grid">
+
+                        <!-- PROJECT INFORMATION -->
+
+                        <section class="detail-section">
+
+                            <h3>Project Information</h3>
+
+                            <div class="detail-row">
+                                <span class="detail-label">
+                                    Project ID
+                                </span>
+
+                                <span class="detail-value">
+                                    #{{ project.id }}
+                                </span>
+                            </div>
+
+
+                            <div class="detail-row">
+                                <span class="detail-label">
+                                    Service
+                                </span>
+
+                                <span class="detail-value">
+                                    {{ project.service }}
+                                </span>
+                            </div>
+
+
+                            <div class="detail-row">
+                                <span class="detail-label">
+                                    Package
+                                </span>
+
+                                <span class="detail-value">
+                                    {{ project.package or 'Not specified' }}
+                                </span>
+                            </div>
+
+
+                            <div class="detail-row">
+                                <span class="detail-label">
+                                    Status
+                                </span>
+
+                                <span class="detail-value">
+                                    {{ project.status }}
+                                </span>
+                            </div>
+
+
+                            <div class="detail-row">
+                                <span class="detail-label">
+                                    Created
+                                </span>
+
+                                <span class="detail-value">
+                                    {{
+                                        project.created_at.strftime(
+                                            '%d %b %Y, %I:%M %p'
+                                        )
+                                        if project.created_at
+                                        else 'N/A'
+                                    }}
+                                </span>
+                            </div>
+
+                        </section>
+
+
+                        <!-- CUSTOMER -->
+
+                        <section class="detail-section">
+
+                            <h3>Customer</h3>
+
+                            {% if project.customer %}
+
+                                <div class="detail-row">
+                                    <span class="detail-label">
+                                        Name
+                                    </span>
+
+                                    <span class="detail-value">
+                                        {{ project.customer.name }}
+                                    </span>
+                                </div>
+
+
+                                <div class="detail-row">
+                                    <span class="detail-label">
+                                        Email
+                                    </span>
+
+                                    <span class="detail-value">
+                                        {{ project.customer.email }}
+                                    </span>
+                                </div>
+
+                            {% else %}
+
+                                <span class="muted">
+                                    Customer information unavailable.
+                                </span>
+
+                            {% endif %}
+
+                        </section>
+
+
+                        <!-- REQUIREMENTS -->
+
+                        <section class="detail-section full-width">
+
+                            <h3>Customer Requirements</h3>
+
+                            {% if project.requirements %}
+
+                                <div class="requirements-box">
+                                    {{ project.requirements }}
+                                </div>
+
+                            {% else %}
+
+                                <span class="muted">
+                                    No requirements were submitted.
+                                </span>
+
+                            {% endif %}
+
+                        </section>
+
+
+                        <!-- PROFESSIONAL -->
+
+                        <section class="detail-section">
+
+                            <h3>Assigned Professional</h3>
+
+                            {% if assigned_application and assigned_application.professional %}
+
+                                {% set professional = assigned_application.professional %}
+
+                                <div class="professional-card">
+
+                                    <div class="professional-avatar">
+                                        {{ professional.name[:1]|upper }}
+                                    </div>
+
+                                    <div>
+
+                                        <div class="professional-name">
+                                            {{ professional.name }}
+                                        </div>
+
+                                        <div class="professional-email">
+                                            {{ professional.email }}
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            {% else %}
+
+                                <span class="muted">
+                                    No professional has been assigned yet.
+                                </span>
+
+                            {% endif %}
+
+                        </section>
+
+
+                        <!-- DELIVERY -->
+
+                        <section class="detail-section">
+
+                            <h3>Latest Delivery</h3>
+
+                            {% if current_delivery %}
+
+                                <div class="detail-row">
+                                    <span class="detail-label">
+                                        Submission
+                                    </span>
+
+                                    <span class="detail-value">
+                                        #{{ current_delivery.submission_number }}
+                                    </span>
+                                </div>
+
+
+                                <div class="detail-row">
+                                    <span class="detail-label">
+                                        Status
+                                    </span>
+
+                                    <span class="detail-value">
+                                        {{ current_delivery.status or 'Submitted' }}
+                                    </span>
+                                </div>
+
+
+                                <div class="detail-row">
+                                    <span class="detail-label">
+                                        Submitted
+                                    </span>
+
+                                    <span class="detail-value">
+
+                                        {{
+                                            current_delivery.submitted_at.strftime(
+                                                '%d %b %Y, %I:%M %p'
+                                            )
+                                            if current_delivery.submitted_at
+                                            else 'N/A'
+                                        }}
+
+                                    </span>
+                                </div>
+
+
+                                {% if current_delivery.completion_notes %}
+
+                                    <div style="margin-top:9px;">
+
+                                        <div
+                                            class="detail-label"
+                                            style="margin-bottom:5px;"
+                                        >
+                                            Completion Notes
+                                        </div>
+
+                                        <div class="notes-box">
+                                            {{ current_delivery.completion_notes }}
+                                        </div>
+
+                                    </div>
+
+                                {% endif %}
+
+
+                                <div class="delivery-links">
+
+                                    {% if current_delivery.live_url %}
+
+                                        <a
+                                            href="{{ current_delivery.live_url }}"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="delivery-link"
+                                        >
+                                            Live Website ↗
+                                        </a>
+
+                                    {% endif %}
+
+
+                                    {% if current_delivery.preview_url %}
+
+                                        <a
+                                            href="{{ current_delivery.preview_url }}"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="delivery-link"
+                                        >
+                                            Preview ↗
+                                        </a>
+
+                                    {% endif %}
+
+
+                                    {% if current_delivery.source_url %}
+
+                                        <a
+                                            href="{{ current_delivery.source_url }}"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="delivery-link"
+                                        >
+                                            Source Code ↗
+                                        </a>
+
+                                    {% endif %}
+
+                                </div>
+
+                            {% else %}
+
+                                <span class="muted">
+                                    No delivery has been submitted yet.
+                                </span>
+
+                            {% endif %}
+
+                        </section>
+
+
+                        <!-- SUBMISSION HISTORY -->
+
+                        <section class="detail-section full-width">
+
+                            <h3>Submission History</h3>
+
+                            {% if history_deliveries|length > 0 %}
+
+                                {% if history_deliveries|length > 1 %}
+
+                                    <button
+                                        type="button"
+                                        class="history-toggle"
+                                        data-project="{{ project.id }}"
+                                    >
+                                        Show submission history
+                                    </button>
+
+                                {% endif %}
+
+
+                                <div
+                                    class="history-list"
+                                    id="history-{{ project.id }}"
+                                >
+
+                                    {% for history_delivery in history_deliveries|sort(
+                                        attribute='submission_number',
+                                        reverse=true
+                                    ) %}
+
+                                        <div class="history-item">
+
+                                            <div class="history-header">
+
+                                                <span class="history-number">
+                                                    Submission #{{ history_delivery.submission_number }}
+                                                </span>
+
+                                                <span class="history-date">
+
+                                                    {{
+                                                        history_delivery.submitted_at.strftime(
+                                                            '%d %b %Y, %I:%M %p'
+                                                        )
+                                                        if history_delivery.submitted_at
+                                                        else 'Date unavailable'
+                                                    }}
+
+                                                </span>
+
+                                            </div>
+
+
+                                            <div style="margin-bottom:5px;">
+
+                                                <span class="status-badge status-default">
+                                                    {{ history_delivery.status or 'Submitted' }}
+                                                </span>
+
+                                            </div>
+
+
+                                            {% if history_delivery.completion_notes %}
+
+                                                <div class="notes-box">
+                                                    {{ history_delivery.completion_notes }}
+                                                </div>
+
+                                            {% endif %}
+
+
+                                            {% if history_delivery.review_comment %}
+
+                                                <div style="margin-top:7px;">
+
+                                                    <div
+                                                        class="detail-label"
+                                                        style="margin-bottom:5px;"
+                                                    >
+                                                        Admin Review
+                                                    </div>
+
+                                                    <div class="notes-box">
+                                                        {{ history_delivery.review_comment }}
+                                                    </div>
+
+                                                </div>
+
+                                            {% endif %}
+
+                                        </div>
+
+                                    {% endfor %}
+
+                                </div>
+
+                            {% else %}
+
+                                <span class="muted">
+                                    No submission history available.
+                                </span>
+
+                            {% endif %}
+
+                        </section>
+
+                    </div>
+                    <!-- =================================================
+                         ADMIN DECISION
+                         ================================================= -->
+
+                    {% if project.status == "Submitted" or project.status == "Revision" %}
+
+                        <section class="decision-panel">
+
+                            <h3>Admin Decision</h3>
+
+                            <p>
+                                Review the latest professional submission
+                                before approving the project or requesting changes.
+                            </p>
+
+
+                            <div class="decision-grid">
+
+                                <!-- APPROVE -->
+
+                                <div class="decision-form approve">
+
+                                    <h4>
+                                        Approve Project
+                                    </h4>
+
+                                    <p>
+                                        Approving marks the project as completed
+                                        and finishes the current delivery cycle.
+                                    </p>
+
+
+                                    <form
+                                        method="POST"
+                                        action="{{ url_for(
+                                            'approve_project',
+                                            project_id=project.id
+                                        ) }}"
+                                        class="approve-form"
+                                    >
+
+                                        <button
+                                            type="submit"
+                                            class="decision-btn approve-btn"
+                                        >
+                                            ✓ Approve & Complete Project
+                                        </button>
+
+                                    </form>
+
+                                </div>
+
+
+                                <!-- REVISION -->
+
+                                <div class="decision-form revision">
+
+                                    <h4>
+                                        Request Revision
+                                    </h4>
+
+                                    <p>
+                                        Send the professional back for changes.
+                                        Revisions can continue as required.
+                                    </p>
+
+
+                                    <form
+                                        method="POST"
+                                        action="{{ url_for(
+                                            'request_project_revision',
+                                            project_id=project.id
+                                        ) }}"
+                                        class="revision-form"
+                                    >
+
+                                        <textarea
+                                            name="revision_comment"
+                                            class="revision-textarea"
+                                            maxlength="1000"
+                                            placeholder="Explain what needs to be changed..."
+                                            required
+                                        ></textarea>
+
+
+                                        <div
+                                            class="char-counter"
+                                            data-counter
+                                        >
+                                            0 / 1000
+                                        </div>
+
+
+                                        <button
+                                            type="submit"
+                                            class="decision-btn revision-btn"
+                                        >
+                                            ↻ Request Revision
+                                        </button>
+
+                                    </form>
+
+                                </div>
+
+                            </div>
+
+                        </section>
+
+
+                    {% elif project.status == "Completed" %}
+
+                        <section class="decision-panel">
+
+                            <h3>
+                                Project Completed
+                            </h3>
+
+                            <p>
+                                This project has already been approved and completed.
+                            </p>
+
+                        </section>
+
+                    {% endif %}
+
+                </div>
+
+            </article>
+
+        {% endfor %}
+
+    </section>
+
+
+    <!-- EMPTY STATE -->
+
+    <div
+        class="empty-state"
+        id="emptyState"
+    >
+
+        <div
+            class="empty-state-icon"
+            aria-hidden="true"
+        >
+            ⌕
+        </div>
+
+        <h3>
+            No projects found
+        </h3>
+
+        <p>
+            Try changing your search or filter criteria.
+        </p>
+
+    </div>
+
+</main>
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+(function () {
+    "use strict";
+
+    /* =====================================================
+       ELEMENTS
+       ===================================================== */
+
+    const searchInput =
+        document.getElementById("projectSearch");
+
+    const statusFilter =
+        document.getElementById("statusFilter");
+
+    const serviceFilter =
+        document.getElementById("serviceFilter");
+
+    const packageFilter =
+        document.getElementById("packageFilter");
+
+    const expandAllBtn =
+        document.getElementById("expandAllBtn");
+
+    const collapseAllBtn =
+        document.getElementById("collapseAllBtn");
+
+    const clearFiltersBtn =
+        document.getElementById("clearFiltersBtn");
+
+    const filterChips =
+        document.getElementById("filterChips");
+
+    const resultsInfo =
+        document.getElementById("resultsInfo");
+
+    const emptyState =
+        document.getElementById("emptyState");
+
+    const projectCards =
+        Array.from(
+            document.querySelectorAll(".project-card")
+        );
+
+
+    /* =====================================================
+       HELPERS
+       ===================================================== */
+
+    function normalize(value) {
+        return String(value || "")
+            .trim()
+            .toLowerCase();
+    }
+
+
+    function setExpanded(card, expanded) {
+
+        card.classList.toggle(
+            "expanded",
+            expanded
+        );
+
+        const summary =
+            card.querySelector(".project-summary");
+
+        if (summary) {
+            summary.setAttribute(
+                "aria-expanded",
+                expanded ? "true" : "false"
+            );
+        }
+    }
+
+
+    /* =====================================================
+       FILTERING
+       ===================================================== */
+
+    function updateResults() {
+
+        const searchTerm =
+            normalize(searchInput.value);
+
+        const selectedStatus =
+            normalize(statusFilter.value);
+
+        const selectedService =
+            normalize(serviceFilter.value);
+
+        const selectedPackage =
+            normalize(packageFilter.value);
+
+        let visibleCount = 0;
+
+
+        projectCards.forEach(function (card) {
+
+            const searchData =
+                normalize(card.dataset.search);
+
+            const cardStatus =
+                normalize(card.dataset.status);
+
+            const cardService =
+                normalize(card.dataset.service);
+
+            const cardPackage =
+                normalize(card.dataset.package);
+
+
+            const matchesSearch =
+                !searchTerm ||
+                searchData.includes(searchTerm);
+
+            const matchesStatus =
+                !selectedStatus ||
+                cardStatus === selectedStatus;
+
+            const matchesService =
+                !selectedService ||
+                cardService === selectedService;
+
+            const matchesPackage =
+                !selectedPackage ||
+                cardPackage === selectedPackage;
+
+
+            const visible =
+                matchesSearch &&
+                matchesStatus &&
+                matchesService &&
+                matchesPackage;
+
+
+            card.classList.toggle(
+                "hidden",
+                !visible
+            );
+
+
+            if (visible) {
+                visibleCount++;
+            }
+        });
+
+
+        const totalCount =
+            projectCards.length;
+
+
+        resultsInfo.textContent =
+            "Showing " +
+            visibleCount +
+            " of " +
+            totalCount +
+            " projects";
+
+
+        emptyState.classList.toggle(
+            "visible",
+            visibleCount === 0
+        );
+
+
+        updateFilterChips();
+    }
+
+
+    /* =====================================================
+       FILTER CHIPS
+       ===================================================== */
+
+    function updateFilterChips() {
+
+        filterChips.innerHTML = "";
+
+
+        const filters = [
+            {
+                label: "Search",
+                value: searchInput.value,
+                clear: function () {
+                    searchInput.value = "";
+                }
+            },
+            {
+                label: "Status",
+                value: statusFilter.value,
+                clear: function () {
+                    statusFilter.value = "";
+                }
+            },
+            {
+                label: "Service",
+                value: serviceFilter.value,
+                clear: function () {
+                    serviceFilter.value = "";
+                }
+            },
+            {
+                label: "Package",
+                value: packageFilter.value,
+                clear: function () {
+                    packageFilter.value = "";
+                }
+            }
+        ];
+
+
+        filters.forEach(function (filter) {
+
+            if (!String(filter.value || "").trim()) {
+                return;
+            }
+
+
+            const chip =
+                document.createElement("span");
+
+            chip.className =
+                "filter-chip";
+
+
+            const text =
+                document.createElement("span");
+
+            text.textContent =
+                filter.label +
+                ": " +
+                filter.value;
+
+
+            const closeButton =
+                document.createElement("button");
+
+            closeButton.type = "button";
+
+            closeButton.setAttribute(
+                "aria-label",
+                "Remove " +
+                filter.label +
+                " filter"
+            );
+
+            closeButton.textContent = "×";
+
+
+            closeButton.addEventListener(
+                "click",
+                function () {
+
+                    filter.clear();
+
+                    updateResults();
+                }
+            );
+
+
+            chip.appendChild(text);
+            chip.appendChild(closeButton);
+
+            filterChips.appendChild(chip);
+        });
+    }
+
+
+    /* =====================================================
+       PROJECT EXPANSION
+       ===================================================== */
+
+    projectCards.forEach(function (card) {
+
+        const summary =
+            card.querySelector(".project-summary");
+
+
+        if (!summary) {
+            return;
+        }
+
+
+        summary.addEventListener(
+            "click",
+            function () {
+
+                const expanded =
+                    card.classList.contains("expanded");
+
+                setExpanded(
+                    card,
+                    !expanded
+                );
+            }
+        );
+
+
+        summary.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.key === "Enter" ||
+                    event.key === " "
+                ) {
+
+                    event.preventDefault();
+
+                    const expanded =
+                        card.classList.contains(
+                            "expanded"
+                        );
+
+                    setExpanded(
+                        card,
+                        !expanded
+                    );
+                }
+            }
+        );
+    });
+
+
+    /* =====================================================
+       EXPAND / COLLAPSE ALL
+       ===================================================== */
+
+    expandAllBtn.addEventListener(
+        "click",
+        function () {
+
+            projectCards.forEach(
+                function (card) {
+
+                    if (
+                        !card.classList.contains(
+                            "hidden"
+                        )
+                    ) {
+                        setExpanded(
+                            card,
+                            true
+                        );
+                    }
+                }
+            );
+        }
+    );
+
+
+    collapseAllBtn.addEventListener(
+        "click",
+        function () {
+
+            projectCards.forEach(
+                function (card) {
+
+                    setExpanded(
+                        card,
+                        false
+                    );
+                }
+            );
+        }
+    );
+
+
+    /* =====================================================
+       CLEAR FILTERS
+       ===================================================== */
+
+    clearFiltersBtn.addEventListener(
+        "click",
+        function () {
+
+            searchInput.value = "";
+            statusFilter.value = "";
+            serviceFilter.value = "";
+            packageFilter.value = "";
+
+            updateResults();
+
+            searchInput.focus();
+        }
+    );
+
+
+    searchInput.addEventListener(
+        "input",
+        updateResults
+    );
+
+    statusFilter.addEventListener(
+        "change",
+        updateResults
+    );
+
+    serviceFilter.addEventListener(
+        "change",
+        updateResults
+    );
+
+    packageFilter.addEventListener(
+        "change",
+        updateResults
+    );
+
+
+    /* =====================================================
+       SUBMISSION HISTORY
+       ===================================================== */
+
+    document
+        .querySelectorAll(".history-toggle")
+        .forEach(function (button) {
+
+            button.addEventListener(
+                "click",
+                function (event) {
+
+                    event.stopPropagation();
+
+
+                    const projectId =
+                        button.dataset.project;
+
+
+                    const history =
+                        document.getElementById(
+                            "history-" +
+                            projectId
+                        );
+
+
+                    if (!history) {
+                        return;
+                    }
+
+
+                    const isOpen =
+                        history.classList.toggle(
+                            "open"
+                        );
+
+
+                    button.textContent =
+                        isOpen
+                            ? "Hide submission history"
+                            : "Show submission history";
+                }
+            );
+        });
+
+
+    /* =====================================================
+       REVISION CHARACTER COUNTERS
+       ===================================================== */
+
+    document
+        .querySelectorAll(".revision-textarea")
+        .forEach(function (textarea) {
+
+            const counter =
+                textarea.parentElement.querySelector(
+                    "[data-counter]"
+                );
+
+
+            function updateCounter() {
+
+                if (!counter) {
+                    return;
+                }
+
+
+                counter.textContent =
+                    textarea.value.length +
+                    " / " +
+                    textarea.maxLength;
+            }
+
+
+            textarea.addEventListener(
+                "input",
+                updateCounter
+            );
+
+
+            updateCounter();
+        });
+
+
+    /* =====================================================
+       APPROVE CONFIRMATION
+       ===================================================== */
+
+    document
+        .querySelectorAll(".approve-form")
+        .forEach(function (form) {
+
+            form.addEventListener(
+                "submit",
+                function (event) {
+
+                    const confirmed =
+                        window.confirm(
+                            "Are you sure you want to approve this project and mark it as completed?"
+                        );
+
+
+                    if (!confirmed) {
+
+                        event.preventDefault();
+
+                        return;
+                    }
+
+
+                    const button =
+                        form.querySelector(
+                            "button[type='submit']"
+                        );
+
+
+                    if (button) {
+
+                        button.disabled = true;
+
+                        button.textContent =
+                            "Approving...";
+                    }
+                }
+            );
+        });
+
+
+    /* =====================================================
+       REVISION CONFIRMATION
+       ===================================================== */
+
+    document
+        .querySelectorAll(".revision-form")
+        .forEach(function (form) {
+
+            form.addEventListener(
+                "submit",
+                function (event) {
+
+                    const textarea =
+                        form.querySelector(
+                            "textarea[name='revision_comment']"
+                        );
+
+
+                    const comment =
+                        textarea
+                            ? textarea.value.trim()
+                            : "";
+
+
+                    if (!comment) {
+
+                        event.preventDefault();
+
+
+                        if (textarea) {
+                            textarea.focus();
+                        }
+
+
+                        window.alert(
+                            "Please enter a revision comment before requesting a revision."
+                        );
+
+                        return;
+                    }
+
+
+                    const confirmed =
+                        window.confirm(
+                            "Request a revision for this project?"
+                        );
+
+
+                    if (!confirmed) {
+
+                        event.preventDefault();
+
+                        return;
+                    }
+
+
+                    const button =
+                        form.querySelector(
+                            "button[type='submit']"
+                        );
+
+
+                    if (button) {
+
+                        button.disabled = true;
+
+                        button.textContent =
+                            "Requesting Revision...";
+                    }
+                }
+            );
+        });
+
+
+    /* =====================================================
+       KEYBOARD SHORTCUTS
+       ===================================================== */
+
+    document.addEventListener(
+        "keydown",
+        function (event) {
+
+            const target =
+                event.target;
+
+
+            const isTyping =
+                target &&
+                (
+                    target.tagName === "INPUT" ||
+                    target.tagName === "TEXTAREA" ||
+                    target.tagName === "SELECT" ||
+                    target.isContentEditable
+                );
+
+
+            /*
+             * "/" focuses search.
+             */
+
+            if (
+                event.key === "/" &&
+                !isTyping
+            ) {
+
+                event.preventDefault();
+
+                searchInput.focus();
+
+                return;
+            }
+
+
+            /*
+             * Escape clears search.
+             */
+
+            if (
+                event.key === "Escape" &&
+                document.activeElement === searchInput
+            ) {
+
+                searchInput.value = "";
+
+                updateResults();
+
+                searchInput.blur();
+            }
+        }
+    );
+
+
+    /* =====================================================
+       INITIALIZE
+       ===================================================== */
+
+    updateResults();
+
+})();
+</script>
+{% endblock %}
