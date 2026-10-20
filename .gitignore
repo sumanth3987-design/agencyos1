@@ -4,6 +4,8 @@
 !.env.example
 !.env.sample
 !.env.template
+
+# Secrets and credentials
 secrets/
 credentials/
 **/credentials.json
@@ -19,7 +21,7 @@ __pycache__/
 .mypy_cache/
 .ruff_cache/
 
-# Local databases and database backups
+# Local databases and backups
 *.db
 *.sqlite
 *.sqlite3

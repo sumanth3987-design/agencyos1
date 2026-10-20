@@ -1,0 +1,6 @@
+{
+  "name": "AgencyOS",
+  "description": "Next-generation agency operating system with AI project scoping, visual workspace review, milestone escrow, and verified talent.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
