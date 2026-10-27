@@ -1021,7 +1021,7 @@ class TestGenuineConcurrency:
                 "SQLALCHEMY_DATABASE_URI": "sqlite:///"
                 + path.replace(os.sep, "/"),
                 "WTF_CSRF_ENABLED": True,
-                "SECRET_KEY": "concurrency-test-secret",
+                "SECRET_KEY": "concurrency-test-secret-0123456789abcdef",
                 "SQLALCHEMY_TRACK_MODIFICATIONS": False,
                 "SQLALCHEMY_ENGINE_OPTIONS": {
                     "connect_args": {"timeout": 30}

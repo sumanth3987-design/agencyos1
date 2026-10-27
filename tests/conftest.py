@@ -148,7 +148,7 @@ def app():
             "SQLALCHEMY_BINDS": {},
             "SQLALCHEMY_ENGINE_OPTIONS": sqlalchemy_engine_options,
             "WTF_CSRF_ENABLED": True,
-            "SECRET_KEY": "test-secret-key",
+            "SECRET_KEY": "test-secret-key-0123456789abcdef0123456789abcdef",
         })
     except Exception as exc:
         # Fail closed: do not silently fall back to another database.

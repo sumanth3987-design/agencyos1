@@ -5,6 +5,7 @@ from app.config import (
     config_by_name,
     validate_production_secret_key,
     validate_production_razorpay_credentials,
+    validate_secret_key,
 )
 from app.extensions import db, login_manager, csrf
 
@@ -63,8 +64,14 @@ def create_app(config_name="default", config_overrides=None):
         # Fail safely in production when the secret is missing or insecure.
         # Validated after overrides are applied.
         validate_production_secret_key(app.config.get("SECRET_KEY"))
-        # Fail safely in production when Razorpay credentials are missing
-        # or still set to development placeholders.
+    else:
+        # Development and default configurations require a usable SECRET_KEY
+        # after overrides are applied, without production-strength checks.
+        validate_secret_key(app.config.get("SECRET_KEY"), production=False)
+
+    # Fail safely in production when Razorpay credentials are missing
+    # or still set to development placeholders.
+    if config_name == "production":
         validate_production_razorpay_credentials(
             app.config.get("RAZORPAY_KEY_ID"),
             app.config.get("RAZORPAY_KEY_SECRET"),

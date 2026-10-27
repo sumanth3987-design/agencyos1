@@ -5,7 +5,7 @@ import secrets
 import pytest
 
 from app import create_app
-from app.config import resolve_flask_env, validate_production_secret_key
+from app.config import resolve_flask_env, validate_production_secret_key, validate_secret_key, InsecureSecretKeyError
 
 
 def test_missing_env_defaults_to_production(monkeypatch):
@@ -85,3 +85,69 @@ def test_modular_app_does_not_execute_legacy():
     sys.modules.pop("app_legacy", None)
     import app  # noqa: F401
     assert "app_legacy" not in sys.modules
+
+def test_validate_secret_key_rejects_missing():
+    for value in (None, "", "   "):
+        with pytest.raises(InsecureSecretKeyError):
+            validate_secret_key(value, production=False)
+
+def test_validate_secret_key_rejects_non_string():
+    with pytest.raises(InsecureSecretKeyError):
+        validate_secret_key(123, production=False)
+
+def test_validate_secret_key_rejects_short():
+    with pytest.raises(InsecureSecretKeyError):
+        validate_secret_key("short", production=False)
+
+def test_validate_secret_key_accepts_strong():
+    validate_secret_key(secrets.token_urlsafe(32), production=False)
+
+def test_production_config_has_secure_cookies():
+    strong = secrets.token_urlsafe(32)
+    app = create_app("production", {"SECRET_KEY": strong})
+    assert app.config["SESSION_COOKIE_SECURE"] is True
+    assert app.config["REMEMBER_COOKIE_SECURE"] is True
+    assert app.config["SESSION_COOKIE_HTTPONLY"] is True
+    assert app.config["SESSION_COOKIE_SAMESITE"] == "Lax"
+
+def test_development_config_allows_insecure_cookies():
+    strong = secrets.token_urlsafe(32)
+    app = create_app("development", {"SECRET_KEY": strong})
+    assert app.config["SESSION_COOKIE_SECURE"] is False
+    assert app.config["REMEMBER_COOKIE_SECURE"] is False
+    assert app.config["SESSION_COOKIE_HTTPONLY"] is True
+    assert app.config["SESSION_COOKIE_SAMESITE"] == "Lax"
+
+
+def test_create_app_rejects_invalid_secret_override_development():
+    for value in (None, "", "   ", 123, "short"):
+        with pytest.raises(InsecureSecretKeyError):
+            create_app("development", {"SECRET_KEY": value})
+
+
+def test_create_app_accepts_valid_development_secret():
+    strong = secrets.token_urlsafe(32)
+    app = create_app("development", {"SECRET_KEY": strong})
+    assert app is not None
+
+
+def test_create_app_default_config_validates_secret():
+    strong = secrets.token_urlsafe(32)
+    app = create_app("default", {"SECRET_KEY": strong})
+    assert app is not None
+
+
+def test_create_app_rejects_short_default_secret():
+    with pytest.raises(InsecureSecretKeyError):
+        create_app("default", {"SECRET_KEY": "short"})
+
+
+def test_create_app_production_rejects_insecure_fallback():
+    with pytest.raises(InsecureSecretKeyError):
+        create_app("production", {"SECRET_KEY": "agencyos-development-secret-key"})
+
+
+def test_create_app_production_accepts_strong_secret():
+    strong = secrets.token_urlsafe(32)
+    app = create_app("production", {"SECRET_KEY": strong})
+    assert app is not None

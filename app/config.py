@@ -52,8 +52,14 @@ class InsecureSecretKeyError(ValueError, RuntimeError):
     """Raised when a production secret key is missing or insecure."""
 
 
-def validate_production_secret_key(secret_key):
-    """Raise if the secret key is missing or insecure for production."""
+def validate_secret_key(secret_key, production=False):
+    """Validate SECRET_KEY for any environment.
+
+    When ``production`` is True, applies full production-strength validation:
+    rejects known insecure fallbacks and requires at least 8 unique
+    characters. Otherwise, requires a non-empty string of at least 32
+    characters.
+    """
     if not isinstance(secret_key, str):
         raise InsecureSecretKeyError(
             "SECRET_KEY must be a non-empty string of at least 32 characters."
@@ -64,23 +70,26 @@ def validate_production_secret_key(secret_key):
             "SECRET_KEY is required but was not set in the environment."
         )
 
-    if secret_key in _INSECURE_FALLBACKS:
-        raise InsecureSecretKeyError(
-            "SECRET_KEY is set to a known insecure fallback value. "
-            "Set a strong, unique SECRET_KEY in the environment."
-        )
-
     if len(secret_key) < 32:
         raise InsecureSecretKeyError(
             "SECRET_KEY is too short; it must be at least 32 characters long."
         )
 
-    # A securely generated secret is the primary strength guarantee. Reject
-    # obviously degenerate values without imposing character-class rules.
-    if len(set(secret_key)) < 8:
-        raise InsecureSecretKeyError(
-            "SECRET_KEY is too weak; use a cryptographically random value."
-        )
+    if production:
+        if secret_key in _INSECURE_FALLBACKS:
+            raise InsecureSecretKeyError(
+                "SECRET_KEY is set to a known insecure fallback value. "
+                "Set a strong, unique SECRET_KEY in the environment."
+            )
+        if len(set(secret_key)) < 8:
+            raise InsecureSecretKeyError(
+                "SECRET_KEY is too weak; use a cryptographically random value."
+            )
+
+
+def validate_production_secret_key(secret_key):
+    """Raise if the secret key is missing or insecure for production."""
+    validate_secret_key(secret_key, production=True)
 
 
 class InsecureRazorpayCredentialsError(ValueError, RuntimeError):
@@ -179,3 +188,10 @@ config_by_name = {
     "production": ProductionConfig,
     "default": DevelopmentConfig,
 }
+
+
+# Prevent silent application startup with a missing or insecure SECRET_KEY.
+# load_dotenv() above has already loaded environment variables from .env.
+# This validates the default (development) configuration; production
+# validation is performed in create_app() via validate_production_secret_key.
+validate_secret_key(os.getenv("SECRET_KEY"), production=False)
