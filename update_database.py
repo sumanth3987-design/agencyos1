@@ -1,6 +1,11 @@
-from app import app, db
+import os
+
+from app import create_app
+from app.extensions import db
 from sqlalchemy import text, inspect
 
+from app.config import resolve_flask_env
+app = create_app(resolve_flask_env())
 
 def column_exists(table_name, column_name):
     inspector = inspect(db.engine)

@@ -607,12 +607,19 @@
                 Profile
             </a>
 
-            <a
-                href="{{ url_for('logout') }}"
-                class="nav-link logout"
+            <form
+                method="POST"
+                action="{{ url_for('logout') }}"
+                style="display: inline;"
             >
-                Logout
-            </a>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button
+                    type="submit"
+                    class="nav-link logout"
+                >
+                    Logout
+                </button>
+            </form>
 
         </nav>
 
@@ -668,6 +675,7 @@
         action="{{ url_for('add_business') }}"
         class="form-card"
     >
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
         <!-- ========================================
              BASIC INFORMATION

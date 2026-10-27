@@ -1,10 +1,15 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from app.extensions import db
+from app.extensions import db, csrf
 from app.models import User, CustomerProfile, ProfessionalProfile
 
 auth_bp = Blueprint("auth", __name__)
+
+# CSRF tokens are required for state-changing requests on authenticated
+# sessions (e.g. POST /logout). Login and registration endpoints are
+# excluded because they are the initial authentication steps used by
+# anonymous visitors before a session exists.
 
 @auth_bp.route("/")
 def index():
@@ -22,6 +27,7 @@ def index():
     "/register",
     methods=["GET", "POST"]
 )
+@csrf.exempt
 def register():
 
     if request.method == "POST":
@@ -233,6 +239,7 @@ def register():
     "/login",
     methods=["GET", "POST"]
 )
+@csrf.exempt
 def login():
 
     if request.method == "POST":
@@ -333,9 +340,14 @@ def login():
 # LOGOUT
 # =========================================================
 
-@auth_bp.route("/logout")
+@auth_bp.route("/logout", methods=["GET", "POST"])
 @login_required
 def logout():
+
+    if request.method == "GET":
+        return render_template(
+            "logout_confirm.html"
+        )
 
     logout_user()
 

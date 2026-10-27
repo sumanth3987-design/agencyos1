@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -2904,24 +2904,30 @@
                 <div class="admin-topbar-divider"></div>
 
 
-                <a
-                    href="{{ url_for('logout') }}"
-                    class="admin-logout"
-                    title="Logout"
+                <form
+                    method="POST"
+                    action="{{ url_for('logout') }}"
+                    style="display: inline;"
                 >
-
-                    <span
-                        class="admin-logout-icon"
-                        aria-hidden="true"
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button
+                        type="submit"
+                        class="admin-logout"
+                        title="Logout"
                     >
-                        ↪
-                    </span>
 
-                    <span>
-                        Logout
-                    </span>
+                        <span
+                            class="admin-logout-icon"
+                            aria-hidden="true"
+                        >
+                            ↪
+                        </span>
 
-                </a>
+                        <span>
+                            Logout
+                        </span>
+                    </button>
+                </form>
 
             </div>
 

@@ -10,6 +10,8 @@
         content="width=device-width, initial-scale=1.0"
     >
 
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <title>Secure Payment | AgencyOS</title>
 
     <link
@@ -942,13 +944,19 @@
                    CREATE RAZORPAY ORDER
                    ================================================= */
 
+                const csrfToken =
+                    document.querySelector('meta[name="csrf-token"]').content;
+
                 const orderResponse =
                     await fetch(
                         "/payment/create-order/" +
                         projectId,
                         {
                             method: "POST",
-                            cache: "no-store"
+                            cache: "no-store",
+                            headers: {
+                                "X-CSRFToken": csrfToken
+                            }
                         }
                     );
 
@@ -1090,7 +1098,9 @@
                                             headers: {
 
                                                 "Content-Type":
-                                                    "application/json"
+                                                    "application/json",
+
+                                                "X-CSRFToken": csrfToken
 
                                             },
 

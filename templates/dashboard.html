@@ -2065,12 +2065,19 @@
                 </a>
 
 
-                <a
-                    href="{{ url_for('logout') }}"
-                    class="nav-link logout"
+                <form
+                    method="POST"
+                    action="{{ url_for('logout') }}"
+                    style="display: inline;"
                 >
-                    Logout
-                </a>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button
+                        type="submit"
+                        class="nav-link logout"
+                    >
+                        Logout
+                    </button>
+                </form>
 
             </nav>
 

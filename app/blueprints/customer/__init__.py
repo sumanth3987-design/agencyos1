@@ -848,7 +848,7 @@ def start_project(service_slug):
             service=service["name"],
             package=package,
             requirements=requirements_text,
-            status="Pending Assignment"
+            status="Payment Pending"
         )
 
         db.session.add(
@@ -864,7 +864,7 @@ def start_project(service_slug):
 
         return redirect(
             url_for(
-                "project_details",
+                "payment_page",
                 project_id=project.id
             )
         )

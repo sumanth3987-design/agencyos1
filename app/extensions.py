@@ -1,18 +1,34 @@
+import logging
+import os
+
+import razorpay
+
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
-import razorpay
-import os
+from flask_wtf import CSRFProtect
+
+logger = logging.getLogger(__name__)
 
 db = SQLAlchemy()
 login_manager = LoginManager()
 login_manager.login_view = "auth.login"
 login_manager.login_message_category = "warning"
 
+csrf = CSRFProtect()
+
 def get_razorpay_client():
+    """Create a Razorpay client from environment/config values.
+
+    Returns ``None`` when initialization fails so callers can respond
+    in a controlled way instead of crashing.
+    """
     key_id = os.getenv("RAZORPAY_KEY_ID", "rzp_test_placeholder")
     key_secret = os.getenv("RAZORPAY_KEY_SECRET", "placeholder_secret")
     try:
         return razorpay.Client(auth=(key_id, key_secret))
-    except Exception as e:
-        print(f"Warning: Razorpay client init failed (running in sandbox mode): {e}")
+    except Exception as exc:  # pragma: no cover - defensive
+        logger.warning(
+            "Razorpay client initialization failed: %s",
+            type(exc).__name__,
+        )
         return None

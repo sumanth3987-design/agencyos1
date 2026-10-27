@@ -514,11 +514,18 @@
                 Profile
             </a>
 
-            <a
-                href="{{ url_for('logout') }}"
+            <form
+                method="POST"
+                action="{{ url_for('logout') }}"
+                style="display: inline;"
             >
-                Logout
-            </a>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button
+                    type="submit"
+                >
+                    Logout
+                </button>
+            </form>
 
         </div>
 

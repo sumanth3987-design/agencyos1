@@ -949,12 +949,19 @@ content="width=device-width, initial-scale=1.0"
             Available Projects
         </a>
 
-        <a
-            href="{{ url_for('logout') }}"
-            class="logout-btn"
+        <form
+            method="POST"
+            action="{{ url_for('logout') }}"
+            style="display: inline;"
         >
-            Logout
-        </a>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button
+                type="submit"
+                class="logout-btn"
+            >
+                Logout
+            </button>
+        </form>
 
     </div>
 

@@ -1,11 +1,60 @@
 from app.extensions import db, login_manager
-from flask_login import UserMixin
+from flask_login import UserMixin, current_user
 from datetime import datetime
+from urllib.parse import urlparse
 from zoneinfo import ZoneInfo
 
 IST = ZoneInfo("Asia/Kolkata")
 def get_ist_now():
     return datetime.now(IST)
+
+
+# =========================================================
+# URL VALIDATION
+# =========================================================
+
+def is_valid_http_url(value):
+    """
+    Validate that a supplied URL uses HTTP or HTTPS.
+    """
+
+    if not value:
+        return False
+
+    try:
+
+        parsed = urlparse(
+            value.strip()
+        )
+
+        return (
+            parsed.scheme in ("http", "https")
+            and bool(parsed.netloc)
+        )
+
+    except Exception:
+
+        return False
+
+
+# =========================================================
+# PACKAGE PRICES
+# =========================================================
+
+PACKAGE_PRICES = {
+
+    "Basic Website": 4999,
+
+    "Business Website": 9999,
+
+    "Advanced Website": 19999,
+
+    "SEO Starter": 2999,
+
+    "SEO Growth": 6999,
+
+    "SEO Advanced": 12000
+}
 
 class User(UserMixin, db.Model):
 
@@ -247,12 +296,14 @@ class ProfessionalProfile(db.Model):
 
     expertise = db.Column(
         db.String(100),
-        nullable=False
+        nullable=False,
+        default=""
     )
 
     experience = db.Column(
         db.String(50),
-        nullable=False
+        nullable=False,
+        default=""
     )
 
     about = db.Column(
@@ -422,6 +473,27 @@ class Project(db.Model):
 # =========================================================
 
 class Payment(db.Model):
+    __table_args__ = (
+        # Unique razorpay_order_id across all payment records
+        db.UniqueConstraint('razorpay_order_id', name='uq_payment_razorpay_order_id'),
+        # Unique razorpay_payment_id when non-NULL (partial unique index)
+        db.Index(
+            'uq_payment_razorpay_payment_id_partial',
+            'razorpay_payment_id',
+            unique=True,
+            postgresql_where=db.text('razorpay_payment_id IS NOT NULL'),
+            sqlite_where=db.text('razorpay_payment_id IS NOT NULL'),
+        ),
+        # At most one payment with status 'Created' per (project_id, customer_id)
+        db.Index(
+            'uq_payment_project_customer_created',
+            'project_id',
+            'customer_id',
+            unique=True,
+            postgresql_where=db.text("status = 'Created'"),
+            sqlite_where=db.text("status = 'Created'"),
+        ),
+    )
 
     id = db.Column(
         db.Integer,

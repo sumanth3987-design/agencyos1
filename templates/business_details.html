@@ -792,12 +792,19 @@
                     Profile
                 </a>
 
-                <a
-                    href="{{ url_for('logout') }}"
-                    class="nav-link"
+                <form
+                    method="POST"
+                    action="{{ url_for('logout') }}"
+                    style="display: inline;"
                 >
-                    Logout
-                </a>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button
+                        type="submit"
+                        class="nav-link"
+                    >
+                        Logout
+                    </button>
+                </form>
 
             </div>
 
@@ -1376,6 +1383,7 @@
                         'Are you sure you want to delete this business? This action cannot be undone.'
                     );"
                 >
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
                     <button
                         type="submit"

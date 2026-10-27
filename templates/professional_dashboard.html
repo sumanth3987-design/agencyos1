@@ -904,12 +904,19 @@
                 Professional Portal
             </span>
 
-            <a
-                href="{{ url_for('logout') }}"
-                class="logout"
+            <form
+                method="POST"
+                action="{{ url_for('logout') }}"
+                style="display: inline;"
             >
-                Logout
-            </a>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button
+                    type="submit"
+                    class="logout"
+                >
+                    Logout
+                </button>
+            </form>
 
         </div>
 

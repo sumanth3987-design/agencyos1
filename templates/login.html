@@ -265,6 +265,7 @@
                 method="POST"
                 action="{{ url_for('login') }}"
             >
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
 
                 <!-- EMAIL -->

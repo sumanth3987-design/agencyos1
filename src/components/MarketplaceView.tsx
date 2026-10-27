@@ -42,7 +42,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
             </p>
           </div>
 
-          <div className="relative min-w-[280px]">
+          <div className="relative w-full md:max-w-sm">
             <Search className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
             <input
               type="text"

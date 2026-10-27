@@ -439,6 +439,7 @@
             method="POST"
             action="{{ url_for('register') }}"
         >
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
             <!-- NAME -->
             <div class="field">
