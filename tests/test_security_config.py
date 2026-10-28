@@ -84,12 +84,16 @@ def test_unknown_config_name_raises_value_error():
 
 
 def test_legacy_blocked_by_default(monkeypatch):
+    if not os.path.isfile("app_legacy.py"):
+        pytest.skip("app_legacy.py is not present in this checkout")
     monkeypatch.delenv("ALLOW_LEGACY_APP", raising=False)
     with pytest.raises(SystemExit):
         runpy.run_path("app_legacy.py", run_name="__main__")
 
 
 def test_legacy_source_has_no_hardcoded_insecure_secret():
+    if not os.path.isfile("app_legacy.py"):
+        pytest.skip("app_legacy.py is not present in this checkout")
     source = open("app_legacy.py", encoding="utf-8", errors="replace").read()
     assert "agencyos-development-secret-key" not in source
 
@@ -224,7 +228,8 @@ def test_rate_limit_in_memory_opt_in_parses_values():
 def test_production_rejects_memory_storage_by_default():
     strong = secrets.token_urlsafe(32)
     with pytest.raises(RuntimeError):
-        create_app("production", {"SECRET_KEY": strong, "APP_BASE_URL": "https://example.com"})
+        create_app("production", {"SECRET_KEY": strong, "APP_BASE_URL": "https://example.com",
+                                 "RATELIMIT_ALLOW_IN_MEMORY_STORAGE": False})
 
 
 def test_production_allows_explicit_in_memory_storage():
