@@ -8,6 +8,7 @@ from app import create_app
 from app.config import resolve_flask_env, validate_production_secret_key, validate_secret_key, InsecureSecretKeyError
 from app.config import (
     resolve_app_base_url,
+    resolve_mail_port,
     resolve_rate_limit_storage_url,
     resolve_rate_limit_in_memory_opt_in,
 )
@@ -368,3 +369,23 @@ def test_production_requires_app_base_url():
 @pytest.fixture(autouse=True)
 def reset_rate_limiter():
     yield
+
+
+def test_mail_port_defaults_to_587():
+    assert resolve_mail_port() == 587
+
+
+def test_mail_port_accepts_valid_values():
+    assert resolve_mail_port("25") == 25
+    assert resolve_mail_port(465) == 465
+
+
+def test_mail_port_rejects_invalid_values():
+    for value in ("abc", "", "   ", "0", 70000):
+        with pytest.raises(ValueError):
+            resolve_mail_port(value)
+
+
+def test_mail_port_rejects_boolean():
+    with pytest.raises(ValueError):
+        resolve_mail_port(True)

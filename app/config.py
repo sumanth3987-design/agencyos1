@@ -297,6 +297,46 @@ validate_razorpay_config = validate_production_razorpay_credentials
 
 
 
+def resolve_mail_port(value=None):
+    """Resolve and validate an SMTP port number.
+
+    A missing value uses the conventional SMTP submission port. Invalid or
+    out-of-range values raise ``ValueError`` instead of causing an opaque
+    conversion failure during application startup.
+    """
+    if value is None:
+        value = os.getenv("MAIL_PORT", "587")
+
+    if isinstance(value, bool) or not isinstance(value, (str, int)):
+        raise ValueError(
+            "MAIL_PORT must be an integer between 1 and 65535, got %r."
+            % (value,)
+        )
+
+    text = str(value).strip()
+    if not text:
+        raise ValueError(
+            "MAIL_PORT must be an integer between 1 and 65535, got %r."
+            % (value,)
+        )
+
+    try:
+        port = int(text, 10)
+    except ValueError as exc:
+        raise ValueError(
+            "MAIL_PORT must be an integer between 1 and 65535, got %r."
+            % (value,)
+        ) from exc
+
+    if port < 1 or port > 65535:
+        raise ValueError(
+            "MAIL_PORT must be an integer between 1 and 65535, got %r."
+            % (value,)
+        )
+
+    return port
+
+
 class Config:
     SECRET_KEY = os.getenv("SECRET_KEY")
     SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "sqlite:///agencyos.db")
@@ -332,7 +372,7 @@ class Config:
     # Account recovery and email verification.
     MAIL_BACKEND = os.getenv("MAIL_BACKEND", "console").strip().lower()
     MAIL_SERVER = os.getenv("MAIL_SERVER", "").strip()
-    MAIL_PORT = int(os.getenv("MAIL_PORT", "587"))
+    MAIL_PORT = resolve_mail_port()
     MAIL_USE_TLS = os.getenv("MAIL_USE_TLS", "true").strip().lower() in {
         "1", "true", "yes", "on"
     }

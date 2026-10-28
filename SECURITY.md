@@ -76,6 +76,8 @@ If you suspect a credential has been exposed:
 - In-memory storage in production requires `RATELIMIT_ALLOW_IN_MEMORY_STORAGE=true` and is only safe for a single worker.
 - Redis URLs must include a hostname. Invalid or unsupported schemes are rejected at startup.
 
+- `.env.example` is a development template and is not suitable for direct production use without review.
+
 This documentation does not constitute a production readiness review. Do not deploy to production until:
 - `SECRET_KEY` is configured with a strong, unique value.
 - `FLASK_ENV=production` is set.

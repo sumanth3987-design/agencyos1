@@ -95,6 +95,13 @@ Configure the following in `.env` (template in `.env.example`):
 | `MAIL_PASSWORD` | SMTP password (server-side only) | empty |
 | `MAIL_DEFAULT_SENDER` | Default email sender address | `no-reply@agencyos.local` |
 | `MAIL_SUPPRESS_SEND` | Suppress outbound email delivery | `false` |
+| `APP_BASE_URL` | Trusted public HTTPS origin for links | empty (required in production) |
+| `PORT` | Application listen port | `5000` |
+| `SESSION_LIFETIME_HOURS` | Authenticated session lifetime | `12` |
+| `EMAIL_VERIFICATION_REQUIRED` | Require verified email before login | `false` |
+| `PASSWORD_RESET_TOKEN_EXPIRY_MINUTES` | Reset token lifetime | `30` |
+| `EMAIL_VERIFICATION_TOKEN_EXPIRY_HOURS` | Verification token lifetime | `24` |
+| `RATELIMIT_ALLOW_IN_MEMORY_STORAGE` | Allow in-memory limiter in production | `false` |
 
 Never commit `.env`. It is gitignored.
 
