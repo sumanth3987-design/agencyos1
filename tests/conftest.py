@@ -148,6 +148,8 @@ def app():
             "SQLALCHEMY_BINDS": {},
             "SQLALCHEMY_ENGINE_OPTIONS": sqlalchemy_engine_options,
             "WTF_CSRF_ENABLED": True,
+            "RATELIMIT_ENABLED": True,
+            "RATELIMIT_STORAGE_URI": "memory://",
             "SECRET_KEY": "test-secret-key-0123456789abcdef0123456789abcdef",
         })
     except Exception as exc:
@@ -174,6 +176,15 @@ def app():
             _db.drop_all()
             _db.engine.dispose()
 
+
+@pytest.fixture(autouse=True)
+def reset_rate_limiter(app):
+    """Reset in-memory rate-limit counters between tests."""
+    from app.extensions import limiter
+
+    limiter.reset()
+    yield
+    limiter.reset()
 
 @pytest.fixture
 def client(app):

@@ -6,6 +6,8 @@ import razorpay
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_wtf import CSRFProtect
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 logger = logging.getLogger(__name__)
 
@@ -15,6 +17,14 @@ login_manager.login_view = "auth.login"
 login_manager.login_message_category = "warning"
 
 csrf = CSRFProtect()
+
+# Shared rate limiter. Storage is configured through RATELIMIT_STORAGE_URL.
+# memory:// is suitable for local development and tests only; production
+# multi-worker deployments should use shared Redis storage.
+limiter = Limiter(
+    key_func=get_remote_address,
+)
+
 
 def get_razorpay_client():
     """Create a Razorpay client from environment/config values.

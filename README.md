@@ -86,6 +86,15 @@ Configure the following in `.env` (template in `.env.example`):
 | `DATABASE_URL` | SQLAlchemy database URI | `sqlite:///agencyos.db` |
 | `RAZORPAY_KEY_ID` | Razorpay public key ID | Placeholder |
 | `RAZORPAY_KEY_SECRET` | Razorpay secret key (server-side only) | Placeholder |
+| `RATELIMIT_STORAGE_URL` | Flask-Limiter storage URL (`memory://` or `redis://...`) | `memory://` |
+| `MAIL_BACKEND` | Email backend (`console` or `smtp`) | `console` |
+| `MAIL_SERVER` | SMTP server hostname | empty |
+| `MAIL_PORT` | SMTP server port | `587` |
+| `MAIL_USE_TLS` | Enable STARTTLS for SMTP | `true` |
+| `MAIL_USERNAME` | SMTP username | empty |
+| `MAIL_PASSWORD` | SMTP password (server-side only) | empty |
+| `MAIL_DEFAULT_SENDER` | Default email sender address | `no-reply@agencyos.local` |
+| `MAIL_SUPPRESS_SEND` | Suppress outbound email delivery | `false` |
 
 Never commit `.env`. It is gitignored.
 

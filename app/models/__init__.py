@@ -88,6 +88,18 @@ class User(UserMixin, db.Model):
         server_default=db.func.now()
     )
 
+    email_verified_at = db.Column(
+        db.DateTime,
+        nullable=True
+    )
+
+    session_version = db.Column(
+        db.Integer,
+        nullable=False,
+        default=0
+    )
+
+
     projects = db.relationship(
         "Project",
         backref="customer",
@@ -279,6 +291,70 @@ class Business(db.Model):
 # =========================================================
 # PROFESSIONAL PROFILE MODEL
 # =========================================================
+
+class UserToken(db.Model):
+    __tablename__ = "user_token"
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
+
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=False,
+        index=True
+    )
+
+    purpose = db.Column(
+        db.String(40),
+        nullable=False,
+        index=True
+    )
+
+    token_hash = db.Column(
+        db.String(64),
+        nullable=False,
+        unique=True,
+        index=True
+    )
+
+    expires_at = db.Column(
+        db.DateTime,
+        nullable=False,
+        index=True
+    )
+
+    used_at = db.Column(
+        db.DateTime,
+        nullable=True
+    )
+
+    created_at = db.Column(
+        db.DateTime,
+        server_default=db.func.now(),
+        nullable=False
+    )
+
+    __table_args__ = (
+        db.Index(
+            "ix_user_token_user_purpose",
+            "user_id",
+            "purpose"
+        ),
+    )
+
+    user = db.relationship(
+        "User",
+        backref=db.backref(
+            "tokens",
+            lazy=True,
+            cascade="all, delete-orphan"
+        )
+    )
+
+
 
 class ProfessionalProfile(db.Model):
 

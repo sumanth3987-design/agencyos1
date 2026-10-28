@@ -6,20 +6,60 @@ import razorpay
 
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_required, current_user
-from app.extensions import db, get_razorpay_client
+from app.extensions import db, get_razorpay_client, limiter
 from app.models import Project, Payment, PACKAGE_PRICES, get_ist_now
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 logger = logging.getLogger(__name__)
 
+def _reconcile_created_payment(project, customer_id, razorpay_order_id, amount):
+    """Return a safe existing Created payment after a persistence conflict.
+
+    Matching is intentionally strict: the reconciled payment must belong to
+    the same project and customer, remain Created, and have the same amount.
+    """
+    reconciled = (
+        Payment.query
+        .filter_by(
+            project_id=project.id,
+            customer_id=customer_id,
+            status="Created",
+        )
+        .order_by(Payment.created_at.desc())
+        .first()
+    )
+
+    if (
+        reconciled is not None
+        and reconciled.razorpay_order_id
+        and reconciled.amount == amount
+    ):
+        return reconciled
+
+    reconciled = Payment.query.filter_by(
+        razorpay_order_id=razorpay_order_id
+    ).first()
+
+    if (
+        reconciled is not None
+        and reconciled.project_id == project.id
+        and reconciled.customer_id == customer_id
+        and reconciled.status == "Created"
+        and reconciled.amount == amount
+    ):
+        return reconciled
+
+    return None
 payments_bp = Blueprint("payments", __name__)
 razorpay_client = get_razorpay_client()
 RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID", "")
+
 
 @payments_bp.route(
     "/payment/create-order/<int:project_id>",
     methods=["POST"]
 )
+@limiter.limit("10 per minute")
 @login_required
 def create_payment_order(project_id):
 
@@ -194,50 +234,32 @@ def create_payment_order(project_id):
 
         db.session.rollback()
 
-        existing_active_payment = (
-            Payment.query
-            .filter_by(
-                project_id=project.id,
-                customer_id=current_user.id,
-                status="Created",
-            )
-            .order_by(Payment.created_at.desc())
-            .first()
+        reconciled_payment = _reconcile_created_payment(
+            project,
+            current_user.id,
+            order["id"],
+            amount,
         )
 
-        if (
-            existing_active_payment is not None
-            and existing_active_payment.razorpay_order_id
-            and existing_active_payment.amount == amount
-        ):
+        if reconciled_payment is not None:
 
             return jsonify({
                 "success": True,
-                "order_id": existing_active_payment.razorpay_order_id,
+                "order_id": reconciled_payment.razorpay_order_id,
                 "amount": amount_paise,
                 "currency": "INR",
                 "key_id": RAZORPAY_KEY_ID,
             })
 
-        existing_order_payment = Payment.query.filter_by(
-            razorpay_order_id=order["id"]
-        ).first()
-
-        if (
-            existing_order_payment is not None
-            and existing_order_payment.project_id == project.id
-            and existing_order_payment.customer_id == current_user.id
-            and existing_order_payment.status == "Created"
-            and existing_order_payment.amount == amount
-        ):
-
-            return jsonify({
-                "success": True,
-                "order_id": existing_order_payment.razorpay_order_id,
-                "amount": amount_paise,
-                "currency": "INR",
-                "key_id": RAZORPAY_KEY_ID,
-            })
+        logger.error(
+            "Razorpay order could not be reconciled after local "
+            "persistence failure.",
+            extra={
+                "razorpay_order_id": order["id"],
+                "project_id": project.id,
+                "customer_id": current_user.id,
+            },
+        )
 
         return jsonify({
             "success": False,
@@ -251,6 +273,11 @@ def create_payment_order(project_id):
         logger.error(
             "Payment order database write failed: %s",
             type(exc).__name__,
+            extra={
+                "razorpay_order_id": order["id"],
+                "project_id": project.id,
+                "customer_id": current_user.id,
+            },
         )
 
         return jsonify({
@@ -275,6 +302,7 @@ def create_payment_order(project_id):
     "/payment/verify",
     methods=["POST"]
 )
+@limiter.limit("20 per minute")
 @login_required
 def verify_payment():
 

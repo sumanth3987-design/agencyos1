@@ -280,6 +280,157 @@ class TestAssignAndStart:
             assert app2.status == 'Not Selected'
             assert project.status == 'Assigned'
 
+    def test_assign_rejected_when_professional_pending(
+        self, app, client, login, factories, csrf_post
+    ):
+        """Assign is rejected when professional verification is Pending."""
+        customer_id = factories.user('customer', 'assign-pending@example.com')
+        project_id = factories.project(customer_id, status='Pending Assignment')
+        prof_id = factories.user('professional', 'assign-pending-prof@example.com')
+        factories.profile(prof_id, verification_status='Pending')
+        other_prof_id = factories.user('professional', 'assign-pending-other@example.com')
+        factories.profile(other_prof_id, verification_status='Verified')
+
+        selected_app_id = factories.application(project_id, prof_id, status='Applied')
+        competing_app_id = factories.application(project_id, other_prof_id, status='Applied')
+
+        admin_id = factories.user('admin', 'assign-pending-admin@example.com')
+        login('assign-pending-admin@example.com', 'admin')
+
+        response = csrf_post(
+            '/admin/applications/' + str(selected_app_id) + '/assign',
+            data={},
+            follow_redirects=False,
+        )
+        assert response.status_code == 302
+
+        from app.extensions import db
+        from app.models import ProfessionalProjectApplication, Project
+
+        with app.app_context():
+            selected = db.session.get(ProfessionalProjectApplication, selected_app_id)
+            competing = db.session.get(ProfessionalProjectApplication, competing_app_id)
+            project = db.session.get(Project, project_id)
+            assert selected is not None
+            assert competing is not None
+            assert project is not None
+            assert selected.status == 'Applied'
+            assert competing.status == 'Applied'
+            assert project.status == 'Pending Assignment'
+
+    def test_assign_rejected_when_verification_empty(
+        self, app, client, login, factories, csrf_post
+    ):
+        """Assign is rejected when professional verification status is empty."""
+        customer_id = factories.user('customer', 'assign-empty@example.com')
+        project_id = factories.project(customer_id, status='Pending Assignment')
+        prof_id = factories.user('professional', 'assign-empty-prof@example.com')
+        factories.profile(prof_id, verification_status='')
+        other_prof_id = factories.user('professional', 'assign-empty-other@example.com')
+        factories.profile(other_prof_id, verification_status='Verified')
+
+        selected_app_id = factories.application(project_id, prof_id, status='Applied')
+        competing_app_id = factories.application(project_id, other_prof_id, status='Applied')
+
+        admin_id = factories.user('admin', 'assign-empty-admin@example.com')
+        login('assign-empty-admin@example.com', 'admin')
+
+        response = csrf_post(
+            '/admin/applications/' + str(selected_app_id) + '/assign',
+            data={},
+            follow_redirects=False,
+        )
+        assert response.status_code == 302
+
+        from app.extensions import db
+        from app.models import ProfessionalProjectApplication, Project
+
+        with app.app_context():
+            selected = db.session.get(ProfessionalProjectApplication, selected_app_id)
+            competing = db.session.get(ProfessionalProjectApplication, competing_app_id)
+            project = db.session.get(Project, project_id)
+            assert selected is not None
+            assert competing is not None
+            assert project is not None
+            assert selected.status == 'Applied'
+            assert competing.status == 'Applied'
+            assert project.status == 'Pending Assignment'
+
+    def test_assign_rejected_when_verification_unknown(
+        self, app, client, login, factories, csrf_post
+    ):
+        """Assign is rejected when professional verification status is unknown."""
+        customer_id = factories.user('customer', 'assign-unknown@example.com')
+        project_id = factories.project(customer_id, status='Pending Assignment')
+        prof_id = factories.user('professional', 'assign-unknown-prof@example.com')
+        factories.profile(prof_id, verification_status='Review')
+        other_prof_id = factories.user('professional', 'assign-unknown-other@example.com')
+        factories.profile(other_prof_id, verification_status='Verified')
+
+        selected_app_id = factories.application(project_id, prof_id, status='Applied')
+        competing_app_id = factories.application(project_id, other_prof_id, status='Applied')
+
+        admin_id = factories.user('admin', 'assign-unknown-admin@example.com')
+        login('assign-unknown-admin@example.com', 'admin')
+
+        response = csrf_post(
+            '/admin/applications/' + str(selected_app_id) + '/assign',
+            data={},
+            follow_redirects=False,
+        )
+        assert response.status_code == 302
+
+        from app.extensions import db
+        from app.models import ProfessionalProjectApplication, Project
+
+        with app.app_context():
+            selected = db.session.get(ProfessionalProjectApplication, selected_app_id)
+            competing = db.session.get(ProfessionalProjectApplication, competing_app_id)
+            project = db.session.get(Project, project_id)
+            assert selected is not None
+            assert competing is not None
+            assert project is not None
+            assert selected.status == 'Applied'
+            assert competing.status == 'Applied'
+            assert project.status == 'Pending Assignment'
+
+    def test_assign_rejected_when_profile_missing(
+        self, app, client, login, factories, csrf_post
+    ):
+        """Assign is safely rejected when professional has no profile."""
+        customer_id = factories.user('customer', 'assign-missing@example.com')
+        project_id = factories.project(customer_id, status='Pending Assignment')
+        prof_id = factories.user('professional', 'assign-missing-prof@example.com')
+        other_prof_id = factories.user('professional', 'assign-missing-other@example.com')
+        factories.profile(other_prof_id, verification_status='Verified')
+
+        selected_app_id = factories.application(project_id, prof_id, status='Applied')
+        competing_app_id = factories.application(project_id, other_prof_id, status='Applied')
+
+        admin_id = factories.user('admin', 'assign-missing-admin@example.com')
+        login('assign-missing-admin@example.com', 'admin')
+
+        response = csrf_post(
+            '/admin/applications/' + str(selected_app_id) + '/assign',
+            data={},
+            follow_redirects=False,
+        )
+        assert response.status_code == 302
+
+        from app.extensions import db
+        from app.models import ProfessionalProjectApplication, Project
+
+        with app.app_context():
+            selected = db.session.get(ProfessionalProjectApplication, selected_app_id)
+            competing = db.session.get(ProfessionalProjectApplication, competing_app_id)
+            project = db.session.get(Project, project_id)
+            assert selected is not None
+            assert competing is not None
+            assert project is not None
+            assert selected.status == 'Applied'
+            assert competing.status == 'Applied'
+            assert project.status == 'Pending Assignment'
+
     def test_assigned_professional_starts_project(
         self, app, client, login, factories, csrf_post
     ):

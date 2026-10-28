@@ -1,7 +1,10 @@
 import os
-from zoneinfo import ZoneInfo
+from datetime import timedelta
+from urllib.parse import urlparse
+
 
 from dotenv import load_dotenv
+from zoneinfo import ZoneInfo
 
 # Load repository .env before Config reads os.getenv.
 # - Anchored to the project root so it works from any working directory.
@@ -41,7 +44,151 @@ def resolve_flask_env(env=None):
     )
 
 
+def resolve_session_lifetime_hours(value=None):
+    """Resolve a positive integer session lifetime in hours.
+
+    ``SESSION_LIFETIME_HOURS`` is parsed strictly so an invalid value
+    cannot silently disable or weaken session expiration.
+    """
+    if value is None:
+        value = os.getenv("SESSION_LIFETIME_HOURS", "12")
+
+    if isinstance(value, bool) or not isinstance(value, (str, int)):
+        raise ValueError(
+            "SESSION_LIFETIME_HOURS must be a positive integer, "
+            "got %r." % (value,)
+        )
+
+    text = str(value).strip()
+
+    if not text:
+        raise ValueError(
+            "SESSION_LIFETIME_HOURS must be a positive integer, "
+            "got %r." % (value,)
+        )
+
+    try:
+        hours = int(text, 10)
+    except ValueError as exc:
+        raise ValueError(
+            "SESSION_LIFETIME_HOURS must be a positive integer, "
+            "got %r." % (value,)
+        ) from exc
+
+    if hours <= 0:
+        raise ValueError(
+            "SESSION_LIFETIME_HOURS must be greater than zero, "
+            "got %r." % (value,)
+        )
+
+    return hours
+
+
+def resolve_app_base_url(value=None, *, production=False):
+    """Resolve and validate a trusted application base URL.
+
+    The result is an origin only: scheme, host, and optional port. Credentials,
+    fragments, query strings, and non-root paths are rejected so that generated
+    links cannot be redirected or polluted by untrusted configuration.
+    """
+    if value is None:
+        value = os.getenv("APP_BASE_URL", "")
+
+    url = str(value).strip()
+    if not url:
+        if production:
+            raise ValueError("APP_BASE_URL is required in production.")
+        return ""
+
+    parsed = urlparse(url)
+    if parsed.scheme not in {"http", "https"}:
+        raise ValueError(
+            "APP_BASE_URL must use http:// or https://, got %r." % value
+        )
+    if not parsed.netloc or parsed.hostname is None:
+        raise ValueError(
+            "APP_BASE_URL must include a valid host, got %r." % value
+        )
+    if parsed.username is not None or parsed.password is not None:
+        raise ValueError("APP_BASE_URL must not include credentials.")
+    if parsed.path not in ("", "/"):
+        raise ValueError("APP_BASE_URL must not include a path.")
+    if parsed.params or parsed.query or parsed.fragment:
+        raise ValueError(
+            "APP_BASE_URL must not include params, query, or fragment."
+        )
+    if production and parsed.scheme != "https":
+        raise ValueError("APP_BASE_URL must use HTTPS in production.")
+
+    return "%s://%s" % (parsed.scheme, parsed.netloc)
+
+
+def resolve_rate_limit_storage_url(value=None):
+    """Resolve and validate a Flask-Limiter storage URL.
+
+    ``memory://`` is accepted for local development and isolated tests.
+    Redis URLs must include a hostname. Unsupported schemes and malformed
+    values raise ``ValueError`` instead of being accepted.
+    """
+    if value is None:
+        value = os.getenv("RATELIMIT_STORAGE_URL", "memory://")
+
+    if not isinstance(value, str):
+        raise ValueError(
+            "RATELIMIT_STORAGE_URL must be a string, got %r." % (value,)
+        )
+
+    url = value.strip()
+
+    if not url:
+        raise ValueError("RATELIMIT_STORAGE_URL must not be empty.")
+
+    parsed = urlparse(url)
+
+    if parsed.scheme not in {"memory", "redis", "rediss"}:
+        raise ValueError(
+            "RATELIMIT_STORAGE_URL must use memory://, redis://, or "
+            "rediss://, got %r." % (value,)
+        )
+
+    if parsed.scheme in {"redis", "rediss"} and not parsed.hostname:
+        raise ValueError(
+            "RATELIMIT_STORAGE_URL must include a Redis host, got %r."
+            % (value,)
+        )
+
+    return url
+
+
+def resolve_rate_limit_in_memory_opt_in(value=None):
+    """Parse the explicit production opt-in for in-memory rate-limit storage."""
+    if value is None:
+        value = os.getenv("RATELIMIT_ALLOW_IN_MEMORY_STORAGE", "false")
+
+    if isinstance(value, bool):
+        return value
+
+    if not isinstance(value, str):
+        raise ValueError(
+            "RATELIMIT_ALLOW_IN_MEMORY_STORAGE must be a boolean value, "
+            "got %r." % (value,)
+        )
+
+    normalized = value.strip().lower()
+
+    if normalized in {"1", "true", "yes", "on"}:
+        return True
+
+    if normalized in {"0", "false", "no", "off"}:
+        return False
+
+    raise ValueError(
+        "RATELIMIT_ALLOW_IN_MEMORY_STORAGE must be true or false, "
+        "got %r." % (value,)
+    )
+
 _INSECURE_FALLBACKS = {
+
     "agencyos-development-secret-key",
     "agencyos-secure-fallback-key-change-in-prod",
     "placeholder_secret",
@@ -163,12 +310,51 @@ class Config:
     REMEMBER_COOKIE_HTTPONLY = True
     REMEMBER_COOKIE_SAMESITE = "Lax"
 
+    # Authenticated sessions expire after this inactivity period.
+    PERMANENT_SESSION_LIFETIME = timedelta(
+        hours=resolve_session_lifetime_hours()
+    )
+    SESSION_REFRESH_EACH_REQUEST = True
+
+    # Rate limiting
+    # Resolved in create_app() from RATELIMIT_STORAGE_URL (env/config) so that
+    # environment overrides are honored while explicit config overrides win.
+    RATELIMIT_ENABLED = True
+    RATELIMIT_STORAGE_URI = None
+    RATELIMIT_ALLOW_IN_MEMORY_STORAGE = None
+    RATELIMIT_IN_MEMORY_FALLBACK_ENABLED = False
+
     # Razorpay Integration
     RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID", "rzp_test_placeholder")
+
     RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET", "placeholder_secret")
 
+    # Account recovery and email verification.
+    MAIL_BACKEND = os.getenv("MAIL_BACKEND", "console").strip().lower()
+    MAIL_SERVER = os.getenv("MAIL_SERVER", "").strip()
+    MAIL_PORT = int(os.getenv("MAIL_PORT", "587"))
+    MAIL_USE_TLS = os.getenv("MAIL_USE_TLS", "true").strip().lower() in {
+        "1", "true", "yes", "on"
+    }
+    MAIL_USERNAME = os.getenv("MAIL_USERNAME", "").strip()
+    MAIL_PASSWORD = os.getenv("MAIL_PASSWORD", "")
+    MAIL_DEFAULT_SENDER = os.getenv(
+        "MAIL_DEFAULT_SENDER", "no-reply@agencyos.local"
+    ).strip()
+    MAIL_SUPPRESS_SEND = os.getenv(
+        "MAIL_SUPPRESS_SEND", "false"
+    ).strip().lower() in {"1", "true", "yes", "on"}
+
+    PASSWORD_RESET_TOKEN_EXPIRY_MINUTES = 30
+    EMAIL_VERIFICATION_TOKEN_EXPIRY_HOURS = 24
+    EMAIL_VERIFICATION_REQUIRED = os.getenv(
+        "EMAIL_VERIFICATION_REQUIRED", "false"
+    ).strip().lower() in {"1", "true", "yes", "on"}
+    # Trusted origin for externally visible links (password reset, verification).
+    APP_BASE_URL = resolve_app_base_url(os.getenv("APP_BASE_URL", ""))
     # Timezone
     IST = ZoneInfo("Asia/Kolkata")
+
 
 
 class DevelopmentConfig(Config):

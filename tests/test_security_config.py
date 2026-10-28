@@ -6,6 +6,16 @@ import pytest
 
 from app import create_app
 from app.config import resolve_flask_env, validate_production_secret_key, validate_secret_key, InsecureSecretKeyError
+from app.config import (
+    resolve_app_base_url,
+    resolve_rate_limit_storage_url,
+    resolve_rate_limit_in_memory_opt_in,
+)
+
+from datetime import timedelta
+
+from app.config import resolve_session_lifetime_hours
+
 
 
 def test_missing_env_defaults_to_production(monkeypatch):
@@ -60,7 +70,10 @@ def test_strong_secret_accepted():
 
 def test_production_debug_cannot_be_enabled_via_override():
     strong = secrets.token_urlsafe(32)
-    app = create_app("production", {"SECRET_KEY": strong, "DEBUG": True})
+    app = create_app("production", {"SECRET_KEY": strong, "DEBUG": True,
+                                 "RATELIMIT_STORAGE_URI": "memory://",
+                                 "RATELIMIT_ALLOW_IN_MEMORY_STORAGE": True,
+                                 "APP_BASE_URL": "https://example.com"})
     assert app.config["DEBUG"] is False
 
 
@@ -104,7 +117,10 @@ def test_validate_secret_key_accepts_strong():
 
 def test_production_config_has_secure_cookies():
     strong = secrets.token_urlsafe(32)
-    app = create_app("production", {"SECRET_KEY": strong})
+    app = create_app("production", {"SECRET_KEY": strong,
+                                    "RATELIMIT_STORAGE_URI": "memory://",
+                                    "RATELIMIT_ALLOW_IN_MEMORY_STORAGE": True,
+                                    "APP_BASE_URL": "https://example.com"})
     assert app.config["SESSION_COOKIE_SECURE"] is True
     assert app.config["REMEMBER_COOKIE_SECURE"] is True
     assert app.config["SESSION_COOKIE_HTTPONLY"] is True
@@ -149,5 +165,206 @@ def test_create_app_production_rejects_insecure_fallback():
 
 def test_create_app_production_accepts_strong_secret():
     strong = secrets.token_urlsafe(32)
-    app = create_app("production", {"SECRET_KEY": strong})
+    app = create_app("production", {"SECRET_KEY": strong,
+                                    "RATELIMIT_STORAGE_URI": "memory://",
+                                    "RATELIMIT_ALLOW_IN_MEMORY_STORAGE": True,
+                                    "APP_BASE_URL": "https://example.com"})
     assert app is not None
+def test_session_lifetime_defaults_to_twelve_hours(monkeypatch):
+    monkeypatch.delenv("SESSION_LIFETIME_HOURS", raising=False)
+    assert resolve_session_lifetime_hours() == 12
+    strong = secrets.token_urlsafe(32)
+    app = create_app("development", {"SECRET_KEY": strong})
+    assert app.config["PERMANENT_SESSION_LIFETIME"] == timedelta(hours=12)
+
+
+def test_session_lifetime_override_is_respected(monkeypatch):
+    monkeypatch.setenv("SESSION_LIFETIME_HOURS", "24")
+    assert resolve_session_lifetime_hours() == 24
+
+
+def test_session_lifetime_rejects_invalid_values():
+    for value in ("", "   ", "abc", "0", "-1", 0, -3, 1.5, True):
+        with pytest.raises(ValueError):
+            resolve_session_lifetime_hours(value)
+
+
+def test_session_refresh_each_request_enabled():
+    strong = secrets.token_urlsafe(32)
+    for config_name in ("development", "production"):
+        app = create_app(config_name, {"SECRET_KEY": strong,
+                                       "RATELIMIT_STORAGE_URI": "memory://",
+                                       "RATELIMIT_ALLOW_IN_MEMORY_STORAGE": True,
+                                     "APP_BASE_URL": "https://example.com"})
+        assert app.config["SESSION_REFRESH_EACH_REQUEST"] is True
+def test_rate_limit_storage_url_defaults_to_memory():
+    assert resolve_rate_limit_storage_url() == "memory://"
+
+
+def test_rate_limit_storage_url_accepts_redis():
+    url = "redis://redis-host:6379/0"
+    assert resolve_rate_limit_storage_url(url) == url
+
+
+def test_rate_limit_storage_url_rejects_invalid_values():
+    for value in ("", "   ", "http://example.com", "redis://", "redis:///0", 123):
+        with pytest.raises(ValueError):
+            resolve_rate_limit_storage_url(value)
+
+
+def test_rate_limit_in_memory_opt_in_parses_values():
+    assert resolve_rate_limit_in_memory_opt_in("true") is True
+    assert resolve_rate_limit_in_memory_opt_in("false") is False
+    for value in ("", "maybe", 123):
+        with pytest.raises(ValueError):
+            resolve_rate_limit_in_memory_opt_in(value)
+
+
+def test_production_rejects_memory_storage_by_default():
+    strong = secrets.token_urlsafe(32)
+    with pytest.raises(RuntimeError):
+        create_app("production", {"SECRET_KEY": strong, "APP_BASE_URL": "https://example.com"})
+
+
+def test_production_allows_explicit_in_memory_storage():
+    strong = secrets.token_urlsafe(32)
+    app = create_app(
+        "production",
+        {
+            "SECRET_KEY": strong,
+            "RATELIMIT_STORAGE_URI": "memory://",
+            "RATELIMIT_ALLOW_IN_MEMORY_STORAGE": True,
+            "APP_BASE_URL": "https://example.com",
+        },
+    )
+    assert app.config["RATELIMIT_STORAGE_URI"] == "memory://"
+
+
+def test_production_accepts_redis_storage_url():
+    strong = secrets.token_urlsafe(32)
+    url = "redis://redis-host:6379/0"
+    app = create_app(
+        "production",
+        {"SECRET_KEY": strong, "RATELIMIT_STORAGE_URI": url, "APP_BASE_URL": "https://example.com"},
+    )
+    assert app.config["RATELIMIT_STORAGE_URI"] == url
+
+
+def test_production_rejects_invalid_in_memory_opt_in():
+    strong = secrets.token_urlsafe(32)
+    with pytest.raises(ValueError):
+        create_app(
+            "production",
+            {
+                "SECRET_KEY": strong,
+                "RATELIMIT_STORAGE_URI": "memory://",
+                "RATELIMIT_ALLOW_IN_MEMORY_STORAGE": "maybe",
+            },
+        )
+class TestSafeErrorHandlers:
+
+    def test_not_found_browser_response(self, app, client):
+        response = client.get("/definitely-not-a-route", follow_redirects=False)
+        assert response.status_code == 404
+        assert response.data == b"Page not found."
+
+    def test_not_found_json_response_for_api(self, app, client):
+        response = client.get("/api/definitely-not-a-route", follow_redirects=False)
+        assert response.status_code == 404
+        assert response.get_json() == {
+            "success": False,
+            "message": "Not found.",
+        }
+
+    def test_not_found_json_response_for_payment(self, app, client):
+        response = client.get("/payment/definitely-not-a-route", follow_redirects=False)
+        assert response.status_code == 404
+        assert response.get_json() == {
+            "success": False,
+            "message": "Not found.",
+        }
+
+    def test_internal_server_error_browser_response(self, app, client):
+        def boom():
+            raise RuntimeError("secret internal detail")
+
+        app.add_url_rule("/__test_internal_error", view_func=boom)
+
+        original_testing = app.config.get("TESTING", False)
+        original_propagate = app.config.get("PROPAGATE_EXCEPTIONS", None)
+        app.config["TESTING"] = False
+        app.config["PROPAGATE_EXCEPTIONS"] = False
+        try:
+            response = client.get("/__test_internal_error", follow_redirects=False)
+        finally:
+            app.config["TESTING"] = original_testing
+            app.config["PROPAGATE_EXCEPTIONS"] = original_propagate
+        assert response.status_code == 500
+        assert response.data == b"Internal server error."
+        assert b"secret internal detail" not in response.data
+
+    def test_internal_server_error_json_response(self, app, client):
+        def boom():
+            raise RuntimeError("secret internal detail")
+
+        app.add_url_rule("/api/__test_internal_error", view_func=boom)
+
+        original_testing = app.config.get("TESTING", False)
+        original_propagate = app.config.get("PROPAGATE_EXCEPTIONS", None)
+        app.config["TESTING"] = False
+        app.config["PROPAGATE_EXCEPTIONS"] = False
+        try:
+            response = client.get("/api/__test_internal_error", follow_redirects=False)
+        finally:
+            app.config["TESTING"] = original_testing
+            app.config["PROPAGATE_EXCEPTIONS"] = original_propagate
+        assert response.status_code == 500
+        assert response.get_json() == {
+            "success": False,
+            "message": "Internal server error.",
+        }
+        assert b"secret internal detail" not in response.data
+
+def test_app_base_url_normalizes_origin():
+    assert resolve_app_base_url("https://Example.com:8443/") == "https://Example.com:8443"
+
+
+def test_app_base_url_rejects_credentials_and_paths():
+    for value in (
+        "https://user:pass@example.com",
+        "https://example.com/reset",
+        "ftp://example.com",
+        "not-a-url",
+    ):
+        with pytest.raises(ValueError):
+            resolve_app_base_url(value)
+
+
+def test_app_base_url_production_requires_https():
+    with pytest.raises(ValueError):
+        resolve_app_base_url("http://example.com", production=True)
+    with pytest.raises(ValueError):
+        resolve_app_base_url("", production=True)
+
+
+def test_production_requires_app_base_url():
+    import os
+    import secrets
+
+    strong = secrets.token_urlsafe(32)
+    with pytest.raises(ValueError):
+        create_app(
+            "production",
+            {
+                "SECRET_KEY": strong,
+                "RAZORPAY_KEY_ID": "rzp_test_example",
+                "RAZORPAY_KEY_SECRET": "example_secret_value",
+                "RATELIMIT_STORAGE_URI": "redis://redis-host:6379/0",
+                "APP_BASE_URL": "",
+            },
+        )
+
+
+@pytest.fixture(autouse=True)
+def reset_rate_limiter():
+    yield

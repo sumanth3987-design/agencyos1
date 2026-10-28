@@ -314,3 +314,26 @@ class TestStateChangeGuards:
         )
         assert response.status_code == 404
         assert Payment.query.count() == 0
+class TestAdminRateLimiting:
+
+    def test_admin_state_change_is_rate_limited(self, app, client, login, factories, csrf_token):
+        prof_id = factories.user("professional", "admin-rate-prof@example.com")
+        factories.profile(prof_id, verification_status="Pending")
+
+        admin_id = factories.user("admin", "admin-rate@example.com")
+        login("admin-rate@example.com", "admin")
+
+        for _ in range(20):
+            response = client.post(
+                f"/admin/professionals/{prof_id}/reject",
+                data={"csrf_token": csrf_token},
+                follow_redirects=False,
+            )
+            assert response.status_code == 302
+
+        response = client.post(
+            f"/admin/professionals/{prof_id}/reject",
+            data={"csrf_token": csrf_token},
+            follow_redirects=False,
+        )
+        assert response.status_code == 429

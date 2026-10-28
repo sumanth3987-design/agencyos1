@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_required, current_user
-from app.extensions import db
+from app.extensions import db, limiter
 from app.models import (
     User, CustomerProfile, Business, ProfessionalProfile, Project, Payment,
     ProfessionalProjectApplication, ProjectDelivery, get_ist_now, PACKAGE_PRICES,
@@ -969,6 +969,7 @@ def admin_professionals():
     "/admin/professionals/<int:profile_id>/verify",
     methods=["POST"]
 )
+@limiter.limit("20 per minute")
 @login_required
 def verify_professional(profile_id):
 
@@ -1011,6 +1012,7 @@ def verify_professional(profile_id):
     "/admin/professionals/<int:profile_id>/reject",
     methods=["POST"]
 )
+@limiter.limit("20 per minute")
 @login_required
 def reject_professional(profile_id):
 
@@ -1093,18 +1095,13 @@ def admin_applications():
     "/admin/applications/<int:application_id>/assign",
     methods=["POST"]
 )
+@limiter.limit("20 per minute")
 @login_required
 def assign_professional(application_id):
 
     if current_user.role != "admin":
-
-        flash(
-            "Admin access required."
-        )
-
-        return redirect(
-            url_for("dashboard")
-        )
+        flash("Admin access required.")
+        return redirect(url_for("dashboard"))
 
     application = (
         ProfessionalProjectApplication.query.get_or_404(
@@ -1115,36 +1112,55 @@ def assign_professional(application_id):
     project = application.project
 
     if project.status != "Pending Assignment":
-
         flash(
             "This project is no longer available for assignment."
         )
-
-        return redirect(
-            url_for("admin_applications")
-        )
+        return redirect(url_for("admin_applications"))
 
     if application.status != "Applied":
-
         flash(
             "This application is no longer available for assignment."
         )
+        return redirect(url_for("admin_applications"))
 
-        return redirect(
-            url_for("admin_applications")
+    # -----------------------------------------------------
+    # VERIFY PROFESSIONAL BEFORE CHANGING ANY STATE
+    # -----------------------------------------------------
+
+    professional = application.professional
+
+    if professional is None:
+        flash(
+            "Cannot assign this project: professional account not found.",
+            "warning"
         )
+        return redirect(url_for("admin_applications"))
+
+    professional_profile = getattr(
+        professional,
+        "professional_profile",
+        None,
+    )
+
+    if (
+        professional_profile is None
+        or professional_profile.verification_status != "Verified"
+    ):
+        flash(
+            "Professional profile must be verified before assignment.",
+            "warning"
+        )
+        return redirect(url_for("admin_applications"))
 
     # -----------------------------------------------------
     # ASSIGN SELECTED PROFESSIONAL
     # -----------------------------------------------------
 
     application.status = "Assigned"
-
     project.status = "Assigned"
 
     # -----------------------------------------------------
-    # OTHER APPLICATIONS FOR SAME PROJECT
-    # ARE NO LONGER ACTIVE
+    # MARK OTHER APPLICATIONS AS NOT SELECTED
     # -----------------------------------------------------
 
     other_applications = (
@@ -1161,18 +1177,13 @@ def assign_professional(application_id):
     )
 
     for other_application in other_applications:
-
         other_application.status = "Not Selected"
 
     db.session.commit()
 
-    flash(
-        "Professional assigned successfully."
-    )
+    flash("Professional assigned successfully.")
 
-    return redirect(
-        url_for("admin_applications")
-    )
+    return redirect(url_for("admin_applications"))
 
 # =========================================================
 # ADMIN PROJECT MANAGEMENT
@@ -1431,6 +1442,7 @@ def admin_project_review():
     "/admin/project/<int:project_id>/revision",
     methods=["POST"]
 )
+@limiter.limit("20 per minute")
 @login_required
 def request_project_revision(project_id):
 
@@ -1522,6 +1534,7 @@ def request_project_revision(project_id):
     "/admin/project/<int:project_id>/approve",
     methods=["POST"]
 )
+@limiter.limit("20 per minute")
 @login_required
 def approve_project(project_id):
 

@@ -62,11 +62,35 @@ If you suspect a credential has been exposed:
 4. Review Git history for accidental commits (`.env` is gitignored, but verify no secrets were added to tracked files).
 5. Report the incident to the project maintainers.
 
-## Production Readiness
+## Trusted Application Origin
+
+- Set `APP_BASE_URL` to the public HTTPS origin of the deployed application.
+- The value must be an absolute HTTP(S) URL with a valid host and no credentials, fragment, query string, or path.
+- Production requires HTTPS and fails startup if `APP_BASE_URL` is missing or invalid.
+- Password-reset and email-verification links use this origin.
+
+## Rate Limiting
+
+- `RATELIMIT_STORAGE_URL` selects the Flask-Limiter backend. Use `memory://` only for local single-process development and isolated tests.
+- Production multi-worker deployments must use shared Redis storage (`redis://` or `rediss://`).
+- In-memory storage in production requires `RATELIMIT_ALLOW_IN_MEMORY_STORAGE=true` and is only safe for a single worker.
+- Redis URLs must include a hostname. Invalid or unsupported schemes are rejected at startup.
 
 This documentation does not constitute a production readiness review. Do not deploy to production until:
 - `SECRET_KEY` is configured with a strong, unique value.
 - `FLASK_ENV=production` is set.
 - Razorpay live credentials are configured and tested.
 - HTTPS is enforced.
-- The full test suite passes against a disposable test database.
+
+## Email Verification
+
+- `EMAIL_VERIFICATION_REQUIRED=false` by default; registration and login work without verification.
+- Set `EMAIL_VERIFICATION_REQUIRED=true` only after deciding the legacy-account policy.
+- Existing accounts remain unverified unless an explicit, documented migration policy is approved.
+- Verification tokens expire after `EMAIL_VERIFICATION_TOKEN_EXPIRY_HOURS` and are single-use.
+
+## Password Reset
+
+- Reset tokens are random, stored as SHA-256 hashes, expire after `PASSWORD_RESET_TOKEN_EXPIRY_MINUTES`, and are single-use.
+- Successful resets invalidate other outstanding reset tokens and increment `session_version`.
+- Passwords must be 8–128 characters and contain both letters and digits.

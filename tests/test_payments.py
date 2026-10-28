@@ -1227,3 +1227,291 @@ class TestGenuineConcurrency:
                 _db.session.remove()
         finally:
             self._cleanup(app, path)
+class TestRateLimitingPayments:
+
+    def test_payment_order_creation_throttled(self, app, client, csrf_token):
+        for _ in range(10):
+            response = client.post(
+                "/payment/create-order/1",
+                data={"csrf_token": csrf_token},
+                follow_redirects=False,
+            )
+            assert response.status_code in (200, 302, 400, 403, 404)
+
+        response = client.post(
+            "/payment/create-order/1",
+            data={"csrf_token": csrf_token},
+            follow_redirects=False,
+        )
+        assert response.status_code == 429
+
+    def test_payment_verification_throttled(self, app, client, csrf_token):
+        for _ in range(20):
+            response = client.post(
+                "/payment/verify",
+                data=json.dumps({
+                    "razorpay_order_id": "order_rate",
+                    "razorpay_payment_id": "pay_rate",
+                    "razorpay_signature": "sig_rate",
+                }),
+                content_type="application/json",
+                headers={"X-CSRFToken": csrf_token},
+                follow_redirects=False,
+            )
+            assert response.status_code in (200, 302, 400, 403, 404)
+
+        response = client.post(
+            "/payment/verify",
+            data=json.dumps({
+                "razorpay_order_id": "order_rate",
+                "razorpay_payment_id": "pay_rate",
+                "razorpay_signature": "sig_rate",
+            }),
+            content_type="application/json",
+            headers={"X-CSRFToken": csrf_token},
+            follow_redirects=False,
+        )
+        assert response.status_code == 429
+class TestPaymentConflictRecovery:
+
+    def test_create_order_reuses_matching_created_payment_without_razorpay(
+        self, app, client, login, factories, csrf_token
+    ):
+        customer_id = factories.user("customer", "reuse-order@example.com")
+        project_id = factories.project(customer_id)
+        factories.payment(
+            project_id,
+            customer_id,
+            razorpay_order_id="order_reuse_existing",
+            status="Created",
+            amount=4999,
+        )
+        login("reuse-order@example.com", "customer")
+
+        with patch(
+            "app.blueprints.payments.razorpay_client.order.create",
+            side_effect=AssertionError("Razorpay should not be called"),
+        ) as mock_create:
+            response = client.post(
+                f"/payment/create-order/{project_id}",
+                data={"csrf_token": csrf_token},
+                follow_redirects=False,
+            )
+
+        assert response.status_code == 200
+        data = json.loads(response.data)
+        assert data["success"] is True
+        assert data["order_id"] == "order_reuse_existing"
+        mock_create.assert_not_called()
+
+    def test_create_order_recovers_matching_payment_after_integrity_error(
+        self, app, client, login, factories, csrf_token, monkeypatch
+    ):
+        customer_id = factories.user("customer", "recover-race@example.com")
+        project_id = factories.project(customer_id)
+        login("recover-race@example.com", "customer")
+
+        fake_order = _make_razorpay_order(order_id="order_recover_race")
+
+        from app.extensions import db as _db
+
+        original_commit = _db.session.commit
+        state = {"raised": False}
+
+        def flaky_commit():
+            if not state["raised"]:
+                state["raised"] = True
+                from sqlalchemy.exc import IntegrityError
+
+                raise IntegrityError("simulated race", None, None)
+            return original_commit()
+
+        monkeypatch.setattr(_db.session, "commit", flaky_commit)
+
+        with patch(
+            "app.blueprints.payments.razorpay_client.order.create",
+            return_value=fake_order,
+        ):
+            response = client.post(
+                f"/payment/create-order/{project_id}",
+                data={"csrf_token": csrf_token},
+                follow_redirects=False,
+            )
+
+        assert response.status_code in (200, 400)
+        assert response.status_code != 500
+
+        with app.app_context():
+            payments = Payment.query.filter_by(project_id=project_id).all()
+            assert len(payments) <= 1
+
+    def test_create_order_rejects_conflicting_razorpay_order_id(
+        self, app, client, login, factories, csrf_token
+    ):
+        owner_id = factories.user("customer", "conflict-owner@example.com")
+        owner_project_id = factories.project(owner_id)
+        factories.payment(
+            owner_project_id,
+            owner_id,
+            razorpay_order_id="order_conflict_shared",
+            status="Created",
+            amount=4999,
+        )
+
+        actor_id = factories.user("customer", "conflict-actor@example.com")
+        actor_project_id = factories.project(actor_id)
+        login("conflict-actor@example.com", "customer")
+
+        fake_order = _make_razorpay_order(order_id="order_conflict_shared")
+
+        with patch(
+            "app.blueprints.payments.razorpay_client.order.create",
+            return_value=fake_order,
+        ):
+            response = client.post(
+                f"/payment/create-order/{actor_project_id}",
+                data={"csrf_token": csrf_token},
+                follow_redirects=False,
+            )
+
+        assert response.status_code == 400
+        data = json.loads(response.data)
+        assert data["success"] is False
+        assert data["message"] == "Payment order already exists."
+
+        with app.app_context():
+            assert Payment.query.filter_by(
+                razorpay_order_id="order_conflict_shared"
+            ).count() == 1
+
+    def test_create_order_logs_orphan_after_persistence_failure(
+        self, app, client, login, factories, csrf_token, monkeypatch, caplog
+    ):
+        customer_id = factories.user("customer", "orphan-log@example.com")
+        project_id = factories.project(customer_id)
+        login("orphan-log@example.com", "customer")
+
+        fake_order = _make_razorpay_order(order_id="order_orphan_log")
+
+        from app.extensions import db as _db
+        from sqlalchemy.exc import IntegrityError
+
+        monkeypatch.setattr(
+            _db.session,
+            "commit",
+            lambda: (_ for _ in ()).throw(
+                IntegrityError("forced failure", None, None)
+            ),
+        )
+
+        with patch(
+            "app.blueprints.payments.razorpay_client.order.create",
+            return_value=fake_order,
+        ), caplog.at_level("ERROR"):
+            response = client.post(
+                f"/payment/create-order/{project_id}",
+                data={"csrf_token": csrf_token},
+                follow_redirects=False,
+            )
+
+        assert response.status_code == 400
+        data = json.loads(response.data)
+        assert data["success"] is False
+        assert data["message"] == "Unable to create payment order."
+
+        assert "Razorpay order could not be reconciled" in caplog.text
+        orphan_record = next(
+            record for record in caplog.records
+            if "Razorpay order could not be reconciled" in record.getMessage()
+        )
+        assert getattr(orphan_record, "razorpay_order_id", None) == "order_orphan_log"
+        assert getattr(orphan_record, "project_id", None) == project_id
+
+        with app.app_context():
+            assert Payment.query.filter_by(
+                razorpay_order_id="order_orphan_log"
+            ).count() == 0
+
+    def test_create_order_retry_reuses_created_payment(
+        self, app, client, login, factories, csrf_token
+    ):
+        customer_id = factories.user("customer", "retry-order@example.com")
+        project_id = factories.project(customer_id)
+        login("retry-order@example.com", "customer")
+
+        fake_order = _make_razorpay_order(order_id="order_retry_once")
+
+        with patch(
+            "app.blueprints.payments.razorpay_client.order.create",
+            return_value=fake_order,
+        ) as mock_create:
+            first_response = client.post(
+                f"/payment/create-order/{project_id}",
+                data={"csrf_token": csrf_token},
+                follow_redirects=False,
+            )
+            second_response = client.post(
+                f"/payment/create-order/{project_id}",
+                data={"csrf_token": csrf_token},
+                follow_redirects=False,
+            )
+
+        assert first_response.status_code == 200
+        assert second_response.status_code == 200
+        first_data = json.loads(first_response.data)
+        second_data = json.loads(second_response.data)
+        assert first_data["order_id"] == "order_retry_once"
+        assert second_data["order_id"] == "order_retry_once"
+        assert mock_create.call_count == 1
+
+        with app.app_context():
+            assert Payment.query.filter_by(project_id=project_id).count() == 1
+
+    def test_verify_payment_replay_does_not_transition_twice(
+        self, app, client, login, factories, csrf_token
+    ):
+        customer_id = factories.user("customer", "verify-replay@example.com")
+        project_id = factories.project(customer_id, status="Payment Pending")
+        factories.payment(
+            project_id,
+            customer_id,
+            razorpay_order_id="order_verify_replay",
+            razorpay_payment_id="pay_verify_replay",
+            status="Paid",
+            amount=4999,
+        )
+        login("verify-replay@example.com", "customer")
+
+        with patch(
+            "app.blueprints.payments.razorpay_client.utility.verify_payment_signature",
+            return_value=True,
+        ) as mock_signature, patch(
+            "app.blueprints.payments.razorpay_client.order.fetch"
+        ) as mock_order_fetch, patch(
+            "app.blueprints.payments.razorpay_client.payment.fetch"
+        ) as mock_payment_fetch:
+            response = client.post(
+                "/payment/verify",
+                data=json.dumps({
+                    "razorpay_order_id": "order_verify_replay",
+                    "razorpay_payment_id": "pay_verify_replay",
+                    "razorpay_signature": "sig_verify_replay",
+                }),
+                content_type="application/json",
+                headers={"X-CSRFToken": csrf_token},
+                follow_redirects=False,
+            )
+
+        assert response.status_code == 200
+        data = json.loads(response.data)
+        assert data["success"] is True
+        assert data["message"] == "Payment already verified."
+        mock_signature.assert_not_called()
+        mock_order_fetch.assert_not_called()
+        mock_payment_fetch.assert_not_called()
+
+        with app.app_context():
+            from app.models import Project
+
+            project = Project.query.get(project_id)
+            assert project.status == "Payment Pending"
