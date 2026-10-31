@@ -1,1618 +1,202 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="en" class="dark scroll-smooth">
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>
-        Project Details | AgencyOS
-    </title>
-
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='style.css') }}"
-    >
-
-    <style>
-
-        /* =========================================================
-           PROJECT DETAILS PAGE
-        ========================================================= */
-
-        .project-details-page {
-            min-height: calc(100vh - 76px);
-            padding: 48px 0 90px;
-
-            background:
-                radial-gradient(
-                    circle at 85% 0%,
-                    rgba(99, 91, 255, 0.07),
-                    transparent 28%
-                ),
-                var(--light-bg);
-        }
-
-
-        /* =========================================================
-           PAGE HEADER
-        ========================================================= */
-
-        .project-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-
-            gap: 25px;
-
-            margin-bottom: 30px;
-        }
-
-        .project-header-content {
-            max-width: 720px;
-        }
-
-        .project-header-content h1 {
-            margin: 8px 0 10px;
-
-            color: var(--dark);
-
-            font-size: clamp(30px, 4vw, 42px);
-
-            line-height: 1.12;
-
-            letter-spacing: -1.5px;
-        }
-
-        .project-header-content p {
-            margin: 0;
-
-            color: var(--muted);
-
-            font-size: 14px;
-
-            line-height: 1.7;
-        }
-
-
-        /* =========================================================
-           STATUS BADGE
-        ========================================================= */
-
-        .project-status {
-            display: inline-flex;
-            align-items: center;
-
-            padding: 9px 14px;
-
-            border-radius: 30px;
-
-            background: #eef2ff;
-
-            color: #4f46e5;
-
-            font-size: 11px;
-
-            font-weight: 800;
-
-            white-space: nowrap;
-        }
-
-
-        /* =========================================================
-           MAIN GRID
-        ========================================================= */
-
-        .details-grid {
-            display: grid;
-
-            grid-template-columns:
-                minmax(0, 1.45fr)
-                minmax(280px, 0.75fr);
-
-            gap: 20px;
-
-            align-items: start;
-        }
-
-
-        /* =========================================================
-           CARDS
-        ========================================================= */
-
-        .details-card {
-            background: var(--white);
-
-            border: 1px solid var(--border);
-
-            border-radius: 18px;
-
-            padding: 25px;
-
-            box-shadow:
-                0 8px 25px rgba(17, 24, 39, 0.04);
-
-            margin-bottom: 20px;
-        }
-
-        .details-card:last-child {
-            margin-bottom: 0;
-        }
-
-        .details-card h2 {
-            margin: 0 0 18px;
-
-            color: var(--dark);
-
-            font-size: 19px;
-
-            letter-spacing: -0.4px;
-        }
-
-        .details-card h3 {
-            margin: 0 0 8px;
-
-            color: var(--dark);
-
-            font-size: 15px;
-        }
-
-
-        /* =========================================================
-           INFORMATION GRID
-        ========================================================= */
-
-        .info-grid {
-            display: grid;
-
-            grid-template-columns:
-                repeat(2, minmax(0, 1fr));
-
-            gap: 15px;
-        }
-
-        .info-item {
-            padding: 15px;
-
-            background: #fafafa;
-
-            border: 1px solid #eeeeee;
-
-            border-radius: 12px;
-        }
-
-        .info-item span {
-            display: block;
-
-            margin-bottom: 6px;
-
-            color: #9ca3af;
-
-            font-size: 10px;
-
-            font-weight: 800;
-
-            text-transform: uppercase;
-
-            letter-spacing: 0.5px;
-        }
-
-        .info-item strong {
-            display: block;
-
-            color: var(--dark);
-
-            font-size: 14px;
-
-            line-height: 1.45;
-        }
-
-
-        /* =========================================================
-           REQUIREMENTS
-        ========================================================= */
-
-        .requirements-box {
-            padding: 18px;
-
-            background: #fafaff;
-
-            border: 1px solid #e5e3ff;
-
-            border-radius: 13px;
-
-            color: #4b5563;
-
-            font-size: 13px;
-
-            line-height: 1.75;
-
-            white-space: pre-wrap;
-
-            word-break: break-word;
-        }
-
-
-        /* =========================================================
-           PROJECT TIMELINE
-        ========================================================= */
-
-        .progress-list {
-            position: relative;
-
-            margin: 0;
-
-            padding: 0;
-
-            list-style: none;
-        }
-
-        .progress-list::before {
-            content: "";
-
-            position: absolute;
-
-            left: 13px;
-
-            top: 14px;
-
-            bottom: 14px;
-
-            width: 2px;
-
-            background: #e5e7eb;
-        }
-
-        .progress-item {
-            position: relative;
-
-            display: flex;
-
-            gap: 15px;
-
-            padding-bottom: 23px;
-        }
-
-        .progress-item:last-child {
-            padding-bottom: 0;
-        }
-
-        .progress-dot {
-            position: relative;
-
-            z-index: 2;
-
-            width: 28px;
-
-            height: 28px;
-
-            flex: 0 0 28px;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            border-radius: 50%;
-
-            background: #f1f5f9;
-
-            border: 2px solid #e5e7eb;
-
-            color: #94a3b8;
-
-            font-size: 11px;
-
-            font-weight: 800;
-        }
-
-        .progress-item.completed .progress-dot {
-            background: var(--primary);
-
-            border-color: var(--primary);
-
-            color: white;
-        }
-
-        .progress-item.current .progress-dot {
-            background: #eef2ff;
-
-            border-color: var(--primary);
-
-            color: var(--primary);
-
-            box-shadow:
-                0 0 0 5px rgba(99, 91, 255, 0.08);
-        }
-
-        .progress-content {
-            padding-top: 2px;
-        }
-
-        .progress-content h3 {
-            margin: 0 0 4px;
-
-            color: var(--dark);
-
-            font-size: 14px;
-        }
-
-        .progress-content p {
-            margin: 0;
-
-            color: var(--muted);
-
-            font-size: 12px;
-
-            line-height: 1.55;
-        }
-
-
-        /* =========================================================
-           PROFESSIONAL CARD
-        ========================================================= */
-
-        .professional-card {
-            display: flex;
-
-            align-items: center;
-
-            gap: 15px;
-
-            padding: 17px;
-
-            background: #fafaff;
-
-            border: 1px solid #e5e3ff;
-
-            border-radius: 13px;
-        }
-
-        .professional-avatar {
-            width: 48px;
-
-            height: 48px;
-
-            flex: 0 0 48px;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            border-radius: 14px;
-
-            background: linear-gradient(
-                135deg,
-                #635bff,
-                #5148e8
-            );
-
-            color: white;
-
-            font-size: 18px;
-
-            font-weight: 800;
-        }
-
-        .professional-info {
-            min-width: 0;
-        }
-
-        .professional-info h3 {
-            margin: 0 0 4px;
-
-            color: var(--dark);
-
-            font-size: 15px;
-        }
-
-        .professional-info p {
-            margin: 0;
-
-            color: var(--muted);
-
-            font-size: 12px;
-
-            line-height: 1.5;
-        }
-
-
-        /* =========================================================
-           PAYMENT
-        ========================================================= */
-
-        .payment-row {
-            display: flex;
-
-            justify-content: space-between;
-
-            align-items: center;
-
-            gap: 15px;
-
-            padding: 12px 0;
-
-            border-bottom: 1px solid var(--border);
-        }
-
-        .payment-row:last-child {
-            border-bottom: none;
-
-            padding-bottom: 0;
-        }
-
-        .payment-row:first-child {
-            padding-top: 0;
-        }
-
-        .payment-label {
-            color: var(--muted);
-
-            font-size: 12px;
-        }
-
-        .payment-value {
-            color: var(--dark);
-
-            font-size: 13px;
-
-            font-weight: 700;
-
-            text-align: right;
-
-            word-break: break-word;
-        }
-
-        .payment-success {
-            color: #15803d;
-        }
-
-        .payment-pending {
-            color: #c2410c;
-        }
-
-
-        /* =========================================================
-           PAYMENT TIME
-        ========================================================= */
-
-        .payment-time {
-            display: inline-flex;
-
-            flex-direction: column;
-
-            align-items: flex-end;
-
-            gap: 2px;
-        }
-
-        .payment-time-date {
-            color: var(--dark);
-
-            font-size: 13px;
-
-            font-weight: 700;
-        }
-
-        .payment-time-clock {
-            color: var(--muted);
-
-            font-size: 11px;
-
-            font-weight: 600;
-        }
-
-
-        /* =========================================================
-           REVISION REQUEST
-        ========================================================= */
-
-        .revision-box {
-            padding: 18px;
-
-            background: #fff7ed;
-
-            border: 1px solid #fed7aa;
-
-            border-radius: 13px;
-
-            color: #9a3412;
-
-            font-size: 13px;
-
-            line-height: 1.65;
-        }
-
-        .revision-box strong {
-            display: block;
-
-            margin-bottom: 7px;
-
-            font-size: 12px;
-
-            text-transform: uppercase;
-
-            letter-spacing: 0.5px;
-        }
-
-
-        /* =========================================================
-           CUSTOMER DELIVERY CENTER
-        ========================================================= */
-
-        .delivery-card {
-            background:
-                linear-gradient(
-                    135deg,
-                    #fafaff,
-                    #f5f3ff
-                );
-
-            border: 1px solid #ddd9ff;
-
-            border-radius: 18px;
-
-            padding: 25px;
-
-            margin-bottom: 20px;
-        }
-
-        .delivery-header {
-            display: flex;
-
-            align-items: flex-start;
-
-            gap: 15px;
-
-            margin-bottom: 20px;
-        }
-
-        .delivery-icon {
-            width: 48px;
-
-            height: 48px;
-
-            flex: 0 0 48px;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            border-radius: 14px;
-
-            background: var(--primary);
-
-            color: white;
-
-            font-size: 22px;
-        }
-
-        .delivery-header h2 {
-            margin: 0 0 5px;
-
-            color: var(--dark);
-
-            font-size: 20px;
-        }
-
-        .delivery-header p {
-            margin: 0;
-
-            color: var(--muted);
-
-            font-size: 12px;
-
-            line-height: 1.6;
-        }
-
-        .delivery-actions {
-            display: grid;
-
-            grid-template-columns:
-                repeat(2, minmax(0, 1fr));
-
-            gap: 12px;
-
-            margin-bottom: 20px;
-        }
-
-        .delivery-button {
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            min-height: 46px;
-
-            padding: 12px 16px;
-
-            border-radius: 11px;
-
-            background: var(--primary);
-
-            color: white;
-
-            text-decoration: none;
-
-            font-size: 13px;
-
-            font-weight: 800;
-
-            transition:
-                transform 0.2s ease,
-                opacity 0.2s ease;
-        }
-
-        .delivery-button:hover {
-            transform: translateY(-1px);
-
-            opacity: 0.92;
-        }
-
-        .delivery-button.secondary {
-            background: white;
-
-            color: var(--primary);
-
-            border: 1px solid #d9d5ff;
-        }
-
-        .delivery-notes {
-            padding: 17px;
-
-            background: white;
-
-            border: 1px solid #e5e3ff;
-
-            border-radius: 13px;
-        }
-
-        .delivery-notes-label {
-            margin-bottom: 8px;
-
-            color: var(--primary);
-
-            font-size: 10px;
-
-            font-weight: 800;
-
-            text-transform: uppercase;
-
-            letter-spacing: 0.7px;
-        }
-
-        .delivery-notes-content {
-            color: #4b5563;
-
-            font-size: 13px;
-
-            line-height: 1.75;
-
-            white-space: pre-wrap;
-
-            word-break: break-word;
-        }
-
-
-        /* =========================================================
-           NEXT STEP
-        ========================================================= */
-
-        .next-step {
-            padding: 19px;
-
-            background: linear-gradient(
-                135deg,
-                #fafaff,
-                #f5f3ff
-            );
-
-            border: 1px solid #e5e3ff;
-
-            border-radius: 14px;
-        }
-
-        .next-step-label {
-            margin-bottom: 7px;
-
-            color: var(--primary);
-
-            font-size: 10px;
-
-            font-weight: 800;
-
-            text-transform: uppercase;
-
-            letter-spacing: 0.8px;
-        }
-
-        .next-step h3 {
-            margin-bottom: 6px;
-
-            font-size: 16px;
-        }
-
-        .next-step p {
-            margin: 0;
-
-            color: var(--muted);
-
-            font-size: 12px;
-
-            line-height: 1.65;
-        }
-
-
-        /* =========================================================
-           MOBILE
-        ========================================================= */
-
-        @media (max-width: 850px) {
-
-            .details-grid {
-                grid-template-columns: 1fr;
-            }
-
-        }
-
-
-        @media (max-width: 600px) {
-
-            .project-details-page {
-                padding: 35px 0 65px;
-            }
-
-            .project-header {
-                flex-direction: column;
-
-                gap: 15px;
-            }
-
-            .project-status {
-                align-self: flex-start;
-            }
-
-            .details-card {
-                padding: 20px;
-            }
-
-            .info-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .professional-card {
-                align-items: flex-start;
-            }
-
-            .payment-row {
-                align-items: flex-start;
-            }
-
-            .payment-value {
-                max-width: 58%;
-            }
-
-            .delivery-actions {
-                grid-template-columns: 1fr;
-            }
-
-            .delivery-card {
-                padding: 20px;
-            }
-
-        }
-
-    </style>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ project.service }} — Client Milestone Portal</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <style>
+    body { background-color: #09090b; font-family: 'Plus Jakarta Sans', sans-serif; color: #f4f4f5; }
+    .portal-card { background: #121215; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 18px; }
+  </style>
 </head>
+<body class="bg-zinc-950 text-zinc-100 min-h-screen p-6 sm:p-10 max-w-5xl mx-auto selection:bg-indigo-500 selection:text-white">
 
+  <!-- Top Breadcrumb & Actions -->
+  <div class="flex items-center justify-between pb-6 border-b border-zinc-800/80">
+    <a href="{{ url_for('dashboard') }}" class="text-xs font-mono text-indigo-400 hover:text-indigo-300 transition flex items-center gap-1.5">
+      <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+      <span>Return to Workspace</span>
+    </a>
 
-<body>
+    <!-- WhatsApp Lead Quick Ping -->
+    <a href="https://wa.me/91XXXXXXXXXX?text=Hi%20AgencyOS,%20checking%20status%20for%20Project%20%23{{ project.id }}" target="_blank" class="px-3.5 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-400 font-bold text-xs flex items-center gap-1.5 transition">
+      <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
+      <span>Agency WhatsApp Lead</span>
+    </a>
+  </div>
 
+  <!-- Project Header Title -->
+  <div class="mt-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <div class="flex items-center gap-3">
+        <span class="font-mono text-xs font-bold text-indigo-400 bg-indigo-500/10 px-2.5 py-1 rounded-md border border-indigo-500/20">#{{ project.id }}</span>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">{{ project.service }}</h1>
+      </div>
+      <p class="text-xs text-zinc-400 mt-2">
+        Package: <strong class="text-zinc-200">{{ project.package }}</strong> • 
+        Business: <strong class="text-zinc-200">{{ project.business.name if project.business else 'Direct Client' }}</strong>
+      </p>
+    </div>
 
-    <!-- =========================================================
-         GLOBAL NAVBAR
-    ========================================================= -->
+    <span class="px-3.5 py-1 rounded-full text-xs font-mono border self-start sm:self-auto {% if project.status == 'Completed' %}bg-emerald-500/10 text-emerald-400 border-emerald-500/20{% elif project.status == 'Payment Pending' %}bg-rose-500/10 text-rose-400 border-rose-500/20{% elif project.status == 'Revision' %}bg-amber-500/10 text-amber-400 border-amber-500/20{% else %}bg-indigo-500/10 text-indigo-400 border-indigo-500/20{% endif %}">
+      ● {{ project.status }}
+    </span>
+  </div>
 
-    <nav class="navbar">
+  <!-- Milestone Progression Tracker (50/25/25 Architecture) -->
+  <div class="portal-card p-6 mt-8">
+    <div class="flex items-center justify-between pb-4 border-b border-zinc-800 mb-6">
+      <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-400 font-mono">Sequential Delivery Gates</h3>
+      <span class="text-xs font-mono text-zinc-500">100% Milestone Tracked</span>
+    </div>
 
-        <div class="nav-container">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+      <div class="p-4 rounded-xl bg-zinc-900 border border-zinc-800">
+        <div class="flex items-center justify-between mb-2">
+          <span class="font-bold text-white">Milestone 1: Advance</span>
+          <span class="text-emerald-400 font-mono font-bold">50% Advance</span>
+        </div>
+        <p class="text-[11px] text-zinc-400">Discovery, wireframes & project architecture kickoff.</p>
+        <span class="mt-3 block font-mono text-[10px] text-emerald-400">Settled ✅</span>
+      </div>
 
-            <a
-                href="{{ url_for('dashboard') }}"
-                class="logo"
-            >
+      <div class="p-4 rounded-xl bg-zinc-900 border {% if project.status in ['Assigned', 'In Progress', 'Submitted', 'Revision'] %}border-indigo-500/40 bg-indigo-950/20{% else %}border-zinc-800{% endif %}">
+        <div class="flex items-center justify-between mb-2">
+          <span class="font-bold text-white">Milestone 2: Design & UI</span>
+          <span class="text-indigo-400 font-mono font-bold">25% Sign-Off</span>
+        </div>
+        <p class="text-[11px] text-zinc-400">Figma prototype, mobile responsive UI, and review.</p>
+        <span class="mt-3 block font-mono text-[10px] text-indigo-400">Current Active Gate ⚡</span>
+      </div>
 
-                <div class="logo-mark">
-                    A
-                </div>
+      <div class="p-4 rounded-xl bg-zinc-900 border border-zinc-800 opacity-60">
+        <div class="flex items-center justify-between mb-2">
+          <span class="font-bold text-white">Milestone 3: Deployment</span>
+          <span class="text-zinc-400 font-mono font-bold">25% Handover</span>
+        </div>
+        <p class="text-[11px] text-zinc-400">Production code, domain DNS setup, and final IP transfer.</p>
+        <span class="mt-3 block font-mono text-[10px] text-zinc-500">Pending Prior Approval</span>
+      </div>
+    </div>
+  </div>
 
-                Agency<span class="logo-accent">OS</span>
+  <!-- Advance Payment Alert if Pending -->
+  {% if project.status == 'Payment Pending' %}
+  <div class="portal-card p-6 mt-6 border-rose-500/30 bg-rose-500/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <h4 class="text-sm font-bold text-white">Milestone Deposit Invoice Awaiting Authorization</h4>
+      <p class="text-xs text-zinc-400 mt-1">Sprints activate immediately upon payment verification via Razorpay / UPI.</p>
+    </div>
+    <a href="{{ url_for('payment_page', project_id=project.id) }}" class="px-5 py-2.5 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs shadow-lg transition whitespace-nowrap">
+      Pay Milestone Advance (Razorpay) →
+    </a>
+  </div>
+  {% endif %}
 
-            </a>
+  <!-- Active Deliverable Review Gate (2-Revision Scope Lock) -->
+  <div class="portal-card p-6 mt-6">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-zinc-800 gap-2 mb-6">
+      <div>
+        <h3 class="text-sm font-bold text-white">Active Milestone Deliverable</h3>
+        <p class="text-xs text-zinc-400 mt-1">Review the specialist submission and confirm sign-off or submit feedback.</p>
+      </div>
 
+      <!-- Revision Counter Badge -->
+      <span class="px-3 py-1 rounded-full text-xs font-mono bg-amber-500/10 text-amber-400 border border-amber-500/20 self-start sm:self-auto">
+        Complimentary Revisions: 2 Maximum
+      </span>
+    </div>
 
-            <div class="nav-actions">
+    <!-- Submission Details -->
+    {% set latest_delivery = project.deliveries[-1] if project.deliveries else None %}
+    {% if latest_delivery %}
+    <div class="space-y-4 text-xs">
+      <div class="p-4 rounded-xl bg-zinc-900 border border-zinc-800">
+        <span class="text-[10px] font-mono text-zinc-500 uppercase block mb-2">Live Production & Preview Links</span>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 font-mono">
+          <div>Staging URL: <a href="{{ latest_delivery.preview_url }}" target="_blank" class="text-indigo-400 hover:underline">{{ latest_delivery.preview_url or 'Pending setup' }}</a></div>
+          <div>Production Live: <a href="{{ latest_delivery.live_url }}" target="_blank" class="text-indigo-400 hover:underline">{{ latest_delivery.live_url or 'Pending handover' }}</a></div>
+        </div>
+      </div>
 
-                <a
-                    href="{{ url_for('dashboard') }}"
-                    class="btn btn-outline"
-                >
-                    ← Back to Dashboard
-                </a>
+      <div class="p-4 rounded-xl bg-zinc-900 border border-zinc-800">
+        <span class="text-[10px] font-mono text-zinc-500 uppercase block mb-1">Specialist Completion Notes</span>
+        <p class="text-zinc-300 leading-relaxed">{{ latest_delivery.completion_notes or 'All checklist requirements completed.' }}</p>
+      </div>
 
-            </div>
+      <!-- Action Buttons -->
+      <div class="pt-4 border-t border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <p class="text-[11px] text-zinc-500">Sign-off permanently locks this phase and unlocks subsequent milestone tasks.</p>
 
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+          <!-- Request Revision Trigger -->
+          <button type="button" onclick="document.getElementById('revisionModal').style.display = 'flex'" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-amber-300 font-bold text-xs transition cursor-pointer">
+            Request Revision (1 of 2 Used)
+          </button>
+
+          <!-- Approve Milestone -->
+          <form method="POST" action="/project/{{ project.id }}/approve" class="w-full sm:w-auto">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-zinc-950 font-bold text-xs shadow-lg transition cursor-pointer">
+              Approve Deliverable ✅
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <div class="py-8 text-center text-xs text-zinc-500 font-mono">
+      Specialist is currently developing this milestone. Deliverable links and previews will appear here for your review.
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Scope & Specifications Card -->
+  <div class="portal-card p-6 mt-6">
+    <h3 class="text-xs font-bold text-zinc-400 uppercase tracking-wider font-mono mb-3">Project Specifications & SOW Brief</h3>
+    <div class="p-4 rounded-xl bg-zinc-900 border border-zinc-800 text-xs text-zinc-300 leading-relaxed font-mono">
+      {{ project.requirements or 'No additional briefing notes provided.' }}
+    </div>
+  </div>
+
+  <!-- Revision Modal (Floating Pure Center Popup) -->
+  <div id="revisionModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" style="display: none;">
+    <div class="relative w-full max-w-lg p-6 bg-[#121215] border border-zinc-800 rounded-2xl shadow-2xl">
+      <div class="flex items-center justify-between pb-4 border-b border-zinc-800">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <i data-lucide="edit-3" class="w-4 h-4 text-amber-400"></i>
+          <span>Request Deliverable Revision</span>
+        </h3>
+        <button type="button" onclick="document.getElementById('revisionModal').style.display = 'none'" class="text-zinc-400 hover:text-white text-base cursor-pointer">×</button>
+      </div>
+
+      <form method="POST" action="/project/{{ project.id }}/revision" class="space-y-4 mt-4 text-xs">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <p class="text-zinc-400">Describe the exact modifications needed. Revisions must stay strictly within the original SOW boundary to prevent scope creep.</p>
+        
+        <div>
+          <label class="block text-zinc-400 font-semibold mb-1">Feedback & Modification Notes</label>
+          <textarea name="revision_comment" rows="4" required placeholder="Specify design tweaks, copy changes, or bugs to correct..." class="w-full p-3 rounded-xl bg-zinc-950 border border-zinc-800 text-white focus:outline-none focus:border-amber-500"></textarea>
         </div>
 
-    </nav>
-
-
-
-    <!-- =========================================================
-         PAGE
-    ========================================================= -->
-
-    <main class="project-details-page">
-
-        <div class="section-container">
-
-
-            <!-- =====================================================
-                 HEADER
-            ===================================================== -->
-
-            <div class="project-header">
-
-                <div class="project-header-content">
-
-                    <span class="section-label">
-                        PROJECT DETAILS
-                    </span>
-
-                    <h1>
-                        {{ project.service }}
-                    </h1>
-
-                    <p>
-                        Track your project, review the selected package,
-                        monitor progress, and see the current delivery status.
-                    </p>
-
-                </div>
-
-
-                <div class="project-status">
-
-                    {{ project.status }}
-
-                </div>
-
-            </div>
-
-
-
-            <!-- =====================================================
-                 MAIN CONTENT
-            ===================================================== -->
-
-            <div class="details-grid">
-
-
-                <!-- =================================================
-                     LEFT COLUMN
-                ================================================= -->
-
-                <div>
-
-
-                    <!-- PROJECT INFORMATION -->
-
-                    <div class="details-card">
-
-                        <h2>
-                            Project Information
-                        </h2>
-
-
-                        <div class="info-grid">
-
-
-                            <div class="info-item">
-
-                                <span>
-                                    Project ID
-                                </span>
-
-                                <strong>
-                                    #{{ project.id }}
-                                </strong>
-
-                            </div>
-
-
-                            <div class="info-item">
-
-                                <span>
-                                    Service
-                                </span>
-
-                                <strong>
-                                    {{ project.service }}
-                                </strong>
-
-                            </div>
-
-
-                            <div class="info-item">
-
-                                <span>
-                                    Selected Package
-                                </span>
-
-                                <strong>
-                                    {{ project.package }}
-                                </strong>
-
-                            </div>
-
-
-                            <div class="info-item">
-
-                                <span>
-                                    Project Price
-                                </span>
-
-                                <strong>
-                                    {% if amount %}
-                                        ₹{{ "{:,.0f}".format(amount) }}
-                                    {% else %}
-                                        Price unavailable
-                                    {% endif %}
-                                </strong>
-
-                            </div>
-
-
-                            <div class="info-item">
-
-                                <span>
-                                    Current Status
-                                </span>
-
-                                <strong>
-                                    {{ project.status }}
-                                </strong>
-
-                            </div>
-
-
-                            <div class="info-item">
-
-                                <span>
-                                    Created
-                                </span>
-
-                                <strong>
-
-                                    {% if project.created_at %}
-
-                                        {{ project.created_at.strftime('%d %b %Y, %I:%M %p') }}
-
-                                    {% else %}
-
-                                        Not available
-
-                                    {% endif %}
-
-                                </strong>
-
-                            </div>
-
-
-                        </div>
-
-                    </div>
-
-
-
-                    <!-- REQUIREMENTS -->
-
-                    <div class="details-card">
-
-                        <h2>
-                            Project Requirements
-                        </h2>
-
-                        <div class="requirements-box">
-
-                            {% if project.requirements %}
-
-                                {{ project.requirements }}
-
-                            {% else %}
-
-                                No project requirements have been added.
-
-                            {% endif %}
-
-                        </div>
-
-                    </div>
-
-
-
-                    <!-- PROJECT PROGRESS -->
-
-                    <div class="details-card">
-
-                        <h2>
-                            Project Progress
-                        </h2>
-
-
-                        <ul class="progress-list">
-
-                            {% for step in project_steps %}
-
-                                {% set step_index = loop.index0 %}
-
-                                <li
-                                    class="progress-item
-                                    {% if step_index < current_status_index %}
-                                        completed
-                                    {% elif step_index == current_status_index %}
-                                        current
-                                    {% endif %}"
-                                >
-
-
-                                    <div class="progress-dot">
-
-                                        {% if step_index < current_status_index %}
-
-                                            ✓
-
-                                        {% elif step_index == current_status_index %}
-
-                                            ●
-
-                                        {% else %}
-
-                                            {{ loop.index }}
-
-                                        {% endif %}
-
-                                    </div>
-
-
-                                    <div class="progress-content">
-
-                                        <h3>
-                                            {{ step.name }}
-                                        </h3>
-
-                                        <p>
-                                            {{ step.description }}
-                                        </p>
-
-                                    </div>
-
-
-                                </li>
-
-                            {% endfor %}
-
-                        </ul>
-
-                    </div>
-
-
-
-                    <!-- =================================================
-                         CUSTOMER DELIVERY CENTER
-                    ================================================= -->
-
-                    {% if project.status == "Completed" and latest_delivery %}
-
-                        <div class="delivery-card">
-
-                            <div class="delivery-header">
-
-                                <div class="delivery-icon">
-                                    🎉
-                                </div>
-
-                                <div>
-
-                                    <h2>
-                                        Your Website Is Ready!
-                                    </h2>
-
-                                    <p>
-                                        Your project has been reviewed and
-                                        approved by AgencyOS.
-                                    </p>
-
-                                </div>
-
-                            </div>
-
-
-                            <div class="delivery-actions">
-
-                                {% if latest_delivery.live_url %}
-
-                                    <a
-                                        href="{{ latest_delivery.live_url }}"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        class="delivery-button"
-                                    >
-                                        🌐 Visit Live Website ↗
-                                    </a>
-
-                                {% endif %}
-
-
-                                {% if latest_delivery.preview_url %}
-
-                                    <a
-                                        href="{{ latest_delivery.preview_url }}"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        class="delivery-button secondary"
-                                    >
-                                        👀 Open Preview ↗
-                                    </a>
-
-                                {% endif %}
-
-                            </div>
-
-
-                            {% if latest_delivery.completion_notes %}
-
-                                <div class="delivery-notes">
-
-                                    <div class="delivery-notes-label">
-                                        Completion Notes
-                                    </div>
-
-                                    <div class="delivery-notes-content">
-
-                                        {{ latest_delivery.completion_notes }}
-
-                                    </div>
-
-                                </div>
-
-                            {% endif %}
-
-                        </div>
-
-                    {% endif %}
-
-
-
-                    <!-- REVISION REQUEST -->
-
-                    {% if project.revision_comment %}
-
-                        <div class="details-card">
-
-                            <h2>
-                                Revision Request
-                            </h2>
-
-                            <div class="revision-box">
-
-                                <strong>
-                                    Action Required
-                                </strong>
-
-                                {{ project.revision_comment }}
-
-                            </div>
-
-                        </div>
-
-                    {% endif %}
-
-
-
-                </div>
-
-
-
-                <!-- =================================================
-                     RIGHT COLUMN
-                ================================================= -->
-
-                <div>
-
-
-                    <!-- ASSIGNED PROFESSIONAL -->
-
-                    <div class="details-card">
-
-                        <h2>
-                            Assigned Professional
-                        </h2>
-
-
-                        {% if assigned_professional %}
-
-                            <div class="professional-card">
-
-                                <div class="professional-avatar">
-
-                                    {% if assigned_professional.user %}
-
-                                        {{ assigned_professional.user.name[0]|upper }}
-
-                                    {% else %}
-
-                                        P
-
-                                    {% endif %}
-
-                                </div>
-
-
-                                <div class="professional-info">
-
-                                    <h3>
-
-                                        {% if assigned_professional.user %}
-
-                                            {{ assigned_professional.user.name }}
-
-                                        {% else %}
-
-                                            Assigned Professional
-
-                                        {% endif %}
-
-                                    </h3>
-
-
-                                    <p>
-
-                                        {% if assigned_professional.expertise %}
-
-                                            {{ assigned_professional.expertise }}
-
-                                        {% else %}
-
-                                            AgencyOS Professional
-
-                                        {% endif %}
-
-                                    </p>
-
-                                </div>
-
-                            </div>
-
-                        {% else %}
-
-                            <p
-                                style="
-                                    margin: 0;
-                                    color: var(--muted);
-                                    font-size: 13px;
-                                    line-height: 1.7;
-                                "
-                            >
-
-                                Your project has not been assigned to a
-                                professional yet. AgencyOS will assign a
-                                suitable professional based on your project
-                                requirements and service category.
-
-                            </p>
-
-                        {% endif %}
-
-                    </div>
-
-
-
-                    <!-- PAYMENT -->
-
-                    <div class="details-card">
-
-                        <h2>
-                            Payment
-                        </h2>
-
-
-                        {% if payment %}
-
-                            <div class="payment-row">
-
-                                <span class="payment-label">
-                                    Amount
-                                </span>
-
-                                <span class="payment-value">
-                                    ₹{{ "{:,.0f}".format(payment.amount) }}
-                                </span>
-
-                            </div>
-
-
-                            <div class="payment-row">
-
-                                <span class="payment-label">
-                                    Currency
-                                </span>
-
-                                <span class="payment-value">
-                                    {{ payment.currency }}
-                                </span>
-
-                            </div>
-
-
-                            <div class="payment-row">
-
-                                <span class="payment-label">
-                                    Payment Status
-                                </span>
-
-
-                                <span
-                                    class="
-                                        payment-value
-                                        {% if payment.status == 'Paid' or payment.status == 'Completed' %}
-                                            payment-success
-                                        {% else %}
-                                            payment-pending
-                                        {% endif %}
-                                    "
-                                >
-                                    {{ payment.status }}
-                                </span>
-
-                            </div>
-
-
-                            {% if payment.razorpay_payment_id %}
-
-                                <div class="payment-row">
-
-                                    <span class="payment-label">
-                                        Payment ID
-                                    </span>
-
-                                    <span class="payment-value">
-                                        {{ payment.razorpay_payment_id }}
-                                    </span>
-
-                                </div>
-
-                            {% endif %}
-
-
-                            {% if payment.paid_at %}
-
-                                <div class="payment-row">
-
-                                    <span class="payment-label">
-                                        Payment Date
-                                    </span>
-
-                                    <span class="payment-value">
-
-                                        <span class="payment-time">
-
-                                            <span class="payment-time-date">
-                                                {{ payment.paid_at.strftime('%d %b %Y') }}
-                                            </span>
-
-                                            <span class="payment-time-clock">
-                                                {{ payment.paid_at.strftime('%I:%M:%S %p') }} IST
-                                            </span>
-
-                                        </span>
-
-                                    </span>
-
-                                </div>
-
-                            {% elif payment.created_at %}
-
-                                <div class="payment-row">
-
-                                    <span class="payment-label">
-                                        Payment Record
-                                    </span>
-
-                                    <span class="payment-value">
-
-                                        <span class="payment-time">
-
-                                            <span class="payment-time-date">
-                                                {{ payment.created_at.strftime('%d %b %Y') }}
-                                            </span>
-
-                                            <span class="payment-time-clock">
-                                                Payment recorded
-                                            </span>
-
-                                        </span>
-
-                                    </span>
-
-                                </div>
-
-                            {% endif %}
-
-
-                        {% else %}
-
-                            <p
-                                style="
-                                    margin: 0;
-                                    color: var(--muted);
-                                    font-size: 13px;
-                                    line-height: 1.7;
-                                "
-                            >
-
-                                No payment record is currently available
-                                for this project.
-
-                            </p>
-
-                        {% endif %}
-
-                    </div>
-
-
-
-                    <!-- WHAT'S NEXT -->
-
-                    <div class="details-card">
-
-                        <div class="next-step">
-
-                            <div class="next-step-label">
-                                What's Next?
-                            </div>
-
-
-                            {% if project.status == "Payment Pending" %}
-
-                                <h3>
-                                    Complete your payment
-                                </h3>
-
-                                <p>
-                                    Your project is waiting for payment
-                                    confirmation before the next stage
-                                    can begin.
-                                </p>
-
-
-                            {% elif project.status == "Pending Assignment" %}
-
-                                <h3>
-                                    Professional assignment
-                                </h3>
-
-                                <p>
-                                    AgencyOS will review your project and
-                                    assign a suitable professional to work
-                                    on it.
-                                </p>
-
-
-                            {% elif project.status == "Assigned" %}
-
-                                <h3>
-                                    Your professional is assigned
-                                </h3>
-
-                                <p>
-                                    The assigned professional can now begin
-                                    working on your project requirements.
-                                </p>
-
-
-                            {% elif project.status == "In Progress" %}
-
-                                <h3>
-                                    Work is in progress
-                                </h3>
-
-                                <p>
-                                    Your professional is currently working
-                                    on the project. You can continue to
-                                    monitor its status here.
-                                </p>
-
-
-                            {% elif project.status == "Submitted" %}
-
-                                <h3>
-                                    Agency review
-                                </h3>
-
-                                <p>
-                                    The professional has submitted the work.
-                                    AgencyOS is reviewing the delivery before
-                                    completion.
-                                </p>
-
-
-                            {% elif project.status == "Revision" %}
-
-                                <h3>
-                                    Revision in progress
-                                </h3>
-
-                                <p>
-                                    Your revision request is being handled.
-                                    The professional will update the work
-                                    before it is reviewed again.
-                                </p>
-
-
-                            {% elif project.status == "Completed" %}
-
-                                <h3>
-                                    Project completed
-                                </h3>
-
-                                <p>
-                                    Your project has been approved and
-                                    completed successfully.
-                                </p>
-
-
-                            {% else %}
-
-                                <h3>
-                                    Project is being processed
-                                </h3>
-
-                                <p>
-                                    AgencyOS is processing your project.
-                                    The latest status will appear here.
-                                </p>
-
-                            {% endif %}
-
-                        </div>
-
-                    </div>
-
-
-                </div>
-
-
-            </div>
-
-
+        <div class="flex gap-2 pt-2">
+          <button type="submit" class="flex-1 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold transition cursor-pointer">Submit Revision Request</button>
+          <button type="button" onclick="document.getElementById('revisionModal').style.display = 'none'" class="px-4 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 cursor-pointer">Cancel</button>
         </div>
+      </form>
+    </div>
+  </div>
 
-    </main>
+  <footer class="mt-12 pt-6 border-t border-zinc-900 text-center text-xs font-mono text-zinc-600">
+    AgencyOS Milestone Workspace • SAC Code 998311 • IST Timezone
+  </footer>
 
-
+  <script>if (window.lucide) lucide.createIcons();</script>
 </body>
-
 </html>

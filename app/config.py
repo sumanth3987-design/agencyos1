@@ -1,6 +1,6 @@
 import os
 from datetime import timedelta
-from urllib.parse import urlparse
+from urllib.parse import urlparse   
 
 
 from dotenv import load_dotenv
@@ -359,7 +359,7 @@ class Config:
     # Rate limiting
     # Resolved in create_app() from RATELIMIT_STORAGE_URL (env/config) so that
     # environment overrides are honored while explicit config overrides win.
-    RATELIMIT_ENABLED = True
+    RATELIMIT_ENABLED = resolve_flask_env() == "production"
     RATELIMIT_STORAGE_URI = None
     RATELIMIT_ALLOW_IN_MEMORY_STORAGE = None
     RATELIMIT_IN_MEMORY_FALLBACK_ENABLED = False

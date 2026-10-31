@@ -457,6 +457,27 @@ class ProfessionalProfile(db.Model):
         nullable=True
     )
 
+    # === NEW PAYOUT & BANKING FIELDS ===
+    upi_id = db.Column(
+        db.String(100),
+        nullable=True
+    )
+
+    bank_account_number = db.Column(
+        db.String(50),
+        nullable=True
+    )
+
+    bank_ifsc = db.Column(
+        db.String(20),
+        nullable=True
+    )
+
+    pan_number = db.Column(
+        db.String(20),
+        nullable=True
+    )
+
     verification_status = db.Column(
         db.String(30),
         default="Pending"
@@ -1025,6 +1046,12 @@ class Invoice(db.Model):
     agency_profit = db.Column(db.Integer, nullable=False)
     tax_amount = db.Column(db.Integer, default=0, nullable=False)
     status = db.Column(db.String(30), default="Paid", nullable=False)
+
+    # === NEW TALENT PAYOUT TRACKING FIELDS ===
+    payout_status = db.Column(db.String(30), default="Pending Approval", nullable=False)
+    payout_utr = db.Column(db.String(100), nullable=True)
+    payout_paid_at = db.Column(db.DateTime, nullable=True)
+
     created_at = db.Column(db.DateTime, default=get_ist_now, nullable=False)
 
     project = db.relationship("Project", backref=db.backref("invoice_record", uselist=False))

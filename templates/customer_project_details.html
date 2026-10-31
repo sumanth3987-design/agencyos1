@@ -1,1157 +1,181 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="en" class="dark scroll-smooth">
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>
-        Project #{{ project.id }} | AgencyOS
-    </title>
-
-    <style>
-
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            font-family:
-                Arial,
-                Helvetica,
-                sans-serif;
-            background: #f4f7fb;
-            color: #172033;
-        }
-
-        /* =================================================
-           NAVBAR
-        ================================================= */
-
-        .navbar {
-            background: #0f172a;
-            color: white;
-            padding: 16px 7%;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 20px;
-        }
-
-        .brand {
-            font-size: 22px;
-            font-weight: 800;
-            color: white;
-            text-decoration: none;
-        }
-
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 18px;
-        }
-
-        .nav-links a {
-            color: #cbd5e1;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .nav-links a:hover {
-            color: white;
-        }
-
-        /* =================================================
-           PAGE
-        ================================================= */
-
-        .container {
-            width: min(
-                1100px,
-                92%
-            );
-
-            margin: 35px auto 60px;
-        }
-
-        .back-link {
-            display: inline-block;
-            margin-bottom: 20px;
-            color: #2563eb;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 14px;
-        }
-
-        .back-link:hover {
-            text-decoration: underline;
-        }
-
-        /* =================================================
-           HEADER
-        ================================================= */
-
-        .project-header {
-            background: white;
-            border-radius: 18px;
-            padding: 28px;
-            margin-bottom: 22px;
-            border: 1px solid #e5e7eb;
-            box-shadow:
-                0 8px 25px
-                rgba(
-                    15,
-                    23,
-                    42,
-                    0.06
-                );
-
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 20px;
-        }
-
-        .project-header h1 {
-            margin: 0 0 8px;
-            font-size: 28px;
-        }
-
-        .project-header p {
-            margin: 0;
-            color: #64748b;
-        }
-
-        .status {
-            display: inline-flex;
-            align-items: center;
-            padding: 9px 15px;
-            border-radius: 999px;
-            font-size: 13px;
-            font-weight: 800;
-            white-space: nowrap;
-        }
-
-        .status-pending {
-            background: #fff7ed;
-            color: #c2410c;
-        }
-
-        .status-assigned {
-            background: #eff6ff;
-            color: #1d4ed8;
-        }
-
-        .status-progress {
-            background: #ecfeff;
-            color: #0e7490;
-        }
-
-        .status-submitted {
-            background: #f5f3ff;
-            color: #6d28d9;
-        }
-
-        .status-revision {
-            background: #fff1f2;
-            color: #be123c;
-        }
-
-        .status-completed {
-            background: #ecfdf5;
-            color: #047857;
-        }
-
-        .status-payment {
-            background: #fffbeb;
-            color: #a16207;
-        }
-
-        /* =================================================
-           GRID
-        ================================================= */
-
-        .grid {
-            display: grid;
-            grid-template-columns:
-                repeat(
-                    2,
-                    minmax(0, 1fr)
-                );
-
-            gap: 22px;
-        }
-
-        .card {
-            background: white;
-            border-radius: 18px;
-            padding: 24px;
-            border: 1px solid #e5e7eb;
-            box-shadow:
-                0 8px 25px
-                rgba(
-                    15,
-                    23,
-                    42,
-                    0.05
-                );
-        }
-
-        .card.full {
-            grid-column: 1 / -1;
-        }
-
-        .card h2 {
-            margin: 0 0 18px;
-            font-size: 19px;
-        }
-
-        /* =================================================
-           INFO ROWS
-        ================================================= */
-
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-            padding: 12px 0;
-            border-bottom: 1px solid #eef2f7;
-        }
-
-        .info-row:last-child {
-            border-bottom: none;
-        }
-
-        .label {
-            color: #64748b;
-            font-size: 14px;
-        }
-
-        .value {
-            text-align: right;
-            font-weight: 700;
-            font-size: 14px;
-            color: #172033;
-        }
-
-        /* =================================================
-           REQUIREMENTS
-        ================================================= */
-
-        .requirements {
-            background: #f8fafc;
-            border-radius: 12px;
-            padding: 18px;
-            line-height: 1.7;
-            white-space: pre-wrap;
-            color: #334155;
-            font-size: 14px;
-        }
-
-        /* =================================================
-           PROFESSIONAL
-        ================================================= */
-
-        .professional-box {
-            display: flex;
-            align-items: flex-start;
-            gap: 18px;
-        }
-
-        .professional-avatar {
-            width: 58px;
-            height: 58px;
-            border-radius: 50%;
-            background: #2563eb;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            font-weight: 800;
-            flex-shrink: 0;
-        }
-
-        .professional-name {
-            margin: 0 0 6px;
-            font-size: 18px;
-        }
-
-        .professional-expertise {
-            margin: 0 0 8px;
-            color: #2563eb;
-            font-weight: 700;
-            font-size: 14px;
-        }
-
-        .professional-about {
-            margin: 0;
-            color: #64748b;
-            line-height: 1.6;
-            font-size: 14px;
-        }
-
-        .professional-details {
-            margin-top: 18px;
-        }
-
-        /* =================================================
-           REVISION
-        ================================================= */
-
-        .revision-box {
-            background: #fff1f2;
-            border: 1px solid #fecdd3;
-            border-radius: 14px;
-            padding: 18px;
-        }
-
-        .revision-box h3 {
-            margin: 0 0 8px;
-            color: #be123c;
-        }
-
-        .revision-box p {
-            margin: 0;
-            color: #881337;
-            line-height: 1.6;
-            white-space: pre-wrap;
-        }
-
-        /* =================================================
-           DELIVERY
-        ================================================= */
-
-        .delivery {
-            border: 1px solid #e2e8f0;
-            border-radius: 14px;
-            padding: 20px;
-            margin-bottom: 15px;
-            background: #fafcff;
-        }
-
-        .delivery:last-child {
-            margin-bottom: 0;
-        }
-
-        .delivery-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .delivery-number {
-            font-weight: 800;
-            font-size: 16px;
-        }
-
-        .delivery-status {
-            padding: 6px 11px;
-            border-radius: 999px;
-            background: #eef2ff;
-            color: #4338ca;
-            font-size: 12px;
-            font-weight: 800;
-        }
-
-        .delivery-notes {
-            background: white;
-            border-radius: 10px;
-            padding: 14px;
-            color: #475569;
-            line-height: 1.6;
-            white-space: pre-wrap;
-            margin-top: 14px;
-            font-size: 14px;
-        }
-
-        .links {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 14px;
-        }
-
-        .links a {
-            display: inline-block;
-            padding: 9px 13px;
-            border-radius: 9px;
-            background: #eff6ff;
-            color: #1d4ed8;
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 700;
-        }
-
-        .links a:hover {
-            background: #dbeafe;
-        }
-
-        .empty {
-            text-align: center;
-            padding: 30px 10px;
-            color: #64748b;
-        }
-
-        /* =================================================
-           PAYMENT
-        ================================================= */
-
-        .payment-paid {
-            color: #047857;
-        }
-
-        .payment-pending {
-            color: #b45309;
-        }
-
-        /* =================================================
-           RESPONSIVE
-        ================================================= */
-
-        @media (max-width: 800px) {
-
-            .grid {
-                grid-template-columns: 1fr;
-            }
-
-            .card.full {
-                grid-column: auto;
-            }
-
-            .project-header {
-                flex-direction: column;
-            }
-
-            .value {
-                text-align: left;
-            }
-
-            .info-row {
-                flex-direction: column;
-                gap: 5px;
-            }
-
-            .nav-links {
-                gap: 10px;
-            }
-
-        }
-
-        @media (max-width: 560px) {
-
-            .navbar {
-                padding: 15px 5%;
-            }
-
-            .brand {
-                font-size: 19px;
-            }
-
-            .nav-links a {
-                font-size: 12px;
-            }
-
-            .container {
-                width: 94%;
-                margin-top: 25px;
-            }
-
-            .card,
-            .project-header {
-                padding: 20px;
-            }
-
-            .project-header h1 {
-                font-size: 23px;
-            }
-
-            .professional-box {
-                flex-direction: column;
-            }
-
-        }
-
-    </style>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ project.service }} — Milestone Workspace</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <style>
+    body { background-color: #09090b; font-family: 'Plus Jakarta Sans', sans-serif; color: #f4f4f5; }
+    .portal-card { background: #121215; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 18px; }
+    .portal-card:hover { border-color: rgba(255, 255, 255, 0.16); }
+  </style>
 </head>
+<body class="bg-zinc-950 text-zinc-100 min-h-screen p-6 sm:p-10 max-w-5xl mx-auto selection:bg-indigo-500 selection:text-white">
 
-<body>
+  <!-- Top Action Toolbar -->
+  <div class="flex items-center justify-between pb-6 border-b border-zinc-800/80">
+    <a href="/dashboard" class="text-xs font-mono text-indigo-400 hover:text-indigo-300 transition flex items-center gap-1.5">
+      <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+      <span>Return to Workspace</span>
+    </a>
 
-    <!-- =================================================
-         NAVBAR
-    ================================================= -->
+    <div class="flex items-center gap-3">
+      <!-- 1-Click Printable GST Invoice (Direct Safe Path) -->
+      <a href="/project/{{ project.id }}/invoice" target="_blank" class="px-3.5 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-zinc-300 text-xs font-bold transition flex items-center gap-1.5">
+        <i data-lucide="receipt" class="w-3.5 h-3.5 text-indigo-400"></i>
+        <span>GST Invoice (PDF)</span>
+      </a>
 
-    <nav class="navbar">
+      <!-- Instant WhatsApp Agency Ping -->
+      <a href="https://wa.me/919876543210?text=Hi%20AgencyOS,%20checking%20status%20for%20Project%20%23{{ project.id }}" target="_blank" class="px-3.5 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-400 font-bold text-xs flex items-center gap-1.5 transition">
+        <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
+        <span>WhatsApp Lead</span>
+      </a>
+    </div>
+  </div>
 
-        <a
-            href="{{ url_for('dashboard') }}"
-            class="brand"
-        >
-            AgencyOS
-        </a>
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="mt-6 space-y-2">
+        {% for category, message in messages %}
+          <div class="p-3.5 rounded-xl border text-xs flex items-center justify-between {% if category == 'success' %}bg-emerald-500/10 border-emerald-500/20 text-emerald-300{% elif 'warning' in category %}bg-amber-500/10 border-amber-500/20 text-amber-300{% else %}bg-rose-500/10 border-rose-500/20 text-rose-300{% endif %}">
+            <span>{{ message }}</span>
+            <button onclick="this.parentElement.remove()" class="text-zinc-400 hover:text-white">×</button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
 
-        <div class="nav-links">
+  <!-- Project Header Title -->
+  <div class="mt-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <div class="flex items-center gap-3">
+        <span class="font-mono text-xs font-bold text-indigo-400 bg-indigo-500/10 px-2.5 py-1 rounded-md border border-indigo-500/20">#{{ project.id }}</span>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">{{ project.service }}</h1>
+      </div>
+      <p class="text-xs text-zinc-400 mt-2">
+        Package: <strong class="text-zinc-200">{{ project.package }}</strong> • 
+        Business: <strong class="text-zinc-200">{{ project.business.name if project.business else 'Direct Client' }}</strong>
+      </p>
+    </div>
 
-            <a
-                href="{{ url_for('dashboard') }}"
-            >
-                Dashboard
-            </a>
+    <span class="px-3.5 py-1 rounded-full text-xs font-mono border self-start sm:self-auto {% if project.status == 'Completed' %}bg-emerald-500/10 text-emerald-400 border-emerald-500/20{% elif project.status == 'Payment Pending' %}bg-rose-500/10 text-rose-400 border-rose-500/20{% elif project.status == 'Revision' %}bg-amber-500/10 text-amber-400 border-amber-500/20{% else %}bg-indigo-500/10 text-indigo-400 border-indigo-500/20{% endif %}">
+      ● {{ project.status }}
+    </span>
+  </div>
 
-            <a
-                href="{{ url_for('customer_profile') }}"
-            >
-                Profile
-            </a>
+  <!-- Milestone Progression Tracker (50/25/25 Architecture) -->
+  <div class="portal-card p-6 mt-8">
+    <div class="flex items-center justify-between pb-4 border-b border-zinc-800 mb-6">
+      <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-400 font-mono">Sequential Milestone Gates</h3>
+      <span class="text-xs font-mono text-zinc-500">Fixed Milestone Delivery</span>
+    </div>
 
-            <form
-                method="POST"
-                action="{{ url_for('logout') }}"
-                style="display: inline;"
-            >
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <button
-                    type="submit"
-                >
-                    Logout
-                </button>
-            </form>
-
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+      <div class="p-4 rounded-xl bg-zinc-900 border border-zinc-800">
+        <div class="flex items-center justify-between mb-2">
+          <span class="font-bold text-white">Milestone 1: Advance</span>
+          <span class="text-emerald-400 font-mono font-bold">50% Advance</span>
         </div>
-
-    </nav>
-
-
-    <!-- =================================================
-         MAIN
-    ================================================= -->
-
-    <main class="container">
-
-        <a
-            href="{{ url_for('dashboard') }}"
-            class="back-link"
-        >
-            ← Back to Dashboard
-        </a>
-
-
-        <!-- =================================================
-             PROJECT HEADER
-        ================================================= -->
-
-        <section class="project-header">
-
-            <div>
-
-                <h1>
-                    Project #{{ project.id }}
-                </h1>
-
-                <p>
-                    {{ project.service }}
-                    •
-                    {{ project.package }}
-                </p>
-
-            </div>
-
-
-            {% set status_class = "status-pending" %}
-
-            {% if project.status == "Assigned" %}
-
-                {% set status_class = "status-assigned" %}
-
-            {% elif project.status == "In Progress" %}
-
-                {% set status_class = "status-progress" %}
-
-            {% elif project.status == "Submitted" %}
-
-                {% set status_class = "status-submitted" %}
-
-            {% elif project.status == "Revision" %}
-
-                {% set status_class = "status-revision" %}
-
-            {% elif project.status == "Completed" %}
-
-                {% set status_class = "status-completed" %}
-
-            {% elif project.status == "Payment Pending" %}
-
-                {% set status_class = "status-payment" %}
-
-            {% endif %}
-
-
-            <span
-                class="status {{ status_class }}"
-            >
-                {{ project.status }}
-            </span>
-
-        </section>
-
-
-        <div class="grid">
-
-
-            <!-- =================================================
-                 PROJECT INFORMATION
-            ================================================= -->
-
-            <section class="card">
-
-                <h2>
-                    Project Information
-                </h2>
-
-                <div class="info-row">
-
-                    <span class="label">
-                        Project ID
-                    </span>
-
-                    <span class="value">
-                        #{{ project.id }}
-                    </span>
-
-                </div>
-
-
-                <div class="info-row">
-
-                    <span class="label">
-                        Service
-                    </span>
-
-                    <span class="value">
-                        {{ project.service }}
-                    </span>
-
-                </div>
-
-
-                <div class="info-row">
-
-                    <span class="label">
-                        Package
-                    </span>
-
-                    <span class="value">
-                        {{ project.package }}
-                    </span>
-
-                </div>
-
-
-                <div class="info-row">
-
-                    <span class="label">
-                        Created
-                    </span>
-
-                    <span class="value">
-
-                        {% if project.created_at %}
-
-                            {{ project.created_at.strftime(
-                                '%d %b %Y, %I:%M %p'
-                            ) }}
-
-                        {% else %}
-
-                            Date unavailable
-
-                        {% endif %}
-
-                    </span>
-
-                </div>
-
-            </section>
-
-
-            <!-- =================================================
-                 PAYMENT
-            ================================================= -->
-
-            <section class="card">
-
-                <h2>
-                    Payment
-                </h2>
-
-                {% if latest_payment %}
-
-                    <div class="info-row">
-
-                        <span class="label">
-                            Amount
-                        </span>
-
-                        <span class="value">
-                            ₹{{ "%.2f"|format(
-                                latest_payment.amount
-                            ) }}
-                        </span>
-
-                    </div>
-
-
-                    <div class="info-row">
-
-                        <span class="label">
-                            Status
-                        </span>
-
-                        <span
-                            class="value
-                            {% if latest_payment.status == 'Paid' %}
-                                payment-paid
-                            {% else %}
-                                payment-pending
-                            {% endif %}"
-                        >
-                            {{ latest_payment.status }}
-                        </span>
-
-                    </div>
-
-
-                    <div class="info-row">
-
-                        <span class="label">
-                            Currency
-                        </span>
-
-                        <span class="value">
-                            {{ latest_payment.currency }}
-                        </span>
-
-                    </div>
-
-
-                    {% if latest_payment.paid_at %}
-
-                        <div class="info-row">
-
-                            <span class="label">
-                                Paid On
-                            </span>
-
-                            <span class="value">
-
-                                {{ latest_payment.paid_at.strftime(
-                                    '%d %b %Y, %I:%M %p'
-                                ) }}
-
-                            </span>
-
-                        </div>
-
-                    {% endif %}
-
-                {% else %}
-
-                    <div class="empty">
-
-                        No payment record found.
-
-                    </div>
-
-                {% endif %}
-
-            </section>
-
-
-            <!-- =================================================
-                 CUSTOMER REQUIREMENTS
-            ================================================= -->
-
-            <section class="card full">
-
-                <h2>
-                    Your Requirements
-                </h2>
-
-                <div class="requirements">
-
-                    {% if project.requirements %}
-
-                        {{ project.requirements }}
-
-                    {% else %}
-
-                        No requirements were provided.
-
-                    {% endif %}
-
-                </div>
-
-            </section>
-
-
-            <!-- =================================================
-                 ASSIGNED PROFESSIONAL
-            ================================================= -->
-
-            <section class="card full">
-
-                <h2>
-                    Assigned Professional
-                </h2>
-
-
-                {% if assigned_professional %}
-
-                    <div class="professional-box">
-
-                        <div class="professional-avatar">
-
-                            {{ assigned_professional.name[0]|upper }}
-
-                        </div>
-
-
-                        <div>
-
-                            <h3 class="professional-name">
-
-                                {{ assigned_professional.name }}
-
-                            </h3>
-
-
-                            {% if professional_profile %}
-
-                                <p class="professional-expertise">
-
-                                    {{ professional_profile.expertise }}
-
-                                </p>
-
-
-                                {% if professional_profile.about %}
-
-                                    <p class="professional-about">
-
-                                        {{ professional_profile.about }}
-
-                                    </p>
-
-                                {% endif %}
-
-
-                                <div class="professional-details">
-
-                                    {% if professional_profile.experience %}
-
-                                        <div class="info-row">
-
-                                            <span class="label">
-                                                Experience
-                                            </span>
-
-                                            <span class="value">
-                                                {{ professional_profile.experience }}
-                                            </span>
-
-                                        </div>
-
-                                    {% endif %}
-
-
-                                    {% if professional_profile.skills %}
-
-                                        <div class="info-row">
-
-                                            <span class="label">
-                                                Skills
-                                            </span>
-
-                                            <span class="value">
-                                                {{ professional_profile.skills }}
-                                            </span>
-
-                                        </div>
-
-                                    {% endif %}
-
-                                </div>
-
-                            {% endif %}
-
-                        </div>
-
-                    </div>
-
-                {% else %}
-
-                    <div class="empty">
-
-                        No professional has been assigned yet.
-
-                    </div>
-
-                {% endif %}
-
-            </section>
-
-
-            <!-- =================================================
-                 REVISION REQUEST
-            ================================================= -->
-
-            {% if project.status == "Revision"
-                  and project.revision_comment %}
-
-                <section class="card full">
-
-                    <div class="revision-box">
-
-                        <h3>
-                            Revision Requested
-                        </h3>
-
-                        <p>
-                            {{ project.revision_comment }}
-                        </p>
-
-                    </div>
-
-                </section>
-
-            {% endif %}
-
-
-            <!-- =================================================
-                 LATEST DELIVERY
-            ================================================= -->
-
-            <section class="card full">
-
-                <h2>
-                    Latest Delivery
-                </h2>
-
-
-                {% if latest_delivery %}
-
-                    <div class="delivery">
-
-                        <div class="delivery-header">
-
-                            <span class="delivery-number">
-
-                                Submission
-                                #{{ latest_delivery.submission_number }}
-
-                            </span>
-
-                            <span class="delivery-status">
-
-                                {{ latest_delivery.status }}
-
-                            </span>
-
-                        </div>
-
-
-                        {% if latest_delivery.completion_notes %}
-
-                            <div class="delivery-notes">
-
-                                {{ latest_delivery.completion_notes }}
-
-                            </div>
-
-                        {% endif %}
-
-
-                        <div class="links">
-
-                            {% if latest_delivery.live_url %}
-
-                                <a
-                                    href="{{ latest_delivery.live_url }}"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    Open Live Website
-                                </a>
-
-                            {% endif %}
-
-
-                            {% if latest_delivery.preview_url %}
-
-                                <a
-                                    href="{{ latest_delivery.preview_url }}"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    Open Preview
-                                </a>
-
-                            {% endif %}
-
-
-                            {% if latest_delivery.source_url %}
-
-                                <a
-                                    href="{{ latest_delivery.source_url }}"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    Source / Repository
-                                </a>
-
-                            {% endif %}
-
-                        </div>
-
-                    </div>
-
-                {% else %}
-
-                    <div class="empty">
-
-                        No work has been submitted yet.
-
-                    </div>
-
-                {% endif %}
-
-            </section>
-
-
-            <!-- =================================================
-                 DELIVERY HISTORY
-            ================================================= -->
-
-            <section class="card full">
-
-                <h2>
-                    Submission History
-                </h2>
-
-
-                {% if delivery_history %}
-
-                    {% for delivery in delivery_history %}
-
-                        <div class="delivery">
-
-                            <div class="delivery-header">
-
-                                <span class="delivery-number">
-
-                                    Submission
-                                    #{{ delivery.submission_number }}
-
-                                </span>
-
-                                <span class="delivery-status">
-
-                                    {{ delivery.status }}
-
-                                </span>
-
-                            </div>
-
-
-                            {% if delivery.submitted_at %}
-
-                                <div class="info-row">
-
-                                    <span class="label">
-                                        Submitted
-                                    </span>
-
-                                    <span class="value">
-
-                                        {{ delivery.submitted_at.strftime(
-                                            '%d %b %Y, %I:%M %p'
-                                        ) }}
-
-                                    </span>
-
-                                </div>
-
-                            {% endif %}
-
-
-                            {% if delivery.reviewed_at %}
-
-                                <div class="info-row">
-
-                                    <span class="label">
-                                        Reviewed
-                                    </span>
-
-                                    <span class="value">
-
-                                        {{ delivery.reviewed_at.strftime(
-                                            '%d %b %Y, %I:%M %p'
-                                        ) }}
-
-                                    </span>
-
-                                </div>
-
-                            {% endif %}
-
-
-                            {% if delivery.revision_comment %}
-
-                                <div class="revision-box">
-
-                                    <h3>
-                                        Revision Instructions
-                                    </h3>
-
-                                    <p>
-                                        {{ delivery.revision_comment }}
-                                    </p>
-
-                                </div>
-
-                            {% endif %}
-
-                        </div>
-
-                    {% endfor %}
-
-                {% else %}
-
-                    <div class="empty">
-
-                        No submission history yet.
-
-                    </div>
-
-                {% endif %}
-
-            </section>
-
-
+        <p class="text-[11px] text-zinc-400">Brief, specifications, and kickoff.</p>
+        <span class="mt-3 block font-mono text-[10px] text-emerald-400">Settled & Approved ✅</span>
+      </div>
+
+      <div class="p-4 rounded-xl bg-zinc-900 border {% if project.status in ['Assigned', 'In Progress', 'Submitted', 'Revision'] %}border-indigo-500/40 bg-indigo-950/20{% else %}border-zinc-800{% endif %}">
+        <div class="flex items-center justify-between mb-2">
+          <span class="font-bold text-white">Milestone 2: Production UI</span>
+          <span class="text-indigo-400 font-mono font-bold">25% Sign-Off</span>
         </div>
+        <p class="text-[11px] text-zinc-400">Interactive prototype, code implementation, and mobile polish.</p>
+        <span class="mt-3 block font-mono text-[10px] text-indigo-400">Active Gate ⚡</span>
+      </div>
 
-    </main>
+      <div class="p-4 rounded-xl bg-zinc-900 border border-zinc-800 opacity-60">
+        <div class="flex items-center justify-between mb-2">
+          <span class="font-bold text-white">Milestone 3: Deployment</span>
+          <span class="text-zinc-400 font-mono font-bold">25% Final</span>
+        </div>
+        <p class="text-[11px] text-zinc-400">DNS launch, SSL deployment, and final IP transfer.</p>
+        <span class="mt-3 block font-mono text-[10px] text-zinc-500">Pending Prior Approval</span>
+      </div>
+    </div>
+  </div>
 
-</body>
+<!-- DYNAMIC MILESTONE PAYMENT GATES (50% / 25% / 25%) -->
+{% set total_pkg = (payment.amount if payment and payment.amount else 10000) %}
+{% set m2_val = (total_pkg * 0.25)|round|int %}
+{% set m3_val = (total_pkg * 0.25)|round|int %}
 
-</html>
+<!-- When Milestone 2 (Design) is Approved, prompt for Milestone 2 (25%) payment -->
+{% if project.status == 'Assigned' or project.status == 'In Progress' %}
+<div class="portal-card p-6 mt-6 border-indigo-500/30 bg-indigo-950/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+  <div>
+    <div class="flex items-center gap-2 mb-1">
+      <span class="h-2 w-2 rounded-full bg-indigo-400 animate-pulse"></span>
+      <span class="text-xs font-mono uppercase text-indigo-300 font-bold">Milestone 2 Progress Invoice (25%)</span>
+    </div>
+    <h4 class="text-sm font-bold text-white">Production UI & Prototype Sign-Off Payment</h4>
+    <p class="text-xs text-zinc-400 mt-1">Due upon UI/UX approval to unlock final production coding and deployment.</p>
+  </div>
+  
+  <div class="flex items-center gap-3">
+    <span class="font-mono text-xl font-bold text-white">₹{{ m2_val }}</span>
+    <a href="/payment/{{ project.id }}?milestone=2&amount={{ m2_val * 100 }}" class="px-5 py-2.5 rounded-xl bg-white hover:bg-zinc-200 text-zinc-950 font-bold text-xs shadow-lg transition whitespace-nowrap">
+      Pay Milestone 2 (25%) →
+    </a>
+  </div>
+</div>
+{% endif %}
+
+<!-- When Final Staging is ready, prompt for Milestone 3 (Final 25%) before Live Launch -->
+{% if project.status == 'Submitted' %}
+<div class="portal-card p-6 mt-6 border-emerald-500/30 bg-emerald-950/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+  <div>
+    <div class="flex items-center gap-2 mb-1">
+      <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
+      <span class="text-xs font-mono uppercase text-emerald-300 font-bold">Milestone 3 Final Balance (25%)</span>
+    </div>
+    <h4 class="text-sm font-bold text-white">Production Launch & Final IP Transfer</h4>
+    <p class="text-xs text-zinc-400 mt-1">Final balance payment required to point live domain DNS and transfer source code.</p>
+  </div>
+  
+  <div class="flex items-center gap-3">
+    <span class="font-mono text-xl font-bold text-white">₹{{ m3_val }}</span>
+    <a href="/payment/{{ project.id }}?milestone=3&amount={{ m3_val * 100 }}" class="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold text-xs shadow-lg transition whitespace-nowrap">
+      Authorize Final 25% & Deploy Live 🚀
+    </a>
+  </div>
+</div>
+{% endif %}
+
+<!-- Advance Deposit Status Card (Shows Paid or Pending) -->
+  {% if project.status == 'Payment Pending' %}
+  <div class="portal-card p-6 mt-6 border-rose-500/30 bg-rose-500/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <h4 class="text-sm font-bold text-white">Milestone Deposit Invoice Awaiting Authorization</h4>
+      <p class="text-xs text-zinc-400 mt-1">Sprints activate immediately upon payment verification via Razorpay / UPI.</p>
+    </div>
+    <a href="/payment/{{ project.id }}" class="px-5 py-2.5 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs shadow-lg transition whitespace-nowrap">
+      Pay Advance Invoice (Razorpay) →
+    </a>
+  </div>
+  {% else %}
+  <div class="portal-card p-5 mt-6 border-emerald-500/30 bg-emerald-500/5 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="h-8 w-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">✓</div>
+      <div>
+        <h4 class="text-xs font-bold text-white">Milestone 1 Advance Deposit Authorized & Settled</h4>
+        <p class="text-[11px] text-zinc-400 mt-0.5">50% Advance received via Razorpay / UPI • Sprint is actively in progress</p>
+      </div>
+    </div>
+    <span class="px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-mono font-bold">PAID (INR)</span>
+  </div>
+  {% endif %}

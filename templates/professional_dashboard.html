@@ -1,1886 +1,223 @@
 <!DOCTYPE html>
-
-<html lang="en">
-
+<html lang="en" class="dark scroll-smooth">
 <head>
-
-```
-<meta charset="UTF-8">
-
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
-
-<title>Professional Dashboard - AgencyOS</title>
-
-<style>
-
-    * {
-        box-sizing: border-box;
-    }
-
-    body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-        background: #f5f7fb;
-        color: #1f2937;
-    }
-
-    /* =========================
-       NAVBAR
-    ========================= */
-
-    .navbar {
-        background: #111827;
-        color: white;
-        padding: 16px 40px;
-    }
-
-    .nav-container {
-        max-width: 1200px;
-        margin: auto;
-
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .logo {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-
-        text-decoration: none;
-        color: white;
-
-        font-size: 23px;
-        font-weight: 700;
-    }
-
-    .logo-mark {
-        width: 34px;
-        height: 34px;
-
-        border-radius: 9px;
-
-        background: #2563eb;
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        font-weight: 800;
-    }
-
-    .logo-accent {
-        color: #60a5fa;
-    }
-
-    .nav-right {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-    }
-
-    .portal-label {
-        color: #d1d5db;
-        font-size: 14px;
-    }
-
-    .logout {
-        color: white;
-        text-decoration: none;
-
-        background: #dc2626;
-
-        padding: 9px 16px;
-
-        border-radius: 7px;
-
-        font-size: 14px;
-        font-weight: 600;
-
-        transition: background 0.2s ease;
-    }
-
-    .logout:hover {
-        background: #b91c1c;
-    }
-
-    /* =========================
-       MAIN
-    ========================= */
-
-    .container {
-        max-width: 1200px;
-        margin: 35px auto;
-        padding: 0 20px;
-    }
-
-    /* =========================
-       WELCOME
-    ========================= */
-
-    .welcome {
-        margin-bottom: 25px;
-    }
-
-    .welcome h1 {
-        margin: 0 0 8px;
-        font-size: 32px;
-        color: #111827;
-    }
-
-    .welcome p {
-        margin: 0;
-        color: #6b7280;
-        line-height: 1.5;
-    }
-
-    /* =========================
-       PROFILE COMPLETION
-    ========================= */
-
-    .completion-card {
-        background: white;
-
-        border-radius: 14px;
-
-        padding: 22px 25px;
-
-        margin-bottom: 25px;
-
-        box-shadow:
-            0 4px 15px rgba(0, 0, 0, 0.07);
-
-        border-left: 4px solid #2563eb;
-    }
-
-    .completion-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-
-        gap: 15px;
-
-        margin-bottom: 12px;
-    }
-
-    .completion-title {
-        font-size: 17px;
-        font-weight: 700;
-        color: #111827;
-    }
-
-    .completion-percent {
-        font-size: 20px;
-        font-weight: 800;
-        color: #2563eb;
-    }
-
-    .progress-bar {
-        width: 100%;
-        height: 9px;
-
-        background: #e5e7eb;
-
-        border-radius: 20px;
-
-        overflow: hidden;
-    }
-
-    .progress-fill {
-        width: 0%;
-
-        height: 100%;
-
-        background: #2563eb;
-
-        border-radius: 20px;
-
-        transition: width 0.4s ease;
-    }
-
-    .completion-message {
-        margin-top: 10px;
-
-        color: #6b7280;
-
-        font-size: 13px;
-
-        line-height: 1.5;
-    }
-
-    .completion-link {
-        color: #2563eb;
-
-        font-weight: 700;
-
-        text-decoration: none;
-    }
-
-    .completion-link:hover {
-        text-decoration: underline;
-    }
-
-    /* =========================
-       STATS
-    ========================= */
-
-    .stats-grid {
-        display: grid;
-
-        grid-template-columns:
-            repeat(4, 1fr);
-
-        gap: 16px;
-
-        margin-bottom: 25px;
-    }
-
-    .stat-card {
-        background: white;
-
-        padding: 20px;
-
-        border-radius: 13px;
-
-        box-shadow:
-            0 4px 15px rgba(0, 0, 0, 0.06);
-    }
-
-    .stat-label {
-        color: #6b7280;
-
-        font-size: 13px;
-
-        font-weight: 700;
-
-        text-transform: uppercase;
-
-        letter-spacing: 0.3px;
-    }
-
-    .stat-value {
-        margin-top: 8px;
-
-        font-size: 28px;
-
-        font-weight: 800;
-
-        color: #111827;
-    }
-
-    /* =========================
-       MAIN GRID
-    ========================= */
-
-    .grid {
-        display: grid;
-
-        grid-template-columns:
-            repeat(2, 1fr);
-
-        gap: 20px;
-
-        margin-bottom: 20px;
-    }
-
-    /* =========================
-       CARD
-    ========================= */
-
-    .card {
-        background: white;
-
-        padding: 25px;
-
-        border-radius: 14px;
-
-        box-shadow:
-            0 4px 15px rgba(0, 0, 0, 0.07);
-    }
-
-    .card h2 {
-        margin: 0 0 20px;
-
-        font-size: 21px;
-
-        color: #111827;
-    }
-
-    .card-description {
-        color: #6b7280;
-
-        line-height: 1.6;
-
-        font-size: 14px;
-
-        margin-top: -8px;
-
-        margin-bottom: 20px;
-    }
-
-    /* =========================
-       PROFILE INFORMATION
-    ========================= */
-
-    .info {
-        margin-bottom: 18px;
-
-        line-height: 1.6;
-
-        word-break: break-word;
-    }
-
-    .info:last-child {
-        margin-bottom: 0;
-    }
-
-    .label {
-        font-weight: 700;
-
-        color: #6b7280;
-
-        font-size: 13px;
-
-        margin-bottom: 3px;
-
-        text-transform: uppercase;
-
-        letter-spacing: 0.3px;
-    }
-
-    .portfolio-link {
-        color: #2563eb;
-
-        text-decoration: none;
-
-        font-weight: 600;
-    }
-
-    .portfolio-link:hover {
-        text-decoration: underline;
-    }
-
-    .empty-value {
-        color: #9ca3af;
-    }
-
-    /* =========================
-       EXPERTISE TAGS
-    ========================= */
-
-    .tags {
-        display: flex;
-
-        flex-wrap: wrap;
-
-        gap: 8px;
-
-        margin-top: 8px;
-    }
-
-    .tag {
-        display: inline-block;
-
-        padding: 7px 11px;
-
-        border-radius: 20px;
-
-        background: #eff6ff;
-
-        color: #1d4ed8;
-
-        font-size: 13px;
-
-        font-weight: 700;
-
-        border: 1px solid #dbeafe;
-    }
-
-    .skill-tag {
-        background: #f3f4f6;
-
-        color: #374151;
-
-        border-color: #e5e7eb;
-    }
-
-    /* =========================
-       STATUS
-    ========================= */
-
-    .status {
-        display: inline-block;
-
-        padding: 7px 12px;
-
-        border-radius: 20px;
-
-        font-size: 13px;
-
-        font-weight: 700;
-    }
-
-    .pending {
-        background: #fef3c7;
-        color: #92400e;
-    }
-
-    .verified {
-        background: #dcfce7;
-        color: #166534;
-    }
-
-    .rejected {
-        background: #fee2e2;
-        color: #991b1b;
-    }
-
-    /* =========================
-       NOTICES
-    ========================= */
-
-    .notice {
-        padding: 16px;
-
-        border-radius: 9px;
-
-        background: #fff7ed;
-
-        color: #9a3412;
-
-        line-height: 1.6;
-    }
-
-    .success-notice {
-        padding: 16px;
-
-        border-radius: 9px;
-
-        background: #ecfdf5;
-
-        color: #166534;
-
-        line-height: 1.6;
-    }
-
-    .matching-notice {
-        padding: 16px;
-
-        border-radius: 9px;
-
-        background: #eff6ff;
-
-        color: #1e40af;
-
-        line-height: 1.6;
-
-        margin-bottom: 18px;
-    }
-
-    /* =========================
-       ACTIONS
-    ========================= */
-
-    .actions {
-        display: grid;
-
-        gap: 12px;
-
-        margin-top: 20px;
-    }
-
-    .action {
-        display: flex;
-
-        align-items: center;
-
-        justify-content: space-between;
-
-        padding: 14px 16px;
-
-        background: #f3f4f6;
-
-        border-radius: 9px;
-
-        text-decoration: none;
-
-        color: #111827;
-
-        font-weight: 700;
-
-        transition:
-            background 0.2s ease,
-            transform 0.2s ease;
-    }
-
-    .action:hover {
-        background: #e5e7eb;
-
-        transform: translateY(-1px);
-    }
-
-    .action.primary {
-        background: #eff6ff;
-
-        color: #1d4ed8;
-    }
-
-    .action.primary:hover {
-        background: #dbeafe;
-    }
-
-    .action.secondary {
-        background: #f0fdf4;
-
-        color: #166534;
-    }
-
-    .action.secondary:hover {
-        background: #dcfce7;
-    }
-
-    .action.disabled {
-        color: #9ca3af;
-
-        cursor: not-allowed;
-
-        background: #f3f4f6;
-    }
-
-    .action.disabled:hover {
-        background: #f3f4f6;
-
-        transform: none;
-    }
-
-    .profile-settings {
-        background: #eff6ff;
-
-        color: #1d4ed8;
-    }
-
-    .profile-settings:hover {
-        background: #dbeafe;
-    }
-
-    .action-arrow {
-        font-size: 18px;
-    }
-
-    /* =========================
-       PROFILE STATUS BOX
-    ========================= */
-
-    .verification-box {
-        margin-top: 18px;
-
-        padding: 14px;
-
-        border-radius: 9px;
-
-        background: #f9fafb;
-
-        border: 1px solid #e5e7eb;
-    }
-
-    .verification-title {
-        font-size: 13px;
-
-        font-weight: 700;
-
-        color: #6b7280;
-
-        margin-bottom: 8px;
-    }
-
-    /* =========================
-       PROJECT INTEGRATION
-    ========================= */
-
-    .project-section {
-        background: white;
-
-        padding: 25px;
-
-        border-radius: 14px;
-
-        box-shadow:
-            0 4px 15px rgba(0, 0, 0, 0.07);
-    }
-
-    .project-section-header {
-        display: flex;
-
-        justify-content: space-between;
-
-        align-items: center;
-
-        gap: 15px;
-
-        margin-bottom: 18px;
-    }
-
-    .project-section-header h2 {
-        margin: 0;
-
-        font-size: 21px;
-
-        color: #111827;
-    }
-
-    .project-section-header p {
-        margin: 4px 0 0;
-
-        color: #6b7280;
-
-        font-size: 14px;
-    }
-
-    .project-actions {
-        display: grid;
-
-        grid-template-columns:
-            repeat(2, 1fr);
-
-        gap: 14px;
-    }
-
-    .project-action {
-        display: flex;
-
-        align-items: center;
-
-        justify-content: space-between;
-
-        padding: 18px;
-
-        border-radius: 11px;
-
-        text-decoration: none;
-
-        border: 1px solid #e5e7eb;
-
-        background: #f9fafb;
-
-        color: #111827;
-
-        transition:
-            background 0.2s ease,
-            border-color 0.2s ease,
-            transform 0.2s ease;
-    }
-
-    .project-action:hover {
-        background: #f3f4f6;
-
-        border-color: #d1d5db;
-
-        transform: translateY(-1px);
-    }
-
-    .project-action-main {
-        display: flex;
-
-        align-items: center;
-
-        gap: 13px;
-    }
-
-    .project-icon {
-        width: 42px;
-
-        height: 42px;
-
-        border-radius: 10px;
-
-        display: flex;
-
-        align-items: center;
-
-        justify-content: center;
-
-        background: #eff6ff;
-
-        color: #1d4ed8;
-
-        font-size: 20px;
-    }
-
-    .project-title {
-        font-weight: 800;
-
-        margin-bottom: 4px;
-    }
-
-    .project-description {
-        color: #6b7280;
-
-        font-size: 13px;
-    }
-
-    .project-arrow {
-        font-size: 20px;
-
-        color: #6b7280;
-    }
-
-    /* =========================
-       WORKFLOW
-    ========================= */
-
-    .workflow {
-        display: grid;
-
-        grid-template-columns:
-            repeat(4, 1fr);
-
-        gap: 12px;
-
-        margin-top: 20px;
-    }
-
-    .workflow-step {
-        padding: 15px;
-
-        background: #f9fafb;
-
-        border: 1px solid #e5e7eb;
-
-        border-radius: 10px;
-    }
-
-    .workflow-number {
-        width: 28px;
-
-        height: 28px;
-
-        display: flex;
-
-        align-items: center;
-
-        justify-content: center;
-
-        border-radius: 50%;
-
-        background: #2563eb;
-
-        color: white;
-
-        font-size: 12px;
-
-        font-weight: 800;
-
-        margin-bottom: 10px;
-    }
-
-    .workflow-title {
-        font-size: 14px;
-
-        font-weight: 800;
-
-        color: #111827;
-
-        margin-bottom: 4px;
-    }
-
-    .workflow-text {
-        font-size: 12px;
-
-        color: #6b7280;
-
-        line-height: 1.5;
-    }
-
-    /* =========================
-       MOBILE
-    ========================= */
-
-    @media (max-width: 900px) {
-
-        .stats-grid {
-            grid-template-columns:
-                repeat(2, 1fr);
-        }
-
-        .workflow {
-            grid-template-columns:
-                repeat(2, 1fr);
-        }
-
-    }
-
-    @media (max-width: 750px) {
-
-        .navbar {
-            padding: 15px 20px;
-        }
-
-        .portal-label {
-            display: none;
-        }
-
-        .container {
-            margin: 25px auto;
-
-            padding: 0 15px;
-        }
-
-        .grid {
-            grid-template-columns: 1fr;
-        }
-
-        .stats-grid {
-            grid-template-columns: 1fr 1fr;
-        }
-
-        .project-actions {
-            grid-template-columns: 1fr;
-        }
-
-        .welcome h1 {
-            font-size: 27px;
-        }
-
-        .card,
-        .project-section {
-            padding: 20px;
-        }
-
-    }
-
-    @media (max-width: 480px) {
-
-        .stats-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .workflow {
-            grid-template-columns: 1fr;
-        }
-
-        .completion-header {
-            align-items: flex-start;
-        }
-
-    }
-
-</style>
-```
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Specialist Executive Workspace — AgencyOS</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <style>
+    body { background-color: #09090b; font-family: 'Plus Jakarta Sans', sans-serif; color: #f4f4f5; }
+    .pro-card { background: #121215; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; }
+    .pro-card:hover { border-color: rgba(255, 255, 255, 0.16); }
+    .opportunity-card { background: #15151a; border: 1px solid rgba(99, 102, 241, 0.25); border-radius: 20px; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
+    .opportunity-card:hover { border-color: rgba(99, 102, 241, 0.5); transform: translateY(-2px); }
+  </style>
 </head>
+<body class="bg-zinc-950 text-zinc-100 min-h-screen p-6 sm:p-10 max-w-6xl mx-auto selection:bg-indigo-500 selection:text-white space-y-8">
 
-<body>
-
-```
-<!-- =========================
-     NAVBAR
-========================= -->
-
-<nav class="navbar">
-
-    <div class="nav-container">
-
-        <a
-            href="{{ url_for('professional_dashboard') }}"
-            class="logo"
-        >
-
-            <div class="logo-mark">
-                A
-            </div>
-
-            Agency<span class="logo-accent">OS</span>
-
-        </a>
-
-
-        <div class="nav-right">
-
-            <span class="portal-label">
-                Professional Portal
-            </span>
-
-            <form
-                method="POST"
-                action="{{ url_for('logout') }}"
-                style="display: inline;"
-            >
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <button
-                    type="submit"
-                    class="logout"
-                >
-                    Logout
-                </button>
-            </form>
-
-        </div>
-
+  <!-- ==================== HEADER BAR ==================== -->
+  <header class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-zinc-800/80 gap-6">
+    <div>
+      <div class="flex items-center gap-2 mb-2">
+        <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono text-[10px] font-bold uppercase flex items-center gap-1.5">
+          <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>Verified Specialist Partner</span>
+        </span>
+        <span class="text-zinc-600 font-mono text-[11px]">•</span>
+        <span class="text-zinc-400 font-mono text-[11px]">{{ profile.expertise or 'Full-Stack Developer' }}</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Specialist Delivery Workspace</h1>
+      <p class="text-xs text-zinc-400 mt-1">Claim open client sprints, submit deliverable staging URLs, and reconcile instant UPI bank payouts.</p>
     </div>
 
-</nav>
-
-
-<!-- =========================
-     MAIN
-========================= -->
-
-<main class="container">
-
-
-    <!-- =========================
-         WELCOME
-    ========================= -->
-
-    <div class="welcome">
-
-        <h1>
-            Welcome, {{ current_user.name }}
-        </h1>
-
-        <p>
-            Manage your professional profile, discover
-            matching projects and manage your AgencyOS work.
-        </p>
-
+    <!-- Quick Actions -->
+    <div class="flex items-center gap-3">
+      <a href="/professional/profile" class="px-4 py-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-xs font-bold text-white transition flex items-center gap-2">
+        <i data-lucide="wallet" class="w-3.5 h-3.5 text-indigo-400"></i>
+        <span>Payout Settings (UPI)</span>
+      </a>
+      <form method="POST" action="/logout">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="px-3.5 py-2 rounded-xl bg-zinc-900 text-xs font-bold text-zinc-400 hover:text-rose-400 transition cursor-pointer">
+          Sign Out
+        </button>
+      </form>
     </div>
+  </header>
 
-
-    <!-- =========================
-         PROFILE COMPLETION
-    ========================= -->
-
-    {% if profile %}
-
-        <div class="completion-card">
-
-            <div class="completion-header">
-
-                <div class="completion-title">
-                    Professional Profile Completion
-                </div>
-
-                <div class="completion-percent">
-                    {{ profile_completion }}%
-                </div>
-
-            </div>
-
-
-            <div class="progress-bar">
-
-                <div
-                    class="progress-fill"
-                    id="profileProgressFill"
-                    data-progress="{{ profile_completion }}"
-                ></div>
-
-            </div>
-
-
-            {% if profile_completion == 100 %}
-
-                <div class="completion-message">
-                    Your professional profile is complete. ✓
-                </div>
-
-            {% else %}
-
-                <div class="completion-message">
-
-                    Complete your profile to keep your
-                    professional information up to date.
-
-                    <a
-                        href="{{ url_for('professional_profile') }}"
-                        class="completion-link"
-                    >
-                        Complete Profile →
-                    </a>
-
-                </div>
-
-            {% endif %}
-
-        </div>
-
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="space-y-2">
+        {% for category, message in messages %}
+          <div class="p-3.5 rounded-xl border text-xs flex items-center justify-between {% if category == 'success' %}bg-emerald-500/10 border-emerald-500/20 text-emerald-300{% elif 'warning' in category %}bg-amber-500/10 border-amber-500/20 text-amber-300{% else %}bg-rose-500/10 border-rose-500/20 text-rose-300{% endif %}">
+            <span>{{ message }}</span>
+            <button onclick="this.parentElement.remove()" class="text-zinc-400 hover:text-white">×</button>
+          </div>
+        {% endfor %}
+      </div>
     {% endif %}
+  {% endwith %}
 
-
-    <!-- =========================
-         STATS
-    ========================= -->
-
-    <div class="stats-grid">
-
-
-        <div class="stat-card">
-
-            <div class="stat-label">
-                Profile
-            </div>
-
-            <div class="stat-value">
-                {{ profile_completion }}%
-            </div>
-
-        </div>
-
-
-        <div class="stat-card">
-
-            <div class="stat-label">
-                Verification
-            </div>
-
-            <div class="stat-value">
-
-                {% if profile and profile.verification_status == "Verified" %}
-
-                    ✓
-
-                {% elif profile and profile.verification_status == "Rejected" %}
-
-                    !
-
-                {% else %}
-
-                    —
-
-                {% endif %}
-
-            </div>
-
-        </div>
-
-
-        <div class="stat-card">
-
-            <div class="stat-label">
-                Availability
-            </div>
-
-            <div class="stat-value">
-
-                {% if profile and profile.availability %}
-
-                    ✓
-
-                {% else %}
-
-                    —
-
-                {% endif %}
-
-            </div>
-
-        </div>
-
-
-        <div class="stat-card">
-
-            <div class="stat-label">
-                Workload
-            </div>
-
-            <div class="stat-value">
-
-                {% if profile and profile.current_workload %}
-
-                    ✓
-
-                {% else %}
-
-                    —
-
-                {% endif %}
-
-            </div>
-
-        </div>
-
-
+  <!-- ==================== FINANCIAL LEDGER & PERFORMANCE TILES ==================== -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="pro-card p-5">
+      <div class="flex items-center justify-between text-xs text-zinc-400 font-mono uppercase">
+        <span>Settled Payouts</span>
+        <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i>
+      </div>
+      <div class="mt-3 font-mono text-3xl font-extrabold text-emerald-400">₹{{ total_earned }}</div>
+      <span class="mt-2 block text-[11px] text-zinc-500">Transferred directly to UPI</span>
     </div>
 
-
-    <!-- =========================
-         PROFILE + WORKSPACE
-    ========================= -->
-
-    <div class="grid">
-
-
-        <!-- =========================
-             PROFESSIONAL PROFILE
-        ========================= -->
-
-        <div class="card">
-
-            <h2>
-                My Professional Profile
-            </h2>
-
-
-            {% if profile %}
-
-
-                <div class="info">
-
-                    <div class="label">
-                        Expertise
-                    </div>
-
-                    {% if profile.expertise %}
-
-                        <div
-                            class="tags"
-                            id="expertiseTags"
-                            data-expertise="{{ profile.expertise }}"
-                        ></div>
-
-                    {% else %}
-
-                        <span class="empty-value">
-                            Not provided
-                        </span>
-
-                    {% endif %}
-
-                </div>
-
-
-                <div class="info">
-
-                    <div class="label">
-                        Experience
-                    </div>
-
-                    {% if profile.experience %}
-
-                        {{ profile.experience }}
-
-                    {% else %}
-
-                        <span class="empty-value">
-                            Not provided
-                        </span>
-
-                    {% endif %}
-
-                </div>
-
-
-                <div class="info">
-
-                    <div class="label">
-                        Skills
-                    </div>
-
-                    {% if profile.skills %}
-
-                        <div
-                            class="tags"
-                            id="skillTags"
-                            data-skills="{{ profile.skills | e }}"
-                        ></div>
-
-                    {% else %}
-
-                        <span class="empty-value">
-                            Not provided
-                        </span>
-
-                    {% endif %}
-
-                </div>
-
-
-                <div class="info">
-
-                    <div class="label">
-                        Portfolio
-                    </div>
-
-                    {% if profile.portfolio %}
-
-                        <a
-                            href="{{ profile.portfolio }}"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="portfolio-link"
-                        >
-                            View Portfolio ↗
-                        </a>
-
-                    {% else %}
-
-                        <span class="empty-value">
-                            Not provided
-                        </span>
-
-                    {% endif %}
-
-                </div>
-
-
-                <div class="info">
-
-                    <div class="label">
-                        About
-                    </div>
-
-                    {% if profile.about %}
-
-                        {{ profile.about }}
-
-                    {% else %}
-
-                        <span class="empty-value">
-                            Not provided
-                        </span>
-
-                    {% endif %}
-
-                </div>
-
-
-                <div class="verification-box">
-
-                    <div class="verification-title">
-                        Verification Status
-                    </div>
-
-
-                    {% if profile.verification_status == "Verified" %}
-
-                        <span class="status verified">
-                            ✓ Verified
-                        </span>
-
-                    {% elif profile.verification_status == "Rejected" %}
-
-                        <span class="status rejected">
-                            Rejected
-                        </span>
-
-                    {% else %}
-
-                        <span class="status pending">
-                            Pending Verification
-                        </span>
-
-                    {% endif %}
-
-
-                </div>
-
-
-                <div class="actions">
-
-                    <a
-                        href="{{ url_for('professional_profile') }}"
-                        class="action profile-settings"
-                    >
-
-                        <span>
-                            👤 Profile Settings
-                        </span>
-
-                        <span class="action-arrow">
-                            →
-                        </span>
-
-                    </a>
-
-                </div>
-
-
-            {% else %}
-
-
-                <p>
-                    Professional profile not found.
-                </p>
-
-
-            {% endif %}
-
-
-        </div>
-
-
-        <!-- =========================
-             PROFESSIONAL WORKSPACE
-        ========================= -->
-
-        <div class="card">
-
-            <h2>
-                Professional Workspace
-            </h2>
-
-
-            {% if profile and profile.verification_status == "Verified" %}
-
-
-                <div class="success-notice">
-
-                    <strong>
-                        ✓ Your account is verified.
-                    </strong>
-
-                    <br>
-
-                    You can access project opportunities
-                    that match your professional expertise.
-
-                </div>
-
-
-                <div class="matching-notice">
-
-                    <strong>
-                        Project Matching
-                    </strong>
-
-                    <br>
-
-                    AgencyOS uses your selected professional
-                    expertise to identify relevant project
-                    opportunities.
-
-                </div>
-
-
-                <div class="actions">
-
-
-                    <a
-                        href="{{ url_for('professional_projects') }}"
-                        class="action primary"
-                    >
-
-                        <span>
-                            📋 Available Projects
-                        </span>
-
-                        <span class="action-arrow">
-                            →
-                        </span>
-
-                    </a>
-
-
-                    <a
-                        href="{{ url_for('professional_my_projects') }}"
-                        class="action"
-                    >
-
-                        <span>
-                            📁 My Projects
-                        </span>
-
-                        <span class="action-arrow">
-                            →
-                        </span>
-
-                    </a>
-
-
-                    <a
-                        href="#"
-                        class="action secondary"
-                    >
-
-                        <span>
-                            💰 Earnings
-                        </span>
-
-                        <span class="action-arrow">
-                            →
-                        </span>
-
-                    </a>
-
-
-                    <a
-                        href="{{ url_for('professional_profile') }}"
-                        class="action profile-settings"
-                    >
-
-                        <span>
-                            👤 Profile Settings
-                        </span>
-
-                        <span class="action-arrow">
-                            →
-                        </span>
-
-                    </a>
-
-
-                </div>
-
-
-            {% elif profile and profile.verification_status == "Rejected" %}
-
-
-                <div class="notice">
-
-                    <strong>
-                        Your professional account has been
-                        rejected.
-                    </strong>
-
-                    <br><br>
-
-                    {% if profile.verification_notes %}
-
-                        {{ profile.verification_notes }}
-
-                    {% else %}
-
-                        Please contact AgencyOS administration
-                        for further information.
-
-                    {% endif %}
-
-                </div>
-
-
-                <div class="actions">
-
-                    <a
-                        href="{{ url_for('professional_profile') }}"
-                        class="action profile-settings"
-                    >
-
-                        <span>
-                            👤 Review Profile
-                        </span>
-
-                        <span class="action-arrow">
-                            →
-                        </span>
-
-                    </a>
-
-                </div>
-
-
-            {% else %}
-
-
-                <div class="notice">
-
-                    <strong>
-                        Your account is awaiting verification.
-                    </strong>
-
-                    <br><br>
-
-                    An AgencyOS administrator must verify your
-                    professional profile before you can access
-                    project opportunities.
-
-                </div>
-
-
-                <div class="actions">
-
-
-                    <div class="action disabled">
-
-                        <span>
-                            🔒 Available Projects
-                        </span>
-
-                    </div>
-
-
-                    <div class="action disabled">
-
-                        <span>
-                            🔒 My Projects
-                        </span>
-
-                    </div>
-
-
-                    <div class="action disabled">
-
-                        <span>
-                            🔒 Earnings
-                        </span>
-
-                    </div>
-
-
-                    <a
-                        href="{{ url_for('professional_profile') }}"
-                        class="action profile-settings"
-                    >
-
-                        <span>
-                            👤 Complete Profile
-                        </span>
-
-                        <span class="action-arrow">
-                            →
-                        </span>
-
-                    </a>
-
-
-                </div>
-
-
-            {% endif %}
-
-
-        </div>
-
-
+    <div class="pro-card p-5">
+      <div class="flex items-center justify-between text-xs text-zinc-400 font-mono uppercase">
+        <span>Escrow In-Flight</span>
+        <i data-lucide="clock" class="w-4 h-4 text-amber-400"></i>
+      </div>
+      <div class="mt-3 font-mono text-3xl font-extrabold text-amber-400">₹{{ pending_payout }}</div>
+      <span class="mt-2 block text-[11px] text-zinc-500">Released upon client milestone sign-off</span>
     </div>
 
+    <div class="pro-card p-5">
+      <div class="flex items-center justify-between text-xs text-zinc-400 font-mono uppercase">
+        <span>Active Workspaces</span>
+        <i data-lucide="activity" class="w-4 h-4 text-sky-400"></i>
+      </div>
+      <div class="mt-3 font-mono text-3xl font-extrabold text-sky-400">{{ active_sprints }}</div>
+      <span class="mt-2 block text-[11px] text-zinc-500">{{ completed_sprints }} sprints completed</span>
+    </div>
 
-    <!-- =========================
-         PROJECT INTEGRATION
-    ========================= -->
+    <div class="pro-card p-5">
+      <div class="flex items-center justify-between text-xs text-zinc-400 font-mono uppercase">
+        <span>Payout Route</span>
+        <i data-lucide="credit-card" class="w-4 h-4 text-indigo-400"></i>
+      </div>
+      <div class="mt-3 font-mono text-sm font-bold text-white truncate">
+        {{ profile.upi_id or 'UPI Setup Needed' }}
+      </div>
+      <span class="mt-2 block text-[11px] text-zinc-500">Auto-reconciled with bank UTR</span>
+    </div>
+  </div>
 
-    <section class="project-section">
+  <!-- =========================================================================
+       SECTION 1: OPEN OPPORTUNITIES (AVAILABLE CLIENT SPRINTS)
+       ========================================================================= -->
+  <div class="space-y-4">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-zinc-800 gap-2">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="h-2 w-2 rounded-full bg-indigo-500 animate-pulse"></span>
+          <h2 class="text-lg font-bold text-white tracking-tight">Available Sprints (Open Client Orders)</h2>
+        </div>
+        <p class="text-xs text-zinc-400 mt-0.5">Claim newly commissioned milestone packages. Each sprint pays a fixed 45% specialist revenue share.</p>
+      </div>
 
-        <div class="project-section-header">
+      <span class="text-xs font-mono text-indigo-400 px-3.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 self-start sm:self-auto">
+        {{ available_projects|length }} Open Sprint{% if available_projects|length != 1 %}s{% endif %}
+      </span>
+    </div>
 
-            <div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {% for prj in available_projects if available_projects %}
+      <div class="opportunity-card p-6 flex flex-col justify-between space-y-4">
+        <div>
+          <div class="flex items-center justify-between text-xs mb-2">
+            <span class="font-mono font-bold text-indigo-400">#{{ prj.id }}</span>
+            <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono font-bold">
+              Specialist Payout: ₹{{ (48000 * 0.45)|int }}
+            </span>
+          </div>
 
-                <h2>
-                    Project Workspace
-                </h2>
+          <h3 class="text-base font-bold text-white">{{ prj.service }}</h3>
+          <p class="text-xs text-zinc-400 mt-1">Package: <strong class="text-zinc-200">{{ prj.package }}</strong> • Business: <strong class="text-zinc-200">{{ prj.business.name if prj.business else 'Direct Client' }}</strong></p>
 
-                <p>
-                    Manage project opportunities and your
-                    assigned AgencyOS work from one place.
-                </p>
-
-            </div>
-
+          <div class="mt-4 p-3.5 rounded-xl bg-zinc-950/80 border border-zinc-800 text-[11px] text-zinc-300 font-mono line-clamp-3 leading-relaxed">
+            {{ prj.requirements or 'Standard client milestone brief.' }}
+          </div>
         </div>
 
+        <div class="pt-4 border-t border-zinc-800 flex items-center justify-between">
+          <span class="text-[11px] font-mono text-zinc-500">Ordered: {{ prj.created_at.strftime('%d %b %Y') if prj.created_at else 'Today' }}</span>
 
-        {% if profile and profile.verification_status == "Verified" %}
+          {% if prj.id in my_applied_ids %}
+            <span class="px-3.5 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 font-mono text-xs font-bold">
+              Application Under Review ⏳
+            </span>
+          {% else %}
+            <form method="POST" action="/professional/project/{{ prj.id }}/apply">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="px-4 py-2 rounded-xl bg-white hover:bg-zinc-200 text-zinc-950 font-bold text-xs shadow-lg transition flex items-center gap-1.5 cursor-pointer">
+                <span>Claim Sprint ⚡</span>
+              </button>
+            </form>
+          {% endif %}
+        </div>
+      </div>
+      {% else %}
+      <div class="col-span-2 p-12 text-center rounded-2xl bg-[#121215] border border-zinc-800 text-xs text-zinc-500 font-mono">
+        <i data-lucide="check-circle" class="w-8 h-8 text-emerald-400 mx-auto mb-3"></i>
+        <p>All active client projects are currently staffed. New open sprints will appear here as soon as orders are booked.</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
 
+  <!-- =========================================================================
+       SECTION 2: MY ASSIGNED SPRINTS (IN DEVELOPMENT)
+       ========================================================================= -->
+  <div class="space-y-4">
+    <div class="flex items-center justify-between pb-3 border-b border-zinc-800">
+      <div>
+        <h2 class="text-lg font-bold text-white tracking-tight">My Active Delivery Workspaces</h2>
+        <p class="text-xs text-zinc-400 mt-0.5">Projects assigned to you by AgencyOS. Submit deliverable staging URLs or review client feedback.</p>
+      </div>
+      <span class="text-xs font-mono text-zinc-400">{{ assigned_projects|length }} Assigned</span>
+    </div>
 
-            <div class="project-actions">
-
-
-                <a
-                    href="{{ url_for('professional_projects') }}"
-                    class="project-action"
-                >
-
-                    <div class="project-action-main">
-
-                        <div class="project-icon">
-                            📋
-                        </div>
-
-                        <div>
-
-                            <div class="project-title">
-                                Available Projects
-                            </div>
-
-                            <div class="project-description">
-                                View projects available for
-                                your professional expertise.
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                    <div class="project-arrow">
-                        →
-                    </div>
-
-                </a>
-
-
-                <a
-                    href="{{ url_for('professional_my_projects') }}"
-                    class="project-action"
-                >
-
-                    <div class="project-action-main">
-
-                        <div class="project-icon">
-                            📁
-                        </div>
-
-                        <div>
-
-                            <div class="project-title">
-                                My Projects
-                            </div>
-
-                            <div class="project-description">
-                                View projects you have applied
-                                for or are working on.
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                    <div class="project-arrow">
-                        →
-                    </div>
-
-                </a>
-
-
+    <div class="pro-card p-6">
+      <div class="divide-y divide-zinc-800/60">
+        {% for project in assigned_projects if assigned_projects %}
+        <article class="py-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-3">
+              <span class="font-mono text-xs font-bold text-indigo-400">#{{ project.id }}</span>
+              <h3 class="text-base font-bold text-white">{{ project.service }}</h3>
+              <span class="px-2.5 py-0.5 rounded text-[10px] font-mono border {% if project.status == 'Completed' %}bg-emerald-500/10 text-emerald-400 border-emerald-500/20{% elif project.status == 'Revision' %}bg-amber-500/10 text-amber-400 border-amber-500/20{% elif project.status == 'Submitted' %}bg-purple-500/10 text-purple-400 border-purple-500/20{% else %}bg-sky-500/10 text-sky-400 border-sky-500/20{% endif %}">
+                ● {{ project.status }}
+              </span>
             </div>
+            <p class="text-xs text-zinc-400 mt-1">
+              Package: <strong class="text-zinc-200">{{ project.package }}</strong> • 
+              Client: <strong class="text-zinc-200">{{ project.customer.name if project.customer else 'Direct Client' }}</strong>
+            </p>
+          </div>
 
-
-            <!-- =========================
-                 PROJECT WORKFLOW
-            ========================= -->
-
-            <div class="workflow">
-
-
-                <div class="workflow-step">
-
-                    <div class="workflow-number">
-                        1
-                    </div>
-
-                    <div class="workflow-title">
-                        Find
-                    </div>
-
-                    <div class="workflow-text">
-                        Browse projects matching your expertise.
-                    </div>
-
-                </div>
-
-
-                <div class="workflow-step">
-
-                    <div class="workflow-number">
-                        2
-                    </div>
-
-                    <div class="workflow-title">
-                        Apply
-                    </div>
-
-                    <div class="workflow-text">
-                        Apply for suitable project opportunities.
-                    </div>
-
-                </div>
-
-
-                <div class="workflow-step">
-
-                    <div class="workflow-number">
-                        3
-                    </div>
-
-                    <div class="workflow-title">
-                        Work
-                    </div>
-
-                    <div class="workflow-text">
-                        Start and complete assigned projects
-                        through AgencyOS.
-                    </div>
-
-                </div>
-
-
-                <div class="workflow-step">
-
-                    <div class="workflow-number">
-                        4
-                    </div>
-
-                    <div class="workflow-title">
-                        Earn
-                    </div>
-
-                    <div class="workflow-text">
-                        Receive project-based payment after
-                        successful completion.
-                    </div>
-
-                </div>
-
-
-            </div>
-
-
+          <div class="flex items-center gap-3">
+            <a href="/professional/project/{{ project.id }}/workspace" class="px-4 py-2 rounded-xl bg-white hover:bg-zinc-200 text-zinc-950 font-bold text-xs transition flex items-center gap-1.5 shadow cursor-pointer">
+              <span>Open Delivery Workspace</span>
+              <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </a>
+          </div>
+        </article>
         {% else %}
+        <div class="py-10 text-center text-xs text-zinc-500 font-mono">
+          You have no active projects assigned right now. Browse the Available Sprints above to apply!
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
 
+  <footer class="pt-6 border-t border-zinc-900 text-center text-xs font-mono text-zinc-600">
+    AgencyOS Specialist Partner Network • Instant IMPS/UPI Payout Settlement
+  </footer>
 
-            <div class="notice">
-
-                Project opportunities will become available
-                after your professional account is verified.
-
-            </div>
-
-
-        {% endif %}
-
-
-    </section>
-
-
-</main>
-
-
-<!-- =========================
-     DASHBOARD SCRIPT
-========================= -->
-
-<script>
-
-    /* =========================
-       PROFILE PROGRESS
-    ========================= */
-
-    const profileProgressFill =
-        document.getElementById(
-            "profileProgressFill"
-        );
-
-
-    if (profileProgressFill) {
-
-        const progress =
-            Number(
-                profileProgressFill.dataset.progress || 0
-            );
-
-
-        const safeProgress =
-            Math.max(
-                0,
-                Math.min(
-                    100,
-                    progress
-                )
-            );
-
-
-        profileProgressFill.style.width =
-            safeProgress + "%";
-
-    }
-
-
-    /* =========================
-       EXPERTISE TAGS
-    ========================= */
-
-    const expertiseTags =
-        document.getElementById(
-            "expertiseTags"
-        );
-
-
-    if (expertiseTags) {
-
-        const expertise =
-            expertiseTags.dataset.expertise
-                .split(",")
-                .map(item => item.trim())
-                .filter(item => item);
-
-
-        expertise.forEach(item => {
-
-            const tag =
-                document.createElement("span");
-
-            tag.className = "tag";
-
-            tag.textContent = item;
-
-            expertiseTags.appendChild(tag);
-
-        });
-
-    }
-
-
-    /* =========================
-       SKILL TAGS
-    ========================= */
-
-    const skillTags =
-        document.getElementById(
-            "skillTags"
-        );
-
-
-    if (skillTags) {
-
-        let skills = [];
-
-
-        try {
-
-            skills =
-                JSON.parse(
-                    skillTags.dataset.skills
-                );
-
-        } catch (error) {
-
-            skills =
-                skillTags.dataset.skills
-                    .split(",")
-                    .map(item => item.trim())
-                    .filter(item => item);
-
-        }
-
-
-        if (!Array.isArray(skills)) {
-
-            skills = [];
-
-        }
-
-
-        skills.forEach(item => {
-
-            const tag =
-                document.createElement("span");
-
-            tag.className =
-                "tag skill-tag";
-
-            tag.textContent = item;
-
-            skillTags.appendChild(tag);
-
-        });
-
-    }
-
-</script>
-```
-
+  <script>if (window.lucide) lucide.createIcons();</script>
 </body>
-
 </html>

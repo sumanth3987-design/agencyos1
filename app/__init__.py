@@ -187,6 +187,7 @@ def create_app(config_name="default", config_overrides=None):
     from app.blueprints.admin import admin_bp
     from app.blueprints.payments import payments_bp
     from app.blueprints.api import api_bp
+    from app.routes.public import public_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(customer_bp)
@@ -196,6 +197,7 @@ def create_app(config_name="default", config_overrides=None):
     app.register_blueprint(admin_bp)
     app.register_blueprint(payments_bp)
     app.register_blueprint(api_bp)
+    app.register_blueprint(public_bp)
 
     # ------------------------------------------------------------
     # Legacy bare-endpoint resolver

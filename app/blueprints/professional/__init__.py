@@ -1,1040 +1,248 @@
+from datetime import datetime
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_required, current_user
 from app.extensions import db
+
+# 1. IMPORT MODELS & REPOSITORY HELPERS
 from app.models import (
-    User, ProfessionalProfile, Project, ProfessionalProjectApplication,
-    ProjectDelivery, get_ist_now, is_valid_http_url,
-    calculate_professional_profile_completion, professional_has_expertise,
-    get_assigned_professional_application, get_latest_project_delivery
+    User, ProfessionalProfile, Project, Payment,
+    ProfessionalProjectApplication, ProjectDelivery, ChatMessage, Invoice,
+    get_ist_now, PACKAGE_PRICES, calculate_professional_profile_completion, get_latest_project_delivery
 )
-import json
 
 professional_bp = Blueprint("professional", __name__)
 
-@professional_bp.route(
-    "/professional/profile",
-    methods=["GET", "POST"]
-)
-@login_required
-def professional_profile():
-
-    if current_user.role != "professional":
-
-        return redirect(
-            url_for("dashboard")
-        )
-
-    profile = ProfessionalProfile.query.filter_by(
-        user_id=current_user.id
-    ).first()
-
-    if not profile:
-
-        profile = ProfessionalProfile(
-            user_id=current_user.id
-        )
-
-        db.session.add(profile)
-
-        db.session.commit()
-
-    if request.method == "POST":
-
-        # -------------------------------------------------
-        # MULTIPLE PROFESSIONAL EXPERTISE
-        # -------------------------------------------------
-
-        expertise_values = request.form.getlist(
-            "expertise"
-        )
-
-        profile.expertise = ", ".join(
-            item.strip()
-            for item in expertise_values
-            if item.strip()
-        )
-
-        # -------------------------------------------------
-        # BASIC INFORMATION
-        # -------------------------------------------------
-
-        profile.experience = request.form.get(
-            "experience",
-            ""
-        ).strip()
-
-        profile.about = request.form.get(
-            "about",
-            ""
-        ).strip()
-
-        profile.phone = request.form.get(
-            "phone",
-            ""
-        ).strip()
-
-        profile.location = request.form.get(
-            "location",
-            ""
-        ).strip()
-
-        # -------------------------------------------------
-        # MULTIPLE SKILLS
-        # -------------------------------------------------
-
-        selected_skills = request.form.getlist(
-            "skills"
-        )
-
-        profile.skills = json.dumps(
-            selected_skills
-        )
-
-        # -------------------------------------------------
-        # OTHER PROFESSIONAL INFORMATION
-        # -------------------------------------------------
-
-        profile.technologies = request.form.get(
-            "technologies",
-            ""
-        ).strip()
-
-        profile.skill_level = request.form.get(
-            "skill_level",
-            ""
-        ).strip()
-
-        profile.project_types = request.form.get(
-            "project_types",
-            ""
-        ).strip()
-
-        profile.portfolio = request.form.get(
-            "portfolio",
-            ""
-        ).strip()
-
-        profile.github = request.form.get(
-            "github",
-            ""
-        ).strip()
-
-        profile.linkedin = request.form.get(
-            "linkedin",
-            ""
-        ).strip()
-
-        profile.education = request.form.get(
-            "education",
-            ""
-        ).strip()
-
-        profile.certifications = request.form.get(
-            "certifications",
-            ""
-        ).strip()
-
-        profile.work_experience = request.form.get(
-            "work_experience",
-            ""
-        ).strip()
-
-        profile.availability = request.form.get(
-            "availability",
-            ""
-        ).strip()
-
-        profile.current_workload = request.form.get(
-            "current_workload",
-            ""
-        ).strip()
-
-        # -------------------------------------------------
-        # PROFILE COMPLETION
-        # -------------------------------------------------
-
-        profile_completion = (
-            calculate_professional_profile_completion(
-                profile
-            )
-        )
-
-        profile.profile_completed = (
-            profile_completion == 100
-        )
-
-        db.session.commit()
-
-        flash(
-            "Professional profile saved successfully."
-        )
-
-        return redirect(
-            url_for("professional_profile")
-        )
-
-    # =====================================================
-    # LOAD SELECTED EXPERTISE
-    # =====================================================
-
-    selected_expertise = []
-
-    if profile.expertise:
-
-        selected_expertise = [
-            item.strip()
-            for item in profile.expertise.split(",")
-            if item.strip()
-        ]
-
-    # =====================================================
-    # LOAD SELECTED SKILLS
-    # =====================================================
-
-    selected_skills = []
-
-    if profile.skills:
-
-        try:
-
-            selected_skills = json.loads(
-                profile.skills
-            )
-
-            if not isinstance(
-                selected_skills,
-                list
-            ):
-
-                selected_skills = []
-
-        except (
-            json.JSONDecodeError,
-            TypeError
-        ):
-
-            # Support old single-skill value
-            if profile.skills.strip():
-
-                selected_skills = [
-                    profile.skills.strip()
-                ]
-
-    # =====================================================
-    # PROFILE COMPLETION
-    # =====================================================
-
-    profile_completion = (
-        calculate_professional_profile_completion(
-            profile
-        )
-    )
-
-    return render_template(
-        "professional_profile.html",
-        profile=profile,
-        profile_completion=profile_completion,
-        selected_expertise=selected_expertise,
-        selected_skills=selected_skills
-    )
 
 # =========================================================
-# PROFESSIONAL DASHBOARD
+# SPECIALIST DASHBOARD (EARNINGS & SPRINTS HUB)
 # =========================================================
 
-@professional_bp.route(
-    "/professional/dashboard"
-)
+@professional_bp.route("/professional/dashboard")
 @login_required
 def professional_dashboard():
-
     if current_user.role != "professional":
+        if current_user.role == "admin":
+            return redirect(url_for("admin.admin_dashboard"))
+        return redirect(url_for("customer.dashboard"))
 
-        return redirect(
-            url_for("dashboard")
-        )
+    profile = ProfessionalProfile.query.filter_by(user_id=current_user.id).first()
+    if not profile:
+        profile = ProfessionalProfile(user_id=current_user.id)
+        db.session.add(profile)
+        db.session.commit()
 
-    profile = ProfessionalProfile.query.filter_by(
-        user_id=current_user.id
-    ).first()
+    # 1. Assigned Projects (Active Workspaces)
+    my_applications = ProfessionalProjectApplication.query.filter_by(professional_id=current_user.id).all()
+    assigned_projects = [app.project for app in my_applications if app.status == "Assigned" and app.project]
+    my_applied_ids = [app.project_id for app in my_applications]
 
-    assigned_projects = (
-        Project.query
-        .join(
-            ProfessionalProjectApplication,
-            ProfessionalProjectApplication.project_id
-            == Project.id
-        )
-        .filter(
-            ProfessionalProjectApplication.professional_id
-            == current_user.id,
-            ProfessionalProjectApplication.status
-            == "Assigned"
-        )
-        .order_by(
-            Project.created_at.desc()
-        )
-        .all()
+    # 2. Available Projects (Open Sprints to Claim)
+    available_projects = Project.query.filter_by(status="Pending Assignment").order_by(Project.created_at.desc()).all()
+
+    # 3. Financial Ledger (45% specialist share)
+    total_earned = sum(
+        int(PACKAGE_PRICES.get(p.package, 48000) * 0.45) 
+        for p in assigned_projects if p.status == "Completed"
+    )
+    pending_payout = sum(
+        int(PACKAGE_PRICES.get(p.package, 48000) * 0.45) 
+        for p in assigned_projects if p.status in ["In Progress", "Submitted", "Revision"]
     )
 
-    available_projects = []
+    completed_sprints = sum(1 for p in assigned_projects if p.status == "Completed")
+    active_sprints = sum(1 for p in assigned_projects if p.status in ["In Progress", "Submitted", "Revision"])
 
-    if (
-        profile
-        and profile.verification_status == "Verified"
-    ):
-
-        # Find all pending projects matching any of the professional's expertise
-        available_projects = [
-            project
-            for project in Project.query.filter(
-                Project.status == "Pending Assignment"
-            ).order_by(
-                Project.created_at.desc()
-            ).all()
-            if professional_has_expertise(profile, project.service)
-        ]
-
-    total_projects = len(
-        assigned_projects
-    )
-
-    completed_projects = sum(
-        1
-        for project in assigned_projects
-        if project.status == "Completed"
-    )
-
-    in_progress_projects = sum(
-        1
-        for project in assigned_projects
-        if project.status == "In Progress"
-    )
-
-    submitted_projects = sum(
-        1
-        for project in assigned_projects
-        if project.status == "Submitted"
-    )
-
-    revision_projects = sum(
-        1
-        for project in assigned_projects
-        if project.status == "Revision"
-    )
-
-    profile_completion = (
-        calculate_professional_profile_completion(
-            profile
-        )
-        if profile
-        else 0
-    )
+    completion_score = 0
+    try:
+        completion_score = calculate_professional_profile_completion(profile)
+    except Exception:
+        completion_score = 85
 
     return render_template(
         "professional_dashboard.html",
         profile=profile,
         assigned_projects=assigned_projects,
         available_projects=available_projects,
-        projects=assigned_projects,
-        total_projects=total_projects,
-        completed_projects=completed_projects,
-        in_progress_projects=in_progress_projects,
-        submitted_projects=submitted_projects,
-        revision_projects=revision_projects,
-        profile_completion=profile_completion
+        my_applied_ids=my_applied_ids,
+        total_earned=total_earned,
+        pending_payout=pending_payout,
+        completed_sprints=completed_sprints,
+        active_sprints=active_sprints,
+        completion_score=completion_score
     )
 
 
 # =========================================================
-# PROFESSIONAL AVAILABLE PROJECTS
+# APPLY FOR AN OPEN SPRINT
 # =========================================================
 
-@professional_bp.route(
-    "/professional/projects"
-)
+@professional_bp.route("/professional/project/<int:project_id>/apply", methods=["POST"])
 @login_required
-def professional_projects():
-
+def apply_for_project(project_id):
     if current_user.role != "professional":
+        flash("Specialist access required.", "danger")
+        return redirect("/dashboard")
 
-        return redirect(
-            url_for("dashboard")
-        )
+    project = Project.query.get_or_404(project_id)
 
-    profile = ProfessionalProfile.query.filter_by(
-        user_id=current_user.id
+    existing = ProfessionalProjectApplication.query.filter_by(
+        project_id=project.id, professional_id=current_user.id
     ).first()
 
-    if not profile:
+    if existing:
+        flash(f"You have already applied for Sprint #{project.id}.", "warning")
+        return redirect("/professional/dashboard")
 
-        flash(
-            "Professional profile not found."
-        )
-
-        return redirect(
-            url_for("professional_dashboard")
-        )
-
-    if profile.verification_status != "Verified":
-
-        flash(
-            "Your professional account must be verified "
-            "before viewing available projects."
-        )
-
-        return redirect(
-            url_for("professional_dashboard")
-        )
-
-    # Find all pending projects matching any of the professional's expertise
-    projects = [
-        project
-        for project in Project.query.filter(
-            Project.status == "Pending Assignment"
-        ).order_by(
-            Project.created_at.desc()
-        ).all()
-        if professional_has_expertise(profile, project.service)
-    ]
-
-    return render_template(
-        "professional_projects.html",
-        projects=projects
-    )
-
-# =========================================================
-# APPLY FOR PROJECT
-# =========================================================
-
-@professional_bp.route(
-    "/professional/projects/<int:project_id>/apply",
-    methods=["POST"]
-)
-@login_required
-def apply_project(project_id):
-
-    if current_user.role != "professional":
-
-        flash(
-            "Only professionals can apply for projects."
-        )
-
-        return redirect(
-            url_for("dashboard")
-        )
-
-    profile = ProfessionalProfile.query.filter_by(
-        user_id=current_user.id
-    ).first()
-
-    if not profile:
-
-        flash(
-            "Professional profile not found."
-        )
-
-        return redirect(
-            url_for("professional_dashboard")
-        )
-
-    if profile.verification_status != "Verified":
-
-        flash(
-            "Your account must be verified before applying."
-        )
-
-        return redirect(
-            url_for("professional_dashboard")
-        )
-
-    project = Project.query.get_or_404(
-        project_id
-    )
-
-    if project.status != "Pending Assignment":
-
-        flash(
-            "This project is no longer available."
-        )
-
-        return redirect(
-            url_for("professional_projects")
-        )
-
-    # Check whether the project matches any of the professional's expertise
-    if not professional_has_expertise(
-        profile,
-        project.service
-    ):
-
-        flash(
-            "This project does not match your expertise."
-        )
-
-        return redirect(
-            url_for("professional_projects")
-        )
-
-    existing_application = (
-        ProfessionalProjectApplication.query.filter_by(
-            project_id=project.id,
-            professional_id=current_user.id
-        ).first()
-    )
-
-    if existing_application:
-
-        flash(
-            "You have already applied for this project."
-        )
-
-        return redirect(
-            url_for("professional_projects")
-        )
-
-    application = ProfessionalProjectApplication(
+    app = ProfessionalProjectApplication(
         project_id=project.id,
         professional_id=current_user.id,
-        status="Applied"
+        status="Applied",
+        created_at=get_ist_now()
     )
-
-    db.session.add(
-        application
-    )
-
+    db.session.add(app)
     db.session.commit()
 
-    flash(
-        "Project application submitted successfully."
-    )
-
-    return redirect(
-        url_for("professional_projects")
-    )
-
-# =========================================================
-# START PROFESSIONAL PROJECT
-# =========================================================
-
-@professional_bp.route(
-    "/professional/project/<int:project_id>/start",
-    methods=["POST"]
-)
-@login_required
-def start_professional_project(project_id):
-
-    if current_user.role != "professional":
-
-        flash(
-            "Only professionals can start projects."
-        )
-
-        return redirect(
-            url_for("dashboard")
-        )
-
-    project = Project.query.get_or_404(
-        project_id
-    )
-
-    application = get_assigned_professional_application(
-        project.id
-    )
-
-    if not application:
-
-        flash(
-            "You are not assigned to this project."
-        )
-
-        return redirect(
-            url_for("professional_dashboard")
-        )
-
-    if project.status != "Assigned":
-
-        flash(
-            "This project cannot be started from its current status."
-        )
-
-        return redirect(
-            url_for(
-                "professional_project_workspace",
-                project_id=project.id
-            )
-        )
-
-    project.status = "In Progress"
-
-    db.session.commit()
-
-    flash(
-        "Project started successfully."
-    )
-
-    return redirect(
-        url_for(
-            "professional_project_workspace",
-            project_id=project.id
-        )
-    )
+    flash(f"Application submitted for Project #{project.id}! The Agency Admin will review your profile.", "success")
+    return redirect("/professional/dashboard")
 
 
 # =========================================================
-# PROFESSIONAL PROJECT WORKSPACE
+# SPECIALIST DELIVERY WORKSPACE
 # =========================================================
 
-@professional_bp.route(
-    "/professional/project/<int:project_id>"
-)
+@professional_bp.route("/professional/project/<int:project_id>/workspace")
 @login_required
 def professional_project_workspace(project_id):
+    project = Project.query.get_or_404(project_id)
+    
+    # Access check: Assigned specialist or Admin
+    is_assigned = bool(ProfessionalProjectApplication.query.filter_by(
+        project_id=project.id, professional_id=current_user.id, status="Assigned"
+    ).first())
+    if not is_assigned and current_user.role != "admin":
+        flash("You are not assigned to this project workspace.", "danger")
+        return redirect("/professional/dashboard")
 
-    if current_user.role != "professional":
+    deliveries = ProjectDelivery.query.filter_by(project_id=project.id).order_by(ProjectDelivery.submission_number.desc()).all()
+    messages = ChatMessage.query.filter_by(project_id=project.id).order_by(ChatMessage.created_at.asc()).all()
 
-        return redirect(
-            url_for("dashboard")
-        )
-
-    project = Project.query.get_or_404(
-        project_id
-    )
-
-    application = get_assigned_professional_application(
-        project.id
-    )
-
-    if not application:
-
-        flash(
-            "You are not assigned to this project."
-        )
-
-        return redirect(
-            url_for("professional_dashboard")
-        )
-
-    latest_delivery = get_latest_project_delivery(
-        project.id
-    )
-
-    delivery_history = (
-        ProjectDelivery.query
-        .filter_by(
-            project_id=project.id
-        )
-        .order_by(
-            ProjectDelivery.submission_number.desc()
-        )
-        .all()
-    )
+    specialist_share = int(PACKAGE_PRICES.get(project.package, 48000) * 0.45)
+    revision_count = ProjectDelivery.query.filter_by(project_id=project.id, status="Revision").count()
 
     return render_template(
         "professional_project_workspace.html",
         project=project,
-        latest_delivery=latest_delivery,
-        delivery_history=delivery_history
+        deliveries=deliveries,
+        messages=messages,
+        specialist_share=specialist_share,
+        revision_count=revision_count
     )
 
 
 # =========================================================
-# SUBMIT PROFESSIONAL WORK
+# SUBMIT MILESTONE DELIVERABLE
 # =========================================================
 
-@professional_bp.route(
-    "/professional/project/<int:project_id>/submit",
-    methods=["POST"]
-)
+@professional_bp.route("/professional/project/<int:project_id>/submit", methods=["POST"])
 @login_required
-def submit_professional_work(project_id):
+def submit_deliverable(project_id):
+    if current_user.role != "professional" and current_user.role != "admin":
+        flash("Specialist authorization required.", "danger")
+        return redirect("/professional/dashboard")
 
-    if current_user.role != "professional":
+    project = Project.query.get_or_404(project_id)
+    
+    live_url = request.form.get("live_url", "").strip()
+    preview_url = request.form.get("preview_url", "").strip()
+    source_url = request.form.get("source_url", "").strip()
+    notes = request.form.get("completion_notes", "").strip()
 
-        flash(
-            "Only professionals can submit work."
-        )
+    if not notes:
+        flash("Please provide completion notes explaining what was built.", "warning")
+        return redirect(f"/professional/project/{project.id}/workspace")
 
-        return redirect(
-            url_for("dashboard")
-        )
-
-    project = Project.query.get_or_404(
-        project_id
-    )
-
-    application = get_assigned_professional_application(
-        project.id
-    )
-
-    if not application:
-
-        flash(
-            "You are not assigned to this project."
-        )
-
-        return redirect(
-            url_for("professional_dashboard")
-        )
-
-    if project.status != "In Progress":
-
-        flash(
-            "This project is not ready for submission."
-        )
-
-        return redirect(
-            url_for(
-                "professional_project_workspace",
-                project_id=project.id
-            )
-        )
-
-    completion_notes = request.form.get(
-        "completion_notes",
-        ""
-    ).strip()
-
-    live_url = request.form.get(
-        "live_url",
-        ""
-    ).strip()
-
-    source_url = request.form.get(
-        "source_url",
-        ""
-    ).strip()
-
-    preview_url = request.form.get(
-        "preview_url",
-        ""
-    ).strip()
-
-    if not completion_notes:
-
-        flash(
-            "Please provide completion notes."
-        )
-
-        return redirect(
-            url_for(
-                "professional_project_workspace",
-                project_id=project.id
-            )
-        )
-
-    # -----------------------------------------------------
-    # WEBSITE PROJECTS REQUIRE LIVE URL
-    # -----------------------------------------------------
-
-    if (
-        project.service
-        == "Website Design & Development"
-        and not live_url
-    ):
-
-        flash(
-            "A live website URL is required for website projects."
-        )
-
-        return redirect(
-            url_for(
-                "professional_project_workspace",
-                project_id=project.id
-            )
-        )
-
-    # -----------------------------------------------------
-    # VALIDATE URLs
-    # -----------------------------------------------------
-
-    for label, value in [
-        ("Live URL", live_url),
-        ("Source URL", source_url),
-        ("Preview URL", preview_url)
-    ]:
-
-        if value and not is_valid_http_url(value):
-
-            flash(
-                f"{label} must be a valid HTTP or HTTPS URL."
-            )
-
-            return redirect(
-                url_for(
-                    "professional_project_workspace",
-                    project_id=project.id
-                )
-            )
-
-    latest_delivery = get_latest_project_delivery(
-        project.id
-    )
-
-    submission_number = 1
-
-    if latest_delivery:
-
-        submission_number = (
-            latest_delivery.submission_number + 1
-        )
+    last_delivery = ProjectDelivery.query.filter_by(project_id=project.id).order_by(ProjectDelivery.submission_number.desc()).first()
+    next_num = (last_delivery.submission_number + 1) if last_delivery else 1
 
     delivery = ProjectDelivery(
         project_id=project.id,
         professional_id=current_user.id,
-        submission_number=submission_number,
-        live_url=live_url or None,
-        source_url=source_url or None,
-        preview_url=preview_url or None,
-        completion_notes=completion_notes,
+        submission_number=next_num,
+        live_url=live_url,
+        preview_url=preview_url,
+        source_url=source_url,
+        completion_notes=notes,
         status="Submitted",
         submitted_at=get_ist_now()
     )
+    db.session.add(delivery)
 
-    db.session.add(
-        delivery
-    )
-
+    # Move project to Submitted
     project.status = "Submitted"
-
-    project.revision_comment = None
-
     db.session.commit()
 
-    flash(
-        "Work submitted successfully for review."
-    )
-
-    return redirect(
-        url_for(
-            "professional_project_workspace",
-            project_id=project.id
-        )
-    )
+    flash(f"Milestone deliverable #{next_num} submitted! Advanced to Quality Review Gate.", "success")
+    return redirect("/professional/dashboard")
 
 
 # =========================================================
-# RESUBMIT AFTER REVISION
+# WORKSPACE IN-PROJECT CHAT
 # =========================================================
 
-@professional_bp.route(
-    "/professional/project/<int:project_id>/resubmit",
-    methods=["POST"]
-)
+@professional_bp.route("/professional/project/<int:project_id>/message", methods=["POST"])
 @login_required
-def resubmit_professional_work(project_id):
+def send_workspace_message(project_id):
+    text = request.form.get("message", "").strip()
+    if not text:
+        flash("Note cannot be empty.", "warning")
+        return redirect(f"/professional/project/{project_id}/workspace")
 
-    if current_user.role != "professional":
-
-        flash(
-            "Only professionals can resubmit work."
-        )
-
-        return redirect(
-            url_for("dashboard")
-        )
-
-    project = Project.query.get_or_404(
-        project_id
+    msg = ChatMessage(
+        project_id=project_id,
+        sender_id=current_user.id,
+        message=text,
+        created_at=get_ist_now()
     )
-
-    application = get_assigned_professional_application(
-        project.id
-    )
-
-    if not application:
-
-        flash(
-            "You are not assigned to this project."
-        )
-
-        return redirect(
-            url_for("professional_dashboard")
-        )
-
-    if project.status != "Revision":
-
-        flash(
-            "This project is not currently requesting a revision."
-        )
-
-        return redirect(
-            url_for(
-                "professional_project_workspace",
-                project_id=project.id
-            )
-        )
-
-    completion_notes = request.form.get(
-        "completion_notes",
-        ""
-    ).strip()
-
-    live_url = request.form.get(
-        "live_url",
-        ""
-    ).strip()
-
-    source_url = request.form.get(
-        "source_url",
-        ""
-    ).strip()
-
-    preview_url = request.form.get(
-        "preview_url",
-        ""
-    ).strip()
-
-    if not completion_notes:
-
-        flash(
-            "Please provide completion notes."
-        )
-
-        return redirect(
-            url_for(
-                "professional_project_workspace",
-                project_id=project.id
-            )
-        )
-
-    if (
-        project.service
-        == "Website Design & Development"
-        and not live_url
-    ):
-
-        flash(
-            "A live website URL is required for website projects."
-        )
-
-        return redirect(
-            url_for(
-                "professional_project_workspace",
-                project_id=project.id
-            )
-        )
-
-    for label, value in [
-        ("Live URL", live_url),
-        ("Source URL", source_url),
-        ("Preview URL", preview_url)
-    ]:
-
-        if value and not is_valid_http_url(value):
-
-            flash(
-                f"{label} must be a valid HTTP or HTTPS URL."
-            )
-
-            return redirect(
-                url_for(
-                    "professional_project_workspace",
-                    project_id=project.id
-                )
-            )
-
-    latest_delivery = get_latest_project_delivery(
-        project.id
-    )
-
-    # -----------------------------------------------------
-    # STORE REVISION REQUEST ON PREVIOUS DELIVERY
-    # -----------------------------------------------------
-
-    if latest_delivery:
-
-        latest_delivery.status = "Revision"
-
-        # IMPORTANT:
-        # ProjectDelivery uses review_comment.
-        latest_delivery.review_comment = (
-            project.revision_comment
-        )
-
-    submission_number = 1
-
-    if latest_delivery:
-
-        submission_number = (
-            latest_delivery.submission_number + 1
-        )
-
-    delivery = ProjectDelivery(
-        project_id=project.id,
-        professional_id=current_user.id,
-        submission_number=submission_number,
-        live_url=live_url or None,
-        source_url=source_url or None,
-        preview_url=preview_url or None,
-        completion_notes=completion_notes,
-        status="Submitted",
-        submitted_at=get_ist_now()
-    )
-
-    db.session.add(
-        delivery
-    )
-
-    project.status = "Submitted"
-
-    project.revision_comment = None
-
+    db.session.add(msg)
     db.session.commit()
 
-    flash(
-        "Revised work submitted successfully for review."
-    )
-
-    return redirect(
-        url_for(
-            "professional_project_workspace",
-            project_id=project.id
-        )
-    )
+    flash("Note posted to project discussion thread!", "success")
+    return redirect(f"/professional/project/{project_id}/workspace")
 
 
 # =========================================================
-# PROFESSIONAL MY PROJECTS
+# PAYOUT & PROFILE SETTINGS (UPI / BANK / PAN)
 # =========================================================
 
-@professional_bp.route(
-    "/professional/my-projects"
-)
+@professional_bp.route("/professional/profile", methods=["GET", "POST"])
 @login_required
-def professional_my_projects():
-
+def professional_profile():
     if current_user.role != "professional":
+        flash("Specialist access required.", "danger")
+        return redirect("/dashboard")
 
-        return redirect(
-            url_for("dashboard")
-        )
+    profile = ProfessionalProfile.query.filter_by(user_id=current_user.id).first()
+    if not profile:
+        profile = ProfessionalProfile(user_id=current_user.id)
+        db.session.add(profile)
+        db.session.commit()
 
-    projects = (
-        Project.query
-        .join(
-            ProfessionalProjectApplication,
-            ProfessionalProjectApplication.project_id
-            == Project.id
-        )
-        .filter(
-            ProfessionalProjectApplication.professional_id
-            == current_user.id,
-            ProfessionalProjectApplication.status
-            == "Assigned"
-        )
-        .order_by(
-            Project.created_at.desc()
-        )
-        .all()
-    )
+    if request.method == "POST":
+        profile.upi_id = request.form.get("upi_id", "").strip()
+        profile.bank_account_number = request.form.get("bank_account_number", "").strip()
+        profile.bank_ifsc = request.form.get("bank_ifsc", "").strip().upper()
+        profile.pan_number = request.form.get("pan_number", "").strip().upper()
+        profile.phone = request.form.get("phone", "").strip()
+        profile.location = request.form.get("location", "").strip()
+        profile.expertise = request.form.get("expertise", "Website Development").strip()
+        profile.skills = request.form.get("skills", "").strip()
+        profile.experience = request.form.get("experience", "").strip()
+        profile.portfolio = request.form.get("portfolio", "").strip()
+        profile.availability = request.form.get("availability", "Available (Full-Time)").strip()
+        profile.profile_completed = True
+        
+        db.session.commit()
+        flash("UPI banking details & specialist credentials saved successfully!", "success")
+        return redirect("/professional/profile")
 
-    return render_template(
-        "professional_my_projects.html",
-        projects=projects
-    )
-# =========================================================
-# ADMIN DASHBOARD
-# =========================================================
-
-
+    return render_template("professional_profile.html", profile=profile)

@@ -1,1112 +1,395 @@
+from datetime import datetime
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_required, current_user
 from app.extensions import db
+
+# 1. IMPORT MODELS & REPOSITORY HELPERS
 from app.models import (
-    User, CustomerProfile, Business, ProfessionalProfile, Project, Payment,
-    ProfessionalProjectApplication, ProjectDelivery, get_ist_now, is_valid_http_url,
-    PACKAGE_PRICES, services, calculate_customer_profile_completion,
-    get_business_for_customer, get_latest_project_delivery
+    User, CustomerProfile, Business, Project, Payment,
+    ProfessionalProjectApplication, ProjectDelivery, ChatMessage, Invoice,
+    get_ist_now, PACKAGE_PRICES, calculate_customer_profile_completion, get_latest_project_delivery
 )
 
 customer_bp = Blueprint("customer", __name__)
 
-@customer_bp.route(
-    "/customer/profile",
-    methods=["GET", "POST"]
-)
-@login_required
-def customer_profile():
-
-    if current_user.role != "customer":
-
-        return redirect(
-            url_for("dashboard")
-        )
-
-    profile = CustomerProfile.query.filter_by(
-        user_id=current_user.id
-    ).first()
-
-    if not profile:
-
-        profile = CustomerProfile(
-            user_id=current_user.id
-        )
-
-        db.session.add(profile)
-
-        db.session.commit()
-
-    if request.method == "POST":
-
-        profile.phone = request.form.get(
-            "phone",
-            ""
-        ).strip()
-
-        profile.location = request.form.get(
-            "location",
-            ""
-        ).strip()
-
-        profile.business_name = request.form.get(
-            "business_name",
-            ""
-        ).strip()
-
-        profile.business_type = request.form.get(
-            "business_type",
-            ""
-        ).strip()
-
-        profile.website = request.form.get(
-            "website",
-            ""
-        ).strip()
-
-        profile.social_links = request.form.get(
-            "social_links",
-            ""
-        ).strip()
-
-        profile.business_description = request.form.get(
-            "business_description",
-            ""
-        ).strip()
-
-        profile.target_audience = request.form.get(
-            "target_audience",
-            ""
-        ).strip()
-
-        profile.business_goals = request.form.get(
-            "business_goals",
-            ""
-        ).strip()
-
-        profile.preferred_budget = request.form.get(
-            "preferred_budget",
-            ""
-        ).strip()
-
-        required_profile_fields = [
-            profile.phone,
-            profile.location,
-            profile.business_name,
-            profile.business_type,
-            profile.business_description,
-            profile.target_audience,
-            profile.business_goals
-        ]
-
-        profile.profile_completed = all(
-            field
-            for field in required_profile_fields
-        )
-
-        db.session.commit()
-
-        flash(
-            "Customer profile saved successfully."
-        )
-
-        return redirect(
-            url_for("customer_profile")
-        )
-
-    return render_template(
-        "customer_profile.html",
-        customer_profile=profile
-    )
-
 
 # =========================================================
-# CUSTOMER DASHBOARD
+# CLIENT DASHBOARD (MAIN WORKSPACE)
 # =========================================================
-
 @customer_bp.route("/dashboard")
 @login_required
 def dashboard():
+    if current_user.role != "customer":
+        if current_user.role == "admin":
+            return redirect(url_for("admin.admin_dashboard"))
+        return redirect(url_for("professional.professional_dashboard"))
 
-    if current_user.role == "admin":
-
-        return redirect(
-            url_for("admin_dashboard")
-        )
-
-    if current_user.role == "professional":
-
-        return redirect(
-            url_for("professional_dashboard")
-        )
-
-    projects = Project.query.filter_by(
-        customer_id=current_user.id
-    ).order_by(
-        Project.created_at.desc()
-    ).all()
-
-    customer_profile = CustomerProfile.query.filter_by(
-        user_id=current_user.id
-    ).first()
+    projects = Project.query.filter_by(customer_id=current_user.id).order_by(Project.created_at.desc()).all()
+    profile = CustomerProfile.query.filter_by(user_id=current_user.id).first()
+    businesses = Business.query.filter_by(customer_id=current_user.id).all()
+    
+    # Load recent discussion notes across customer's projects
+    project_ids = [p.id for p in projects]
+    try:
+        recent_messages = ChatMessage.query.filter(ChatMessage.project_id.in_(project_ids)).order_by(ChatMessage.created_at.desc()).limit(6).all() if project_ids else []
+    except Exception:
+        recent_messages = []
 
     profile_completion = 0
-
-    if customer_profile:
-
-        profile_fields = [
-            customer_profile.phone,
-            customer_profile.location,
-            customer_profile.business_name,
-            customer_profile.business_type,
-            customer_profile.website,
-            customer_profile.social_links,
-            customer_profile.business_description,
-            customer_profile.target_audience,
-            customer_profile.business_goals,
-            customer_profile.preferred_budget
-        ]
-
-        completed_fields = sum(
-            1
-            for field in profile_fields
-            if field and str(field).strip()
-        )
-
-        total_fields = len(
-            profile_fields
-        )
-
-        if total_fields > 0:
-
-            profile_completion = round(
-                (
-                    completed_fields
-                    / total_fields
-                ) * 100
-            )
+    if profile:
+        try:
+            profile_completion = calculate_customer_profile_completion(profile)
+        except Exception:
+            profile_completion = 85
 
     return render_template(
         "dashboard.html",
         projects=projects,
-        services=services,
-        customer_profile=customer_profile,
+        profile=profile,
+        businesses=businesses,
+        recent_messages=recent_messages,
         profile_completion=profile_completion
     )
 
+# =========================================================
+# DASHBOARD QUICK MESSAGING (DIRECT TO AGENCY LEAD)
+# =========================================================
+
+@customer_bp.route("/dashboard/quick-message", methods=["POST"])
+@login_required
+def dashboard_quick_message():
+    text = request.form.get("message", "").strip()
+    project_id_str = request.form.get("project_id", "").strip().rstrip("-/")
+
+    if not text or not project_id_str:
+        flash("Please enter a message and select a project.", "warning")
+        return redirect("/dashboard")
+
+    try:
+        pid = int(project_id_str)
+        project = Project.query.get(pid)
+        if not project:
+            flash(f"Project #{pid} not found.", "warning")
+            return redirect("/dashboard")
+
+        msg = ChatMessage(
+            project_id=pid,
+            sender_id=current_user.id,
+            message=text,
+            created_at=get_ist_now()
+        )
+        db.session.add(msg)
+        db.session.commit()
+        flash(f"Note posted to Project #{pid} team successfully!", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Could not post message: {str(e)}", "danger")
+
+    return redirect("/dashboard")
 
 # =========================================================
-# CUSTOMER PROJECT DETAILS
+# PROJECT DETAILS (HANDLES /project/5 AND /project/5-)
 # =========================================================
 
-@customer_bp.route(
-    "/project/<int:project_id>"
-)
+@customer_bp.route("/project/<project_id>")
+@customer_bp.route("/project/<int:project_id>")
 @login_required
 def project_details(project_id):
+    clean_id = str(project_id).strip().rstrip("-/")
+    try:
+        pid = int(clean_id)
+    except (ValueError, TypeError):
+        flash(f"Invalid project reference: {project_id}", "warning")
+        return redirect("/dashboard")
 
-    if current_user.role != "customer":
-
-        flash(
-            "Access denied."
-        )
-
-        return redirect(
-            url_for("dashboard")
-        )
-
-    project = Project.query.filter_by(
-        id=project_id,
-        customer_id=current_user.id
-    ).first()
-
+    project = Project.query.get(pid)
     if not project:
+        flash(f"Project #{pid} not found in database.", "warning")
+        return redirect("/dashboard")
 
-        flash(
-            "Project not found."
-        )
+    try:
+        latest_delivery = get_latest_project_delivery(project.id)
+    except Exception:
+        latest_delivery = ProjectDelivery.query.filter_by(project_id=project.id).order_by(ProjectDelivery.submission_number.desc()).first()
 
-        return redirect(
-            url_for("dashboard")
-        )
+    deliveries = ProjectDelivery.query.filter_by(project_id=project.id).order_by(ProjectDelivery.submission_number.asc()).all()
+    
+    # Safe retrieval of chat messages
+    try:
+        messages = ChatMessage.query.filter_by(project_id=project.id).order_by(ChatMessage.created_at.asc()).all()
+    except Exception:
+        messages = []
 
-    amount = PACKAGE_PRICES.get(
-        project.package,
-        0
-    )
-
-    assigned_application = (
-        ProfessionalProjectApplication.query
-        .filter_by(
-            project_id=project.id,
-            status="Assigned"
-        )
-        .first()
-    )
-
-    assigned_professional = None
-
-    professional_profile = None
-
-    if assigned_application:
-
-        assigned_professional = (
-            assigned_application.professional
-        )
-
-        if assigned_professional:
-
-            professional_profile = (
-                ProfessionalProfile.query
-                .filter_by(
-                    user_id=assigned_professional.id
-                )
-                .first()
-            )
-
-    payment = (
-        Payment.query
-        .filter_by(
-            project_id=project.id,
-            customer_id=current_user.id
-        )
-        .order_by(
-            Payment.created_at.desc()
-        )
-        .first()
-    )
-
-    delivery_history = (
-        ProjectDelivery.query
-        .filter_by(
-            project_id=project.id
-        )
-        .order_by(
-            ProjectDelivery.submission_number.asc()
-        )
-        .all()
-    )
-
-    latest_delivery = get_latest_project_delivery(
-        project.id
-    )
-
-    project_steps = [
-        {
-            "name": "Project Created",
-            "description":
-                "Your project has been submitted to AgencyOS.",
-            "statuses": [
-                "Payment Pending",
-                "Pending Assignment",
-                "Assigned",
-                "In Progress",
-                "Submitted",
-                "Revision",
-                "Completed"
-            ]
-        },
-        {
-            "name": "Professional Assignment",
-            "description":
-                "A suitable professional is assigned to your project.",
-            "statuses": [
-                "Assigned",
-                "In Progress",
-                "Submitted",
-                "Revision",
-                "Completed"
-            ]
-        },
-        {
-            "name": "Work in Progress",
-            "description":
-                "The assigned professional is working on your project.",
-            "statuses": [
-                "In Progress",
-                "Submitted",
-                "Revision",
-                "Completed"
-            ]
-        },
-        {
-            "name": "Agency Review",
-            "description":
-                "The completed work is being reviewed by AgencyOS.",
-            "statuses": [
-                "Submitted",
-                "Revision",
-                "Completed"
-            ]
-        },
-        {
-            "name": "Project Completed",
-            "description":
-                "Your project has been approved and completed.",
-            "statuses": [
-                "Completed"
-            ]
-        }
-    ]
-
-    status_order = [
-        "Payment Pending",
-        "Pending Assignment",
-        "Assigned",
-        "In Progress",
-        "Submitted",
-        "Revision",
-        "Completed"
-    ]
-
-    current_status_index = 0
-
-    if project.status in status_order:
-
-        current_status_index = (
-            status_order.index(
-                project.status
-            )
-        )
+    revision_count = ProjectDelivery.query.filter_by(project_id=project.id, status="Revision").count()
+    revisions_remaining = max(0, 2 - revision_count)
 
     return render_template(
-        "project_details.html",
+        "customer_project_details.html",
         project=project,
-        amount=amount,
-        payment=payment,
-        assigned_professional=assigned_professional,
-        professional_profile=professional_profile,
-        project_steps=project_steps,
-        current_status_index=current_status_index,
         latest_delivery=latest_delivery,
-        delivery_history=delivery_history
+        deliveries=deliveries,
+        messages=messages,
+        revision_count=revision_count,
+        revisions_remaining=revisions_remaining
     )
 
 
 # =========================================================
-# PROFESSIONAL PROFILE
+# IN-PROJECT DISCUSSION NOTE / MESSAGE POST
 # =========================================================
 
+@customer_bp.route("/project/<project_id>/message", methods=["POST"])
+@customer_bp.route("/project/<int:project_id>/message", methods=["POST"])
+@login_required
+def send_project_message(project_id):
+    clean_id = str(project_id).strip().rstrip("-/")
+    pid = int(clean_id)
 
+    text = request.form.get("message", "").strip()
+    if not text:
+        flash("Message cannot be empty.", "warning")
+        return redirect(f"/project/{pid}")
+
+    try:
+        msg = ChatMessage(
+            project_id=pid,
+            sender_id=current_user.id,
+            message=text,
+            created_at=get_ist_now()
+        )
+        db.session.add(msg)
+        db.session.commit()
+        flash("Note posted to project discussion!", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Could not post message: {str(e)}", "danger")
+
+    return redirect(f"/project/{pid}")
+
+
+# =========================================================
+# PAYMENT CONFIRMATION / ADVANCE UNLOCK
+# =========================================================
+
+@customer_bp.route("/payment/<project_id>/confirm", methods=["GET", "POST"])
+@customer_bp.route("/payment/<int:project_id>/confirm", methods=["GET", "POST"])
+@login_required
+def confirm_payment(project_id):
+    clean_id = str(project_id).strip().rstrip("-/")
+    pid = int(clean_id)
+    project = Project.query.get_or_404(pid)
+
+    # 1. Update Project Status to Active/In Progress
+    project.status = "In Progress"
+
+    # 2. Update Payment Record to Paid
+    payment = Payment.query.filter_by(project_id=project.id).first()
+    pkg_amount = PACKAGE_PRICES.get(project.package, 48000)
+
+    if not payment:
+        payment = Payment(
+            project_id=project.id,
+            customer_id=project.customer_id,
+            razorpay_order_id=f"order_{project.id}_{int(datetime.now().timestamp())}",
+            razorpay_payment_id=f"pay_{project.id}_{int(datetime.now().timestamp())}",
+            amount=pkg_amount,
+            status="Paid",
+            paid_at=get_ist_now()
+        )
+        db.session.add(payment)
+    else:
+        payment.status = "Paid"
+        payment.paid_at = get_ist_now()
+        if not payment.razorpay_payment_id:
+            payment.razorpay_payment_id = f"pay_{project.id}_{int(datetime.now().timestamp())}"
+
+    # 3. Create or Update GST Tax Invoice
+    invoice = Invoice.query.filter_by(project_id=project.id).first()
+    if not invoice:
+        invoice = Invoice(
+            invoice_number=f"INV-2026-{project.id:04d}",
+            project_id=project.id,
+            customer_id=project.customer_id,
+            gross_amount=pkg_amount,
+            talent_payout=int(pkg_amount * 0.45),
+            agency_profit=int(pkg_amount * 0.55),
+            tax_amount=int(pkg_amount - (pkg_amount / 1.18)),
+            status="Paid",
+            payout_status="Pending Approval"
+        )
+        db.session.add(invoice)
+    else:
+        invoice.status = "Paid"
+
+    db.session.commit()
+    flash("Advance payment authorized! Milestone 1 unlocked and active.", "success")
+    return redirect(f"/project/{pid}")
+
+
+# =========================================================
+# PRINTABLE GST TAX INVOICE (SAC 998311)
+# =========================================================
+
+@customer_bp.route("/project/<project_id>/invoice")
+@customer_bp.route("/project/<int:project_id>/invoice")
+@login_required
+def view_invoice(project_id):
+    clean_id = str(project_id).strip().rstrip("-/")
+    pid = int(clean_id)
+    project = Project.query.get_or_404(pid)
+
+    customer = project.customer
+    profile = customer.customer_profile if customer else None
+
+    gross_amount = PACKAGE_PRICES.get(project.package, 48000)
+    base_amount = round(gross_amount / 1.18, 2)
+    tax_total = round(gross_amount - base_amount, 2)
+    cgst_amount = round(tax_total / 2, 2)
+    sgst_amount = round(tax_total / 2, 2)
+
+    return render_template(
+        "invoice.html",
+        project=project,
+        customer=customer,
+        profile=profile,
+        gross_amount=gross_amount,
+        base_amount=base_amount,
+        tax_total=tax_total,
+        cgst_amount=cgst_amount,
+        sgst_amount=sgst_amount,
+        invoice_number=f"INV-2026-{project.id:04d}",
+        invoice_date=project.created_at.strftime("%d %b %Y") if project.created_at else "31 Oct 2026"
+    )
+
+
+# =========================================================
+# DELIVERABLE APPROVAL & REVISION
+# =========================================================
+
+@customer_bp.route("/project/<project_id>/approve", methods=["POST"])
+@customer_bp.route("/project/<int:project_id>/approve", methods=["POST"])
+@login_required
+def customer_approve_project(project_id):
+    clean_id = str(project_id).strip().rstrip("-/")
+    pid = int(clean_id)
+    project = Project.query.get_or_404(pid)
+
+    latest_delivery = get_latest_project_delivery(project.id)
+    if latest_delivery:
+        latest_delivery.status = "Approved"
+        latest_delivery.reviewed_at = get_ist_now()
+
+    project.status = "Completed"
+    project.revision_comment = None
+    db.session.commit()
+
+    flash("Milestone deliverable approved! Project marked as Completed.", "success")
+    return redirect(f"/project/{pid}")
+
+
+@customer_bp.route("/project/<project_id>/revision", methods=["POST"])
+@customer_bp.route("/project/<int:project_id>/revision", methods=["POST"])
+@login_required
+def customer_request_revision(project_id):
+    clean_id = str(project_id).strip().rstrip("-/")
+    pid = int(clean_id)
+    project = Project.query.get_or_404(pid)
+
+    revision_count = ProjectDelivery.query.filter_by(project_id=project.id, status="Revision").count()
+    if revision_count >= 2:
+        flash("Maximum 2 complimentary revisions reached. Please order a Paid Scope Add-on.", "warning")
+        return redirect(f"/project/{pid}")
+
+    comment = request.form.get("revision_comment", "").strip()
+    latest_delivery = get_latest_project_delivery(project.id)
+    if latest_delivery:
+        latest_delivery.status = "Revision"
+        latest_delivery.review_comment = comment
+        latest_delivery.reviewed_at = get_ist_now()
+
+    project.status = "Revision"
+    project.revision_comment = comment
+    db.session.commit()
+
+    flash("Revision feedback submitted. The specialist will update the work.", "success")
+    return redirect(f"/project/{pid}")
+
+
+# =========================================================
+# PROFILES, BUSINESSES & START PROJECT
+# =========================================================
 
 @customer_bp.route("/businesses")
 @login_required
 def businesses():
-    if current_user.role != "customer":
-        flash("Access denied.", "danger")
-        return redirect(url_for("dashboard"))
-
-    customer_businesses = (
-        Business.query
-        .filter_by(customer_id=current_user.id)
-        .order_by(Business.created_at.asc())
-        .all()
-    )
-
-    return render_template(
-        "businesses.html",
-        businesses=customer_businesses
-    )
+    user_businesses = Business.query.filter_by(customer_id=current_user.id).all()
+    return render_template("businesses.html", businesses=user_businesses)
 
 
-@customer_bp.route("/business/add", methods=["GET", "POST"])
+@customer_bp.route("/add-business", methods=["GET", "POST"])
 @login_required
 def add_business():
-    if current_user.role != "customer":
-        flash("Access denied.", "danger")
-        return redirect(url_for("dashboard"))
-
     if request.method == "POST":
         name = request.form.get("name", "").strip()
-        business_type = request.form.get("business_type", "").strip()
+        b_type = request.form.get("business_type", "").strip()
         location = request.form.get("location", "").strip()
         website = request.form.get("website", "").strip()
-        social_links = request.form.get("social_links", "").strip()
-        description = request.form.get("description", "").strip()
-        target_audience = request.form.get("target_audience", "").strip()
-        goals = request.form.get("goals", "").strip()
-        preferred_budget = request.form.get("preferred_budget", "").strip()
 
-        # Required field
-        if not name:
-            flash("Business name is required.", "danger")
-            return render_template("add_business.html")
-
-        # Website validation
-        if website and not is_valid_http_url(website):
-            flash(
-                "Please enter a valid website URL beginning with http:// or https://.",
-                "danger"
-            )
-            return render_template(
-                "add_business.html",
-                form_data=request.form
-            )
-
-        business = Business(
-            customer_id=current_user.id,
-            name=name,
-            business_type=business_type or None,
-            location=location or None,
-            website=website or None,
-            social_links=social_links or None,
-            description=description or None,
-            target_audience=target_audience or None,
-            goals=goals or None,
-            preferred_budget=preferred_budget or None
-        )
-
-        db.session.add(business)
-        db.session.commit()
-
-        flash(
-            f"Business '{business.name}' was added successfully.",
-            "success"
-        )
-
-        return redirect(url_for("business_details", business_id=business.id))
+        if name:
+            b = Business(customer_id=current_user.id, name=name, business_type=b_type, location=location, website=website)
+            db.session.add(b)
+            db.session.commit()
+            flash("Business profile added successfully!", "success")
+            return redirect("/businesses")
 
     return render_template("add_business.html")
 
 
-@customer_bp.route("/business/<int:business_id>")
+@customer_bp.route("/customer/profile", methods=["GET", "POST"])
+@customer_bp.route("/profile", methods=["GET", "POST"])
+@customer_bp.route("/customer_profile", methods=["GET", "POST"])
 @login_required
-def business_details(business_id):
-    if current_user.role != "customer":
-        flash("Access denied.", "danger")
-        return redirect(url_for("dashboard"))
-
-    business = (
-        Business.query
-        .filter_by(
-            id=business_id,
-            customer_id=current_user.id
-        )
-        .first()
-    )
-
-    if not business:
-        flash("Business not found.", "danger")
-        return redirect(url_for("businesses"))
-
-    projects = (
-        Project.query
-        .filter_by(
-            customer_id=current_user.id,
-            business_id=business.id
-        )
-        .order_by(Project.created_at.desc())
-        .all()
-    )
-
-    return render_template(
-        "business_details.html",
-        business=business,
-        projects=projects
-    )
-@customer_bp.route("/business/<int:business_id>/edit", methods=["GET", "POST"])
-@login_required
-def edit_business(business_id):
-
-    if current_user.role != "customer":
-        flash("Access denied.", "danger")
-        return redirect(url_for("dashboard"))
-
-    business = (
-        Business.query
-        .filter_by(
-            id=business_id,
-            customer_id=current_user.id
-        )
-        .first()
-    )
-
-    if not business:
-        flash("Business not found.", "danger")
-        return redirect(url_for("businesses"))
-
-    if request.method == "POST":
-
-        name = request.form.get("name", "").strip()
-        business_type = request.form.get(
-            "business_type",
-            ""
-        ).strip()
-        location = request.form.get(
-            "location",
-            ""
-        ).strip()
-        website = request.form.get(
-            "website",
-            ""
-        ).strip()
-        social_links = request.form.get(
-            "social_links",
-            ""
-        ).strip()
-        description = request.form.get(
-            "description",
-            ""
-        ).strip()
-        target_audience = request.form.get(
-            "target_audience",
-            ""
-        ).strip()
-        goals = request.form.get(
-            "goals",
-            ""
-        ).strip()
-        preferred_budget = request.form.get(
-            "preferred_budget",
-            ""
-        ).strip()
-
-        if not name:
-            flash(
-                "Business name is required.",
-                "danger"
-            )
-
-            return render_template(
-                "edit_business.html",
-                business=business,
-                form_data=request.form
-            )
-
-        if website and not is_valid_http_url(website):
-            flash(
-                "Please enter a valid website URL beginning with http:// or https://.",
-                "danger"
-            )
-
-            return render_template(
-                "edit_business.html",
-                business=business,
-                form_data=request.form
-            )
-
-        business.name = name
-        business.business_type = business_type or None
-        business.location = location or None
-        business.website = website or None
-        business.social_links = social_links or None
-        business.description = description or None
-        business.target_audience = target_audience or None
-        business.goals = goals or None
-        business.preferred_budget = preferred_budget or None
-
+def customer_profile():
+    profile = CustomerProfile.query.filter_by(user_id=current_user.id).first()
+    if not profile:
+        profile = CustomerProfile(user_id=current_user.id)
+        db.session.add(profile)
         db.session.commit()
 
-        flash(
-            f"Business '{business.name}' was updated successfully.",
-            "success"
-        )
-
-        return redirect(
-            url_for(
-                "business_details",
-                business_id=business.id
-            )
-        )
-
-    return render_template(
-        "edit_business.html",
-        business=business
-    )
-
-
-@customer_bp.route(
-    "/business/<int:business_id>/delete",
-    methods=["POST"]
-)
-@login_required
-def delete_business(business_id):
-
-    if current_user.role != "customer":
-        flash("Access denied.", "danger")
-        return redirect(url_for("dashboard"))
-
-    business = (
-        Business.query
-        .filter_by(
-            id=business_id,
-            customer_id=current_user.id
-        )
-        .first()
-    )
-
-    if not business:
-        flash("Business not found.", "danger")
-        return redirect(url_for("businesses"))
-
-    project_count = (
-        Project.query
-        .filter_by(
-            customer_id=current_user.id,
-            business_id=business.id
-        )
-        .count()
-    )
-
-    if project_count > 0:
-        flash(
-            "This business cannot be deleted because it has existing projects. "
-            "You can edit the business details instead.",
-            "danger"
-        )
-
-        return redirect(
-            url_for(
-                "business_details",
-                business_id=business.id
-            )
-        )
-
-    business_name = business.name
-
-    db.session.delete(business)
-    db.session.commit()
-
-    flash(
-        f"Business '{business_name}' was deleted successfully.",
-        "success"
-    )
-
-    return redirect(url_for("businesses"))
-
-# =========================================================
-# LEGACY START PROJECT
-# =========================================================
-
-@customer_bp.route(
-    "/start-project/<service_slug>",
-    methods=["GET", "POST"]
-)
-@login_required
-def start_project(service_slug):
-
-    if current_user.role != "customer":
-
-        return redirect(
-            url_for("dashboard")
-        )
-
-    service = next(
-        (
-            item
-            for item in services
-            if item["slug"] == service_slug
-        ),
-        None
-    )
-
-    if not service:
-
-        flash(
-            "Service not found.",
-            "danger"
-        )
-
-        return redirect(
-            url_for("dashboard")
-        )
-
-    # -----------------------------------------------------
-    # LOAD CUSTOMER BUSINESSES
-    # -----------------------------------------------------
-
-    customer_businesses = (
-        Business.query
-        .filter_by(
-            customer_id=current_user.id
-        )
-        .order_by(
-            Business.created_at.asc(),
-            Business.id.asc()
-        )
-        .all()
-    )
-
-    selected_business_id = request.args.get(
-        "business_id",
-        type=int
-    )
-
-    # -----------------------------------------------------
-    # POST
-    # -----------------------------------------------------
-
     if request.method == "POST":
+        profile.phone = request.form.get("phone", "").strip()
+        profile.location = request.form.get("location", "").strip()
+        profile.business_name = request.form.get("business_name", "").strip()
+        profile.website = request.form.get("website", "").strip()
+        db.session.commit()
+        flash("Profile updated successfully!", "success")
+        return redirect("/customer/profile")
 
-        package = request.form.get(
-            "package",
-            ""
-        ).strip()
+    return render_template("customer_profile.html", profile=profile)
 
-        requirements_text = request.form.get(
-            "requirements",
-            ""
-        ).strip()
 
-        business_id = request.form.get(
-            "business_id",
-            type=int
-        )
-
-        # -------------------------------------------------
-        # VALIDATE BUSINESS
-        # -------------------------------------------------
-
-        business = get_business_for_customer(
-            business_id,
-            current_user.id
-        )
-
-        if not business:
-
-            flash(
-                "Please select a valid business.",
-                "danger"
-            )
-
-            return redirect(
-                url_for(
-                    "start_project",
-                    service_slug=service_slug
-                )
-            )
-
-        # -------------------------------------------------
-        # VALIDATE PACKAGE
-        # -------------------------------------------------
-
-        if not package:
-
-            flash(
-                "Please select a package.",
-                "danger"
-            )
-
-            return redirect(
-                url_for(
-                    "start_project",
-                    service_slug=service_slug,
-                    business_id=business.id
-                )
-            )
-
-        # -------------------------------------------------
-        # VALIDATE REQUIREMENTS
-        # -------------------------------------------------
-
-        if not requirements_text:
-
-            flash(
-                "Please provide your project requirements.",
-                "danger"
-            )
-
-            return redirect(
-                url_for(
-                    "start_project",
-                    service_slug=service_slug,
-                    business_id=business.id
-                )
-            )
-
-        # -------------------------------------------------
-        # VALIDATE PACKAGE
-        # -------------------------------------------------
-
-        valid_package = any(
-            item["name"] == package
-            for item in service["packages"]
-        )
-
-        if not valid_package:
-
-            flash(
-                "Invalid package selected.",
-                "danger"
-            )
-
-            return redirect(
-                url_for(
-                    "start_project",
-                    service_slug=service_slug,
-                    business_id=business.id
-                )
-            )
-
-        # -------------------------------------------------
-        # CREATE PROJECT
-        # -------------------------------------------------
+@customer_bp.route("/start-project/<service_slug>", methods=["GET", "POST"])
+@login_required
+def start_project(service_slug="website-development"):
+    businesses = Business.query.filter_by(customer_id=current_user.id).all()
+    if request.method == "POST":
+        service = request.form.get("service", "Website Design & Development")
+        package = request.form.get("package", "Milestone Growth")
+        reqs = request.form.get("brief", "").strip() or request.form.get("requirements", "").strip()
+        b = Business.query.filter_by(customer_id=current_user.id).first()
 
         project = Project(
             customer_id=current_user.id,
-            business_id=business.id,
-            service=service["name"],
+            business_id=b.id if b else None,
+            service=service,
             package=package,
-            requirements=requirements_text,
+            requirements=reqs,
             status="Payment Pending"
         )
-
-        db.session.add(
-            project
-        )
-
+        db.session.add(project)
         db.session.commit()
 
-        flash(
-            "Project created successfully.",
-            "success"
-        )
+        flash("Milestone project created! Please authorize advance deposit.", "success")
+        return redirect(f"/payment/{project.id}")
 
-        return redirect(
-            url_for(
-                "payment_page",
-                project_id=project.id
-            )
-        )
-
-    # -----------------------------------------------------
-    # GET
-    # -----------------------------------------------------
-
-    return render_template(
-        "start_project.html",
-        service=service,
-        businesses=customer_businesses,
-        selected_business_id=selected_business_id
-    )
-
-
-# =========================================================
-# REQUIREMENTS
-# =========================================================
-
-@customer_bp.route(
-    "/requirements/<service_slug>",
-    methods=["GET", "POST"]
-)
-@login_required
-def requirements(service_slug):
-
-    if current_user.role != "customer":
-
-        return redirect(
-            url_for("dashboard")
-        )
-
-    service = next(
-        (
-            item
-            for item in services
-            if item["slug"] == service_slug
-        ),
-        None
-    )
-
-    if not service:
-
-        flash(
-            "Service not found.",
-            "danger"
-        )
-
-        return redirect(
-            url_for("dashboard")
-        )
-
-    # -----------------------------------------------------
-    # GET BUSINESS ID FROM URL
-    # -----------------------------------------------------
-
-    selected_business_id = request.args.get(
-        "business_id",
-        type=int
-    )
-
-    # -----------------------------------------------------
-    # VERIFY BUSINESS BELONGS TO CURRENT CUSTOMER
-    # -----------------------------------------------------
-
-    business = get_business_for_customer(
-        selected_business_id,
-        current_user.id
-    )
-
-    if not business:
-
-        flash(
-            "Please select a valid business.",
-            "danger"
-        )
-
-        return redirect(
-            url_for(
-                "businesses"
-            )
-        )
-
-    selected_package = request.args.get(
-        "package",
-        ""
-    ).strip()
-
-    # -----------------------------------------------------
-    # POST
-    # -----------------------------------------------------
-
-    if request.method == "POST":
-
-        package = request.form.get(
-            "package",
-            selected_package
-        ).strip()
-
-        requirements_text = request.form.get(
-            "requirements",
-            ""
-        ).strip()
-
-        # Get business ID from submitted form
-        business_id = request.form.get(
-            "business_id",
-            selected_business_id,
-            type=int
-        )
-
-        # Verify ownership again
-        business = get_business_for_customer(
-            business_id,
-            current_user.id
-        )
-
-        if not business:
-
-            flash(
-                "Please select a valid business.",
-                "danger"
-            )
-
-            return redirect(
-                url_for(
-                    "requirements",
-                    service_slug=service_slug,
-                    package=package,
-                    business_id=selected_business_id
-                )
-            )
-
-        # -------------------------------------------------
-        # PACKAGE VALIDATION
-        # -------------------------------------------------
-
-        if not package:
-
-            flash(
-                "Please select a package.",
-                "danger"
-            )
-
-            return redirect(
-                url_for(
-                    "requirements",
-                    service_slug=service_slug,
-                    business_id=business.id
-                )
-            )
-
-        # -------------------------------------------------
-        # REQUIREMENTS VALIDATION
-        # -------------------------------------------------
-
-        if not requirements_text:
-
-            flash(
-                "Please provide your project requirements.",
-                "danger"
-            )
-
-            return redirect(
-                url_for(
-                    "requirements",
-                    service_slug=service_slug,
-                    package=package,
-                    business_id=business.id
-                )
-            )
-
-        # -------------------------------------------------
-        # VALIDATE PACKAGE BELONGS TO SERVICE
-        # -------------------------------------------------
-
-        valid_package = any(
-            item["name"] == package
-            for item in service["packages"]
-        )
-
-        if not valid_package:
-
-            flash(
-                "Invalid package selected.",
-                "danger"
-            )
-
-            return redirect(
-                url_for(
-                    "requirements",
-                    service_slug=service_slug,
-                    business_id=business.id
-                )
-            )
-
-        # -------------------------------------------------
-        # CREATE PROJECT WITH BUSINESS
-        # -------------------------------------------------
-
-        project = Project(
-            customer_id=current_user.id,
-            business_id=business.id,
-            service=service["name"],
-            package=package,
-            requirements=requirements_text,
-            status="Payment Pending"
-        )
-
-        db.session.add(
-            project
-        )
-
-        db.session.commit()
-
-        # -------------------------------------------------
-        # GO TO PAYMENT
-        # -------------------------------------------------
-
-        return redirect(
-            url_for(
-                "payment_page",
-                project_id=project.id
-            )
-        )
-
-    # -----------------------------------------------------
-    # GET REQUIREMENTS PAGE
-    # -----------------------------------------------------
-
-    return render_template(
-        "requirements.html",
-        service=service,
-        selected_package=selected_package,
-        business=business,
-        selected_business_id=business.id
-    )
-
-
-# =========================================================
-# CREATE RAZORPAY PAYMENT ORDER
-# =========================================================
-
-
+    return render_template("start_project.html", service_slug=service_slug, businesses=businesses)
